@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"    
+    android:fillViewport="true"
+    android:gravity="center"
+    android:orientation="vertical">    
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"        
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/loginName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"                        
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:typeface="normal"
+            android:hint="@string/login_name"/>
+
+        <EditText
+            android:id="@+id/loginPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" 
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"                         
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:typeface="normal"
+            android:hint="@string/login_password"/>
+
+        <Button
+            android:id="@+id/loginSend"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:onClick=""
+            android:text="@string/login_send"/>
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/loginNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:autoLink="all"
+        android:linksClickable="true"
+        android:text="@string/login_new"/>
+</LinearLayout>

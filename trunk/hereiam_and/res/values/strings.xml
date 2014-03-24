@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HereIAm</string>
+    <string name="action_settings">configurações</string>
+    <string name="ok">OK</string>
+    <string name="logout">logout</string>
+    <string name="cancel">cancelar</string>
+    <string name="required_field">campo obrigatório</string>
+    
+    <string name="create_name">nome</string>
+    <string name="create_usuario">usuário</string>
+    <string name="create_email">e-mail</string>    
+    <string name="create_password">senha</string>
+    <string name="create_confirm">confirmar senha</string>
+    <string name="create_send">criar</string>
+    
+    <string name="login_name">usuário</string>
+    <string name="login_password">senha</string>
+    <string name="login_send">acessar</string>
+    <string name="login_new">criar nova conta</string>
+    
+    <string name="dashboard_map">visualizar mapa</string>
+    <string name="dashboard_nfc">leitura etiqueta NFC</string>
+    <string name="dashboard_places">listar locais</string>
+    <string name="dashboard_favorites">listar locais favoritos</string>
+    <string name="dashboard_route">montar rota</string>
+    <string name="dashboard_important">listar locais importantes</string>
+    
+    <string name="map_update">atualizar posição</string>
+    <string name="map_route">montar rota</string>
+    <string name="map_listenvironments">listar ambientes</string>    
+    <string name="map_listplaces">listar locais</string>
+    <string name="map_listfavorites">listar favoritos</string>
+    <string name="map_listimportants">listar importantes</string>
+    
+    <string name="progresst_nfc">Leitura Etiqueta NFC</string>
+    <string name="progressm_nfc">Aproxime o dispositivo na Etiqueta NFC</string>
+    
+    <string name="progresst_login">Acessando</string>
+    <string name="progressm_login">Verificando credenciais, por favor aguarde.</string>
+    
+    <string name="progresst_creation">Criando usuário</string>
+    <string name="progressm_creation">Verificando credenciais inseridas, por favor aguarde.</string>
+    
+    <string name="progresst_environment_list">Carregando Lista de Ambientes</string>
+    <string name="progressm_environment_list">Por favor, aguarde enquanto a lista de ambientes é carregada.</string>
+    
+    <string name="progresst_places_list">Carregando Lista de Locais</string>
+    <string name="progressm_places_list">Por favor, aguarde enquanto a lista de locais é carregada.</string>
+    
+    <string name="progresst_favorites_list">Carregando Lista de Locais Favoritos</string>
+    <string name="progressm_favorites_list">Por favor, aguarde enquanto a lista de locais favoritos é carregada.</string>
+    
+    <string name="progresst_importants_list">Carregando Lista de Locais Importantes</string>
+    <string name="progressm_importants_list">Por favor, aguarde enquanto a lista de locais importantes é carregada.</string>
+
+	<string name="alertt_withoutconnection">Sem conexão</string>
+	<string name="alertm_withoutconnection">Por favor, habilitar acesso a internet.</string>
+
+	<string name="alertt_wronguserorpassword">Credenciais inválidas</string>
+	<string name="alertm_wronguserorpassword">Por favor, verificar as credenciais inseridas.</string>
+
+	<string name="alertt_invaliduser">Usuário já existe</string>
+	<string name="alertm_invalidauser">Por favor, inserir outra credencial.</string>
+	
+	<string name="alertt_invalidemail">Email inválido</string>
+	<string name="alertm_invalidemail">Por favor, verificar as informações inseridas.</string>
+	
+	<string name="alertt_invalidpassword">Senha inválida</string>
+	<string name="alertm_invalidpassword">Por favor, verificar as informações inseridas.</string>
+	
+	<string name="alertt_withoutnfc">Dispositivo não possui NFC</string>
+	<string name="alertm_withoutnfc">Infelizmente seu dispositivo não possui NFC.</string>
+	
+	<string name="alertt_nfcisoff">Recurso NFC desligado</string>
+	<string name="alertm_nfcisoff">Por favor, ative o recurso NFC em seu dispositivo.</string>
+	
+	<string name="alertt_serviceisoff">Serviço Here I Am Indisponível</string>
+	<string name="alertm_serviceisoff">Por favor aguarde, o serviço Here I Am está indisponível no momento.</string>
+	
+	<string name="toast_creation">Usuário criado com sucesso</string>
+</resources>

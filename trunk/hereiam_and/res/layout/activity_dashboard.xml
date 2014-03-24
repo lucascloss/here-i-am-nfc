@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<TableLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"    
+    android:orientation="vertical"
+    android:stretchColumns="1"
+    android:layout_marginTop="10dip"
+    android:layout_marginLeft="5dip"
+    android:layout_marginRight="5dip">
+        
+    <TableRow
+        android:layout_marginTop="10dip"
+        android:layout_marginBottom="10dip">    	       
+    	<TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_map"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="showMap"/>
+    
+    	<TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_nfc"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="readNFC"/>
+
+    </TableRow>
+	<TableRow
+	    android:layout_marginTop="10dip"
+        android:layout_marginBottom="10dip">
+		<TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_places"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="listPlaces"/>
+		
+    	<TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_favorites"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="listFavorites"/>
+
+    </TableRow>
+    <TableRow
+        android:layout_marginTop="10dip"
+        android:layout_marginBottom="10dip">    	    
+   		<TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_route"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="startRoute"/>
+		
+        <TextView            
+		    android:layout_width="0dip"
+    		android:layout_height="wrap_content"
+    		android:textSize="18sp"
+    		android:gravity="bottom|center"
+    		android:text="@string/dashboard_important"
+    		android:drawableTop="@drawable/maps64"
+    		android:layout_weight="1"
+    		android:clickable="true"
+    		android:onClick="listImportant"/>
+
+	</TableRow>
+</TableLayout>
+</ScrollView>
