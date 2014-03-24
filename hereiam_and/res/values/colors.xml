@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <drawable name="color_default">#000000</drawable>
+    <drawable name="color_blue">#36b8e6</drawable>
+    <drawable name="color_green">#07cc64</drawable>
+    <drawable name="color_green_pressed">#CC04a550</drawable>
+    <drawable name="color_orange">#ff9900</drawable>
+    <drawable name="color_red">#FF0000</drawable>
+    <drawable name="color_brown">#cc3333</drawable>
+    <drawable name="color_yellow">#ffcc00</drawable>
+    <drawable name="color_white">#ffffff</drawable>
+    <drawable name="color_light_steel_blue">#B0C4DE</drawable>
+    <drawable name="color_grey">#BEBEBE</drawable>
+    <drawable name="color_light_gray">#D3D3D3</drawable>
+    <drawable name="color_gainsboro">#D3D3D3</drawable>
+    <drawable name="color_seashell1">#FFF5EE</drawable>
+    <drawable name="color_seashell2">#EEE5DE</drawable>
+
+</resources>
