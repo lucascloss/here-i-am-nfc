@@ -55,8 +55,10 @@ import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.controller.adapter.AlertDialogAdapter;
 import com.hereiam.model.Environment;
+import com.hereiam.model.Place;
 import com.hereiam.model.User;
 import com.hereiam.wsi.EnvironmentWSI;
+import com.hereiam.wsi.PlaceWSI;
 import com.hereiam.wsi.UserWSI;
 
 public class MapViewController extends BaseActivity implements Runnable, OnClickListener, OnItemClickListener{
@@ -74,9 +76,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private MapController mapController;
 	private MapOverlay mapOverlay;
 	private RoadManager roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
+	private Drawable nodeIcon;// = getResources().getDrawable(R.drawable.marker_node);
+	private Marker nodeMarker;
 		
-	//
-	private String TitleName[]={ "lucas", "testes", "aaaaa"};
+	//	
 	private EditText editTextSearch;
     private ListView listViewResults;
     private ArrayList<String> array_sort;
@@ -87,6 +90,17 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     private double latitude;
     private double longitude;
     private String currentEnvironment;
+    private String currentPlace;
+    private String nextPlace;
+    private EnvironmentWSI environmentWSI;
+	private ArrayList<Environment> environments;
+	private PlaceWSI placeWSI;
+	private ArrayList<Place> places;
+	private ArrayList<String> listItens = new ArrayList<String>();
+	private String placeA;
+	private String placeB;
+	private GeoPoint positionA;
+	private GeoPoint positionB;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -101,7 +115,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
         mapView.setMaxZoomLevel(19);
-        
+        mapController = (MapController) mapView.getController();
+        nodeMarker = new Marker(mapView);
         mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
         	@Override
         	public boolean onScroll(ScrollEvent e) {
@@ -113,31 +128,55 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
-				//travar scroll?
+				if(mapView.getZoomLevel() == 19){
+					
+					
+				}
 				return true;
 			}}, 500 ));
         
         /*mapOverlay = new MapOverlay(context);        
         List<Overlay> listOfOverlays = mapView.getOverlays();
         listOfOverlays.clear();
-        listOfOverlays.add(mapOverlay); */        
-        
-        currentEnvironment = getIntent().getStringExtra("ENVIRONMENT");
+        listOfOverlays.add(mapOverlay); */                       
         
         if(getIntent().hasExtra("SHOWMAP")){        	             	
         	if(getIntent().getBooleanExtra("SHOWMAP", true)){
             	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE"));
             	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE"));
         		setTo(latitude, longitude);
+        		
+        		if(getIntent().hasExtra("ENVIRONMENT")){
+                	currentEnvironment = getIntent().getStringExtra("ENVIRONMENT");
+                }
+                
+                if(getIntent().hasExtra("PLACE")){
+                	nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+                	currentPlace = getIntent().getStringExtra("PLACE");                	
+                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+                    nodeMarker.setIcon(nodeIcon);
+                    nodeMarker.setTitle(currentPlace);
+                    mapView.getOverlays().add(nodeMarker);
+                }
             }
         }
-           
+        
+        if(getIntent().hasExtra("ROUTE")){
+        	if(getIntent().getBooleanExtra("ROUTE", true)){
+        		placeA = getIntent().getStringExtra("PLACE_A");
+        		placeB = getIntent().getStringExtra("PLACE_B");
+        		positionA = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_A")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A")));
+            	positionB = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_A")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B")));
+            	
+            	//startar asynctask
+        	}
+        }
+        
         if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
         	setToSelectedPlace(/*getIntent().getStringExtra("NFC_WITHOUT_ROUTE"));*/);            
         }
+
         mapView.invalidate();     
-        //startProgressDialog("Calculando rota", "Aguarde...");
-        //new Thread(this).start();        
     }
 
 	@Override
@@ -146,7 +185,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			GeoPoint position = new GeoPoint(-29.7962346, -51.1514861);        
 	        GeoPoint position2 = new GeoPoint(-29.7949435, -51.1522033);
 	        
-	        mapController = (MapController) mapView.getController();
+	        
 	        mapController.setZoom(17);
 	        mapController.setCenter(position); 	       	        
 	        
@@ -204,31 +243,31 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	createAlertDialog();
 	        	startProgressDialog("teste", "message");
 	        	selectedMenu = ALERTROUTE;
-	            new AlertDialogFeedTask().execute(ALERTROUTE);
+	            //new AlertDialogFeedTask().execute(ALERTROUTE);
 	        	return true;
 	        case R.id.action_listenvironments:
 	        	createAlertDialog();
 	            startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
 	            selectedMenu = ALERTPLACES;
-	            new AlertDialogFeedTask().execute(ALERTENVIRONMENTS);	            																		          	           
+	            new SelectEnvironemntAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_listplaces:
 	        	createAlertDialog();
 	            startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 	            selectedMenu = ALERTPLACES;
-	            new AlertDialogFeedTask().execute(ALERTPLACES);	            																		          	           
+	            new SelectPlaceAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_listfavorites:
 	        	createAlertDialog();
 	        	startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
 	        	selectedMenu = ALERTFAVORITES;
-	            new AlertDialogFeedTask().execute(ALERTFAVORITES);
+	            //new AlertDialogFeedTask().execute(ALERTFAVORITES);
 	        	return true;
 	        case R.id.action_listimportants:
 	        	createAlertDialog();
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 	        	selectedMenu = ALERTIMPORTANTS;
-	            new AlertDialogFeedTask().execute(ALERTIMPORTANTS);
+	            //new AlertDialogFeedTask().execute(ALERTIMPORTANTS);
 	        	return true;
 	        case R.id.action_logout:
         		clearPreferences();
@@ -291,7 +330,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	alertDialogBuilder = new AlertDialog.Builder(context);
     	editTextSearch = new EditText(context);
     	listViewResults = new ListView(context);
-    	array_sort = new ArrayList<String> (Arrays.asList(TitleName));
     	layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(editTextSearch);
@@ -327,15 +365,46 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     }
     
     
-    private class AlertDialogFeedTask extends AsyncTask<Integer, Void, Void>{
+    private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
 
 		@Override
-		protected Void doInBackground(Integer... params) {
+		protected Void doInBackground(Void... arg0) {
 			try{
-				EnvironmentWSI environmentWSI = new EnvironmentWSI();
-				ArrayList<Environment> environments = environmentWSI.getListEnvironment();
+				environmentWSI = new EnvironmentWSI();
+				environments = environmentWSI.getListEnvironment();	
+				listItens.clear();				
+				for (int i = 0; i < environments.size(); i++) {
+					listItens.add(environments.get(i).getEnvtName());
+				}
 				
-				alertDialogAdapter = new AlertDialogAdapter(MapViewController.this, array_sort);
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+
+    private class SelectPlaceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlace();	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
 			    listViewResults.setAdapter(alertDialogAdapter);
 			}finally {
 				

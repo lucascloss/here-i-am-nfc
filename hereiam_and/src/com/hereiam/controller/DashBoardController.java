@@ -35,11 +35,15 @@ import com.hereiam.wsi.PlaceWSI;
 
 public class DashBoardController extends BaseActivity implements OnItemClickListener{
 
+	private final static int LIST_ENVIRONMENTS = 1;
+	private final static int LIST_PLACES = 2;
+	private final static int ROUTE_A = 3;
+	private final static int ROUTE_B = 4;
+	
 	private Context context;
 	private Intent navIntent;
 	
-	///
-	private EditText editTextSearch;
+	///	
     private ListView listViewResults;
     private AlertDialog alertDialog;
     private AlertDialogAdapter alertDialogAdapter;
@@ -47,6 +51,8 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
     private LinearLayout layout;
     private EnvironmentWSI environmentWSI;
 	private ArrayList<Environment> environments;
+	private PlaceWSI placeWSI;
+	private ArrayList<Place> places;
 	private ArrayList<String> listItens = new ArrayList<String>();
     
 	@Override
@@ -64,10 +70,10 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		if(Validator.hasInternetConnection()){
 			//if(Validator.isServiceOnline())
 			startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
-			createAlertDialog();
+			createAlertDialog(LIST_ENVIRONMENTS);
 			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);			
-			new SelectEnvironemntAlertDialogFeedTask().execute(1);			
+			navIntent.putExtra("SHOWMAP", true);						
+			new SelectEnvironemntAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
 			Alerts.createErrorAlert(1, context);
@@ -84,7 +90,17 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	}
 
 	public void listPlaces(View view) {
-	
+		if(Validator.hasInternetConnection()){
+			//if(Validator.isServiceOnline())
+			startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
+			createAlertDialog(LIST_PLACES);
+			navIntent = new Intent(this, MapViewController.class);
+			navIntent.putExtra("SHOWMAP", true);			
+			new SelectPlaceAlertDialogFeedTask().execute();			
+		}else {
+			finishProgressDialog();
+			Alerts.createErrorAlert(1, context);
+		}
 	}
 
 	public void listFavorites(View view) {
@@ -92,7 +108,17 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	}
 	
 	public void startRoute(View view) {
-	
+		if(Validator.hasInternetConnection()){
+			//if(Validator.isServiceOnline())
+			startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
+			createAlertDialog(ROUTE_A);
+			navIntent = new Intent(this, MapViewController.class);
+			//navIntent.putExtra("SHOWMAP", true);			
+			new SelectPlaceAlertDialogFeedTask().execute();			
+		}else {
+			finishProgressDialog();
+			Alerts.createErrorAlert(1, context);
+		}
 	}
 	
 	public void listImportants(View view) {
@@ -126,26 +152,77 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		moveTaskToBack(true);
 	}
     
-    public void createAlertDialog(){
-    	alertDialogBuilder = new AlertDialog.Builder(context);
-    	editTextSearch = new EditText(context);
+    public void createAlertDialog(int type){
+    	alertDialogBuilder = new AlertDialog.Builder(context);    	
     	listViewResults = new ListView(context);
     	layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.addView(editTextSearch);
-        layout.addView(listViewResults);
-        ////// select especifico para cada ação
-        listViewResults.setOnItemClickListener(new OnItemClickListener() {
+        layout.setOrientation(LinearLayout.VERTICAL);        
+        layout.addView(listViewResults);      
+        switch (type) {
+		case LIST_ENVIRONMENTS:
+	        listViewResults.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View v, int position,
-					long id) {				
-				navIntent.putExtra("ENVIRONMENT", listItens.get(position));
-				navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
-				navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
-				startActivity(navIntent);
-			}        	
-		});
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View v, int position,
+						long id) {				
+					navIntent.putExtra("ENVIRONMENT", listItens.get(position));
+					navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
+					navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
+					startActivity(navIntent);
+				}        	
+			});
+	        alertDialogBuilder.setTitle(R.string.alertt_environment_list);
+			break;
+		case LIST_PLACES:
+	        listViewResults.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View v, int position,
+						long id) {				
+					navIntent.putExtra("PLACE", listItens.get(position));
+					navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
+					navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+					startActivity(navIntent);
+				}        	
+			});
+	        alertDialogBuilder.setTitle(R.string.alertt_place_list);
+			break;
+		case ROUTE_A:
+			listViewResults.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View v, int position,
+						long id) {				
+					navIntent.putExtra("ROUTE", true);
+					navIntent.putExtra("PLACE_A", listItens.get(position));
+					navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
+					navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
+					listItens.remove(position);
+					createAlertDialog(ROUTE_B);
+				}        	
+			});
+	        alertDialogBuilder.setTitle(R.string.alertt_route_A_list);			
+			break;
+			
+		case ROUTE_B:
+			
+			alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+		    listViewResults.setAdapter(alertDialogAdapter);
+			listViewResults.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View v, int position,
+						long id) {				
+					navIntent.putExtra("PLACE_B", listItens.get(position));
+					navIntent.putExtra("LATITUDE_B", places.get(position).getPlaceLatitude());
+					navIntent.putExtra("LONGITUDE_B", places.get(position).getPlaceLongitude());
+				}        	
+			});
+	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
+		default:
+			break;
+		}
+
         
         alertDialogBuilder.setView(layout);	            
         alertDialogBuilder.setNegativeButton(getStringResource(R.string.cancel), new DialogInterface.OnClickListener() {	            	 
@@ -156,19 +233,41 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
         });
     }
     
-    private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Integer, Void, Void>{
+    private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
 
 		@Override
-		protected Void doInBackground(Integer... params) {
+		protected Void doInBackground(Void... arg0) {
 			try{
-				//environmentWSI = new EnvironmentWSI();
-				//environments = environmentWSI.getListEnvironment();	
-				listItens.clear();
+				environmentWSI = new EnvironmentWSI();
+				environments = environmentWSI.getListEnvironment();	
+				listItens.clear();				
+				for (int i = 0; i < environments.size(); i++) {
+					listItens.add(environments.get(i).getEnvtName());
+				}
 				
-				PlaceWSI wsi = new PlaceWSI();
-				ArrayList<Place> places = new ArrayList<Place>();
-				places = wsi.getListPlace();
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
 				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+
+    private class SelectPlaceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlace();	
+				listItens.clear();				
 				for (int i = 0; i < places.size(); i++) {
 					listItens.add(places.get(i).getPlaceName());
 				}
@@ -187,7 +286,5 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	        alertDialog = alertDialogBuilder.show(); 
         }
     }
-
-	
 	
 }

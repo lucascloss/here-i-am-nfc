@@ -44,7 +44,7 @@
     <string name="progressm_creation">Verificando credenciais inseridas, por favor aguarde.</string>
     
     <string name="progresst_environment_list">Carregando Lista de Ambientes</string>
-    <string name="progressm_environment_list">Por favor, aguarde enquanto a lista de ambientes é carregada.</string>
+    <string name="progressm_environment_list">Por favor, aguarde enquanto a lista de ambientes é carregada.</string>    
     
     <string name="progresst_places_list">Carregando Lista de Locais</string>
     <string name="progressm_places_list">Por favor, aguarde enquanto a lista de locais é carregada.</string>
@@ -78,6 +78,11 @@
 	
 	<string name="alertt_serviceisoff">Serviço Here I Am Indisponível</string>
 	<string name="alertm_serviceisoff">Por favor aguarde, o serviço Here I Am está indisponível no momento.</string>
+	
+	<string name="alertt_environment_list">Lista de Ambientes</string>
+	<string name="alertt_place_list">Lista de Locais</string>
+	<string name="alertt_route_A_list">Ponto A</string>
+	<string name="alertt_route_B_list">Ponto B</string>
 	
 	<string name="toast_creation">Usuário criado com sucesso</string>
 </resources>
