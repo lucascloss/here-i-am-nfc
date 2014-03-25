@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
@@ -24,7 +25,8 @@ public class NFCReaderController extends BaseActivity{
 	
 	public static final String MIME_TEXT_PLAIN = "text/plain";    
     public TextView mTextView;
-    private NfcAdapter mNfcAdapter;
+    private NfcManager nfcManager;
+    private NfcAdapter nfcAdapter;
     private String nfcReaderResult;
  
     @Override
@@ -33,16 +35,17 @@ public class NFCReaderController extends BaseActivity{
         setContentView(R.layout.activity_nfc);
         
         context = this;
-        
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        nfcManager = (NfcManager) context.getSystemService(Context.NFC_SERVICE);
+        nfcAdapter = nfcManager.getDefaultAdapter();
+        //nfcAdapter = NfcAdapter.getDefaultAdapter(this);
  
-        if (mNfcAdapter == null) {
+        if (nfcAdapter == null) {
     		Alerts.createErrorAlert(6, context);
             finish();
             return;
         }
      
-        if (!mNfcAdapter.isEnabled()) {
+        if (!nfcAdapter.isEnabled()) {
     		Alerts.createErrorAlert(7, context);
         } else {
         	startProgressDialog(getString(R.string.progresst_nfc), getString(R.string.progressm_nfc));
@@ -53,12 +56,12 @@ public class NFCReaderController extends BaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        setupForegroundDispatch(this, mNfcAdapter);
+        setupForegroundDispatch(this, nfcAdapter);
     }
      
     @Override
     protected void onPause() {
-        stopForegroundDispatch(this, mNfcAdapter);
+        stopForegroundDispatch(this, nfcAdapter);
         finishProgressDialog(); 
         super.onPause();
     }
