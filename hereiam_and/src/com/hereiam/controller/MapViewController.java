@@ -75,7 +75,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private MapView mapView;
 	private MapController mapController;
 	private MapOverlay mapOverlay;
-	private RoadManager roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
+	private RoadManager roadManager;
 	private Drawable nodeIcon;// = getResources().getDrawable(R.drawable.marker_node);
 	private Marker nodeMarker;
 		
@@ -166,9 +166,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		placeA = getIntent().getStringExtra("PLACE_A");
         		placeB = getIntent().getStringExtra("PLACE_B");
         		positionA = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_A")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A")));
-            	positionB = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_A")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B")));
+            	positionB = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_B")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B")));
+            	mapController = (MapController) mapView.getController();
+                mapController.setZoom(15);
+                mapController.setCenter(positionA);
+            	startProgressDialog("teste", "teste");
             	
-            	//startar asynctask
+            	new ShowRouteTask().execute(positionA, positionB);
+            	//new Thread(this).start();
         	}
         }
         
@@ -188,12 +193,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        
 	        mapController.setZoom(17);
 	        mapController.setCenter(position); 	       	        
-	        
+	        roadManager = getMapQuestKey();
 	        roadManager.addRequestOption("routeType=pedestrian");        
 	        //roadManager.addRequestOption("routeType=fastest");
 	        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-	        waypoints.add(position);
-	        waypoints.add(position2); //end point        
+	        waypoints.add(positionA);
+	        waypoints.add(positionB); //end point        
 	        
 	        Road road = roadManager.getRoad(waypoints);
 	        
@@ -205,8 +210,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	roadOverlay.setColor(Color.BLACK);
 	        	roadOverlay.setWidth(8);
 	            
-	            mapView.getOverlays().add(roadOverlay);
-	            
+	            mapView.getOverlays().add(roadOverlay);            
 	            
 	            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
 	            for (int i=0; i<road.mNodes.size(); i++){
@@ -306,6 +310,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public RoadManager getMapQuestKey(){
+		return new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
+	}
     
     public void setTo(double latitude, double longitude){
     	GeoPoint position = new GeoPoint(latitude, longitude);
@@ -364,7 +372,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
     }
     
-    
     private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
 
 		@Override
@@ -419,4 +426,52 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
     }
 
+    private class ShowRouteTask extends AsyncTask<GeoPoint, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(GeoPoint... geopoints) {
+            
+            ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+            waypoints.add(geopoints[0]);
+            waypoints.add(geopoints[1]);
+            RoadManager roadManager = null;
+           
+            
+            roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
+            
+            roadManager.addRequestOption("routeType=pedestrian");
+            
+        	Road road = roadManager.getRoad(waypoints);
+	        
+	        if (road.mStatus == Road.STATUS_DEFAULT){
+	        	// Mensagem de sinal baixo aqui
+	        } else if(road.mStatus == Road.STATUS_OK){
+	        	
+	        	Polyline roadOverlay = RoadManager.buildRoadOverlay(road, context);
+	        	roadOverlay.setColor(Color.BLACK);
+	        	roadOverlay.setWidth(8);
+	            
+	            mapView.getOverlays().add(roadOverlay);            
+	            
+	            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+	            for (int i=0; i<road.mNodes.size(); i++){
+                    RoadNode node = road.mNodes.get(i);
+                    Marker nodeMarker = new Marker(mapView);
+                    nodeMarker.setPosition(node.mLocation);
+                    nodeMarker.setIcon(nodeIcon);
+                    nodeMarker.setTitle("Step "+i);
+                    
+                    mapView.getOverlays().add(nodeMarker);
+	            }
+	            mapView.postInvalidate();
+	        }
+			return null;
+    }
+    	
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+			mapView.invalidate(); 
+        }
+    }
 }

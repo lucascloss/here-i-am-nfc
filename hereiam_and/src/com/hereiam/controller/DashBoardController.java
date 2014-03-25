@@ -8,6 +8,8 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +56,8 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	private PlaceWSI placeWSI;
 	private ArrayList<Place> places;
 	private ArrayList<String> listItens = new ArrayList<String>();
+	private NfcManager nfcManager;
+    private NfcAdapter nfcAdapter;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +87,17 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	public void readNFC(View view) {
 		if(Validator.hasInternetConnection()){
 			//if(Validator.isServiceOnline())
-			startActivity(new Intent(this, NFCReaderController.class));				
+			nfcManager = (NfcManager) context.getSystemService(Context.NFC_SERVICE);
+	        nfcAdapter = nfcManager.getDefaultAdapter();
+	        //nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+	 
+	        if (nfcAdapter == null) {
+	    		Alerts.createErrorAlert(6, context);
+	            finish();
+	            return;
+	        }else{
+	        	startActivity(new Intent(this, NFCReaderController.class));
+	        }
 		}else {
 			Alerts.createErrorAlert(1, context);
 		}
@@ -96,7 +110,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			createAlertDialog(LIST_PLACES);
 			navIntent = new Intent(this, MapViewController.class);
 			navIntent.putExtra("SHOWMAP", true);			
-			new SelectPlaceAlertDialogFeedTask().execute();			
+			new SelectPlaceRouteAAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
 			Alerts.createErrorAlert(1, context);
@@ -155,7 +169,8 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
     public void createAlertDialog(int type){
     	alertDialogBuilder = new AlertDialog.Builder(context);    	
     	listViewResults = new ListView(context);
-    	layout = new LinearLayout(context);
+    	LinearLayout layout = new LinearLayout(context);
+    	
         layout.setOrientation(LinearLayout.VERTICAL);        
         layout.addView(listViewResults);      
         switch (type) {
@@ -168,6 +183,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 					navIntent.putExtra("ENVIRONMENT", listItens.get(position));
 					navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
 					navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
+					alertDialog.dismiss();
 					startActivity(navIntent);
 				}        	
 			});
@@ -182,6 +198,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 					navIntent.putExtra("PLACE", listItens.get(position));
 					navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
 					navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+					alertDialog.dismiss();
 					startActivity(navIntent);
 				}        	
 			});
@@ -198,16 +215,14 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 					navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
 					navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
 					listItens.remove(position);
+					alertDialog.dismiss();
+					
 					createAlertDialog(ROUTE_B);
 				}        	
 			});
 	        alertDialogBuilder.setTitle(R.string.alertt_route_A_list);			
 			break;
-			
 		case ROUTE_B:
-			
-			alertDialogAdapter = new AlertDialogAdapter(context, listItens);
-		    listViewResults.setAdapter(alertDialogAdapter);
 			listViewResults.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
@@ -216,14 +231,16 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 					navIntent.putExtra("PLACE_B", listItens.get(position));
 					navIntent.putExtra("LATITUDE_B", places.get(position).getPlaceLatitude());
 					navIntent.putExtra("LONGITUDE_B", places.get(position).getPlaceLongitude());
+					alertDialog.dismiss();
+					startActivity(navIntent);
 				}        	
 			});
 	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
+	        new SelectPlaceRouteBAlertDialogFeedTask().execute();
 		default:
 			break;
 		}
 
-        
         alertDialogBuilder.setView(layout);	            
         alertDialogBuilder.setNegativeButton(getStringResource(R.string.cancel), new DialogInterface.OnClickListener() {	            	 
             @Override
@@ -286,5 +303,51 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	        alertDialog = alertDialogBuilder.show(); 
         }
     }
+    
+    private class SelectPlaceRouteAAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlace();	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
 	
+    private class SelectPlaceRouteBAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			try{			
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
 }
