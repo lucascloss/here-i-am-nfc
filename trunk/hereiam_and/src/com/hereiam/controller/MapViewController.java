@@ -89,6 +89,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     private LinearLayout layout;
     private double latitude;
     private double longitude;
+    private double latitudePlaceA;
+    private double latitudePlaceB;
+    private double longitudePlaceA;
+    private double longitudePlaceB;
     private String currentEnvironment;
     private String currentPlace;
     private String nextPlace;
@@ -165,8 +169,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         	if(getIntent().getBooleanExtra("ROUTE", true)){
         		placeA = getIntent().getStringExtra("PLACE_A");
         		placeB = getIntent().getStringExtra("PLACE_B");
-        		positionA = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_A")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A")));
-            	positionB = new GeoPoint(Double.parseDouble(getIntent().getStringExtra("LATITUDE_B")), Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B")));
+        		latitudePlaceA = Double.parseDouble(getIntent().getStringExtra("LATITUDE_A"));
+				latitudePlaceB = Double.parseDouble(getIntent().getStringExtra("LATITUDE_B"));
+				longitudePlaceA = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A"));
+				longitudePlaceB = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B"));
+        		positionA = new GeoPoint(latitudePlaceA, longitudePlaceA);
+            	positionB = new GeoPoint(latitudePlaceB, longitudePlaceB);
             	mapController = (MapController) mapView.getController();
                 mapController.setZoom(15);
                 mapController.setCenter(positionA);

@@ -21,7 +21,8 @@ import org.apache.http.HttpResponse;
 public class BaseWSI {
 
 	//protected static final String URI = "http://locahost:8080/hereiamwse/";
-	protected static final String URI = "http://ec2-54-186-1-128.us-west-2.compute.amazonaws.com:8080/hereiamwse/"; 
+	//protected static final String URI = "http://ec2-54-186-1-128.us-west-2.compute.amazonaws.com:8080/hereiamwse/";
+	protected static final String URI = "http://hereiam.dyndns.info:8080/hereiamwse/"; 
 	protected static final int HTTP_TIME_OUT = 60*1000;
 	protected static HttpClient httpClient;  
 	
