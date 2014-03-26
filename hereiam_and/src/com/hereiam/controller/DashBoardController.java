@@ -215,6 +215,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 					navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
 					navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
 					listItens.remove(position);
+					places.remove(position);
 					alertDialog.dismiss();
 					
 					createAlertDialog(ROUTE_B);
