@@ -1,14 +1,11 @@
 package com.hereiam.controller;
 
-import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
-import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
@@ -16,17 +13,10 @@ import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
-import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
-import org.osmdroid.views.overlay.Overlay;
-import org.osmdroid.views.overlay.TilesOverlay;
-import org.osmdroid.ResourceProxy;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -37,8 +27,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -49,62 +37,50 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.controller.adapter.AlertDialogAdapter;
 import com.hereiam.model.Environment;
 import com.hereiam.model.Place;
-import com.hereiam.model.User;
 import com.hereiam.wsi.EnvironmentWSI;
 import com.hereiam.wsi.PlaceWSI;
-import com.hereiam.wsi.UserWSI;
 
 public class MapViewController extends BaseActivity implements Runnable, OnClickListener, OnItemClickListener{
 	
-	private static final int ALERTROUTE = 1;
-	private static final int ALERTENVIRONMENTS = 2;
-	private static final int ALERTPLACES = 3;
-	private static final int ALERTFAVORITES = 4;
-	private static final int ALERTIMPORTANTS = 5;
+	private static final int ALERT_ROUTE_A = 1;
+	private static final int ALERT_ROUTE_B = 2;
+	private static final int ALERT_ENVIRONMENTS = 3;
+	private static final int ALERT_PLACES = 4;
+	private static final int ALERT_FAVORITES = 5;
+	private static final int ALERT_IMPORTANTS = 6;
 	
 	protected int selectedMenu;
 	
 	private Context context;
 	private MapView mapView;
 	private MapController mapController;
-	private MapOverlay mapOverlay;
 	private RoadManager roadManager;
-	private Drawable nodeIcon;// = getResources().getDrawable(R.drawable.marker_node);
+	private Drawable nodeIcon;
 	private Marker nodeMarker;
 		
 	//	
-	private EditText editTextSearch;
-    private ListView listViewResults;
-    private ArrayList<String> array_sort;
+    private ListView listViewResults;    
     private AlertDialog alertDialog;
     private AlertDialogAdapter alertDialogAdapter;
-    private Builder alertDialogBuilder;
-    private LinearLayout layout;
+    private Builder alertDialogBuilder;    
     private double latitude;
-    private double longitude;
-    private double latitudePlaceA;
-    private double latitudePlaceB;
-    private double longitudePlaceA;
-    private double longitudePlaceB;
+    private double longitude;    
     private String currentEnvironment;
-    private String currentPlace;
-    private String nextPlace;
+    private String currentPlace;    
     private EnvironmentWSI environmentWSI;
 	private ArrayList<Environment> environments;
 	private PlaceWSI placeWSI;
 	private ArrayList<Place> places;
-	private ArrayList<String> listItens = new ArrayList<String>();
-	private String placeA;
-	private String placeB;
-	private GeoPoint positionA;
-	private GeoPoint positionB;
+	private ArrayList<String> listItens = new ArrayList<String>();	
+	private ArrayList<String> routeA;
+	private ArrayList<String> routeB;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -167,26 +143,29 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         
         if(getIntent().hasExtra("ROUTE")){
         	if(getIntent().getBooleanExtra("ROUTE", true)){
-        		placeA = getIntent().getStringExtra("PLACE_A");
-        		placeB = getIntent().getStringExtra("PLACE_B");
-        		latitudePlaceA = Double.parseDouble(getIntent().getStringExtra("LATITUDE_A"));
-				latitudePlaceB = Double.parseDouble(getIntent().getStringExtra("LATITUDE_B"));
-				longitudePlaceA = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A"));
-				longitudePlaceB = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_B"));
-        		positionA = new GeoPoint(latitudePlaceA, longitudePlaceA);
-            	positionB = new GeoPoint(latitudePlaceB, longitudePlaceB);
+        		routeA.add(getIntent().getStringExtra("PLACE_A"));
+        		routeB.add(getIntent().getStringExtra("PLACE_B"));
+
+        		routeA.add(getIntent().getStringExtra("LATITUDE_A"));
+        		routeB.add(getIntent().getStringExtra("LATITUDE_B"));
+
+        		routeA.add(getIntent().getStringExtra("LONGITUDE_A"));
+        		routeB.add(getIntent().getStringExtra("LONGITUDE_B"));
+        		
+        		GeoPoint positionA = new GeoPoint(Double.parseDouble(routeA.get(1)), Double.parseDouble(routeA.get(2)));
+        		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
+            	
             	mapController = (MapController) mapView.getController();
                 mapController.setZoom(15);
                 mapController.setCenter(positionA);
-            	startProgressDialog("teste", "teste");
+            	startProgressDialog(getString(R.string.progresst_make_route), getString(R.string.progressm_make_route));
             	
             	new ShowRouteTask().execute(positionA, positionB);
-            	//new Thread(this).start();
         	}
         }
         
         if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
-        	setToSelectedPlace(/*getIntent().getStringExtra("NFC_WITHOUT_ROUTE"));*/);            
+        	            
         }
 
         mapView.invalidate();     
@@ -197,16 +176,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		try{
 			GeoPoint position = new GeoPoint(-29.7962346, -51.1514861);        
 	        GeoPoint position2 = new GeoPoint(-29.7949435, -51.1522033);
-	        
-	        
+	        	        
 	        mapController.setZoom(17);
 	        mapController.setCenter(position); 	       	        
 	        roadManager = getMapQuestKey();
 	        roadManager.addRequestOption("routeType=pedestrian");        
 	        //roadManager.addRequestOption("routeType=fastest");
 	        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-	        waypoints.add(positionA);
-	        waypoints.add(positionB); //end point        
+	        //waypoints.add(positionA);
+	        //waypoints.add(positionB); //end point        
 	        
 	        Road road = roadManager.getRoad(waypoints);
 	        
@@ -249,36 +227,42 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){	        	        	
 	        case R.id.action_update:
-	        	////////////////////chamar NFC, verificar se está roteando
+	        	//////////////////// chamar NFC, verificar se está roteando
+	        	/// atualizar rota
 	        	return true;
 	        case R.id.action_route:
-	        	createAlertDialog();
-	        	startProgressDialog("teste", "message");
-	        	selectedMenu = ALERTROUTE;
-	            //new AlertDialogFeedTask().execute(ALERTROUTE);
+	        	
+	        	startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
+	        	createAlertDialog(ALERT_ROUTE_A);
+	        	selectedMenu = ALERT_ROUTE_A;
+	            new SelectPlaceRouteAAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_listenvironments:
-	        	createAlertDialog();
+	        	
 	            startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
-	            selectedMenu = ALERTPLACES;
+	            createAlertDialog(ALERT_ENVIRONMENTS);
+	            selectedMenu = ALERT_ENVIRONMENTS;
 	            new SelectEnvironemntAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_listplaces:
-	        	createAlertDialog();
+	        	
 	            startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
-	            selectedMenu = ALERTPLACES;
+	            createAlertDialog(ALERT_PLACES);
+	            selectedMenu = ALERT_PLACES;
 	            new SelectPlaceAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_listfavorites:
-	        	createAlertDialog();
+	        	
 	        	startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
-	        	selectedMenu = ALERTFAVORITES;
+	        	createAlertDialog(ALERT_FAVORITES);
+	        	selectedMenu = ALERT_FAVORITES;
 	            //new AlertDialogFeedTask().execute(ALERTFAVORITES);
 	        	return true;
 	        case R.id.action_listimportants:
-	        	createAlertDialog();
+	        	
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
-	        	selectedMenu = ALERTIMPORTANTS;
+	        	createAlertDialog(ALERT_IMPORTANTS);
+	        	selectedMenu = ALERT_IMPORTANTS;
 	            //new AlertDialogFeedTask().execute(ALERTIMPORTANTS);
 	        	return true;
 	        case R.id.action_logout:
@@ -295,19 +279,56 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		
 		alertDialog.dismiss();
 		switch(getSelectedMenu()){
-			case ALERTROUTE:
-				// redireciona para o mapa novamente mais com a adição da ação selecionada
+			case ALERT_ROUTE_A:
+				routeA.clear();
+				routeA.add(listItens.get(position));
+				routeA.add(places.get(position).getPlaceLatitude());
+				routeA.add(places.get(position).getPlaceLongitude());
+				listItens.remove(position);
+				places.remove(position);			
+				alertDialog.dismiss();
+				
+				selectedMenu = ALERT_ROUTE_B;
+				createAlertDialog(ALERT_ROUTE_B);	
 				break;
-			case ALERTENVIRONMENTS:
+			case ALERT_ROUTE_B:
+				routeB.clear();
+				routeB.add(listItens.get(position));
+				routeB.add(places.get(position).getPlaceLatitude());
+				routeB.add(places.get(position).getPlaceLongitude());
+				alertDialog.dismiss();
+
+				GeoPoint positionA = new GeoPoint(Double.parseDouble(routeA.get(1)), Double.parseDouble(routeA.get(2)));
+        		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
+				
+				mapView.getOverlays().clear();
+				new ShowRouteTask().execute(positionA, positionB);
+				break;
+			case ALERT_ENVIRONMENTS:
+				currentEnvironment = environments.get(position).getEnvtName();
+				latitude = Double.parseDouble(environments.get(position).getEnvtLatitude());
+            	longitude = Double.parseDouble(environments.get(position).getEnvtLongitude());
+            	setTo(latitude, longitude);
+            	mapView.getOverlays().clear();
+            	mapView.invalidate(); 
+				break;
+			case ALERT_PLACES:
+				nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+            	currentPlace = places.get(position).getPlaceName();
+				latitude = Double.parseDouble(places.get(position).getPlaceLatitude());
+            	longitude = Double.parseDouble(places.get(position).getPlaceLongitude());
+                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+                nodeMarker.setIcon(nodeIcon);
+                nodeMarker.setTitle(currentPlace);
+                mapView.getOverlays().clear();
+                mapView.getOverlays().add(nodeMarker);
+                setTo(latitude, longitude);
+                mapView.invalidate();
+				break;
+			case ALERT_FAVORITES:
 				
 				break;
-			case ALERTPLACES:
-				
-				break;
-			case ALERTFAVORITES:
-				
-				break;
-			case ALERTIMPORTANTS:
+			case ALERT_IMPORTANTS:
 				
 				break;
 		}
@@ -331,26 +352,46 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     }
     
     // pegar as coordenadas
-    public void setToSelectedPlace(){
+    /*public void setToSelectedPlace(){
     	GeoPoint position = new GeoPoint(-29.6849347, -51.45922);
     	mapController = (MapController) mapView.getController();
         mapController.setZoom(15);
         mapController.setCenter(position);  
-    }
+    }*/
     
     public int getSelectedMenu(){
     	return selectedMenu;
     }
     
-    public void createAlertDialog(){
-    	alertDialogBuilder = new AlertDialog.Builder(context);
-    	editTextSearch = new EditText(context);
+    public void createAlertDialog(int type){
+    	alertDialogBuilder = new AlertDialog.Builder(context);    	
     	listViewResults = new ListView(context);
-    	layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.addView(editTextSearch);
-        layout.addView(listViewResults);
+    	LinearLayout layout = new LinearLayout(context);    	
+        layout.setOrientation(LinearLayout.VERTICAL);        
+        layout.addView(listViewResults);   
         listViewResults.setOnItemClickListener(this);
+        switch (type) {
+		case ALERT_ENVIRONMENTS:
+	        alertDialogBuilder.setTitle(R.string.alertt_environment_list);
+			break;
+		case ALERT_PLACES:        
+	        alertDialogBuilder.setTitle(R.string.alertt_place_list);
+			break;
+		case ALERT_ROUTE_A:		
+	        alertDialogBuilder.setTitle(R.string.alertt_route_A_list);			
+			break;
+		case ALERT_ROUTE_B:			
+	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
+	        new SelectPlaceRouteBAlertDialogFeedTask().execute();
+		case ALERT_FAVORITES:
+			
+			break;
+		case ALERT_IMPORTANTS:
+			
+			break;
+		default:
+			break;
+		}
         alertDialogBuilder.setView(layout);	            
         alertDialogBuilder.setNegativeButton(getStringResource(R.string.cancel), new DialogInterface.OnClickListener() {	            	 
             @Override
@@ -442,19 +483,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
             waypoints.add(geopoints[0]);
             waypoints.add(geopoints[1]);
-            RoadManager roadManager = null;
-           
             
-            roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
-            
+            RoadManager roadManager = null;                      
+            roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");            
             roadManager.addRequestOption("routeType=pedestrian");
             
         	Road road = roadManager.getRoad(waypoints);
 	        
 	        if (road.mStatus == Road.STATUS_DEFAULT){
 	        	// Mensagem de sinal baixo aqui
-	        } else if(road.mStatus == Road.STATUS_OK){
-	        	
+	        } else if(road.mStatus == Road.STATUS_OK){	        	
 	        	Polyline roadOverlay = RoadManager.buildRoadOverlay(road, context);
 	        	roadOverlay.setColor(Color.BLACK);
 	        	roadOverlay.setWidth(8);
@@ -480,6 +518,53 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         protected void onPostExecute(Void res){
 			finishProgressDialog();
 			mapView.invalidate(); 
+        }
+    }
+    
+    private class SelectPlaceRouteAAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlace();	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+	
+    private class SelectPlaceRouteBAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			try{			
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
         }
     }
 }

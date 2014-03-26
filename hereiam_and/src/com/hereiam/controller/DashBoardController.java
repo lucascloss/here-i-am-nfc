@@ -37,11 +37,14 @@ import com.hereiam.wsi.PlaceWSI;
 
 public class DashBoardController extends BaseActivity implements OnItemClickListener{
 
-	private final static int LIST_ENVIRONMENTS = 1;
+	private final static int VIEW_MAP = 1;
 	private final static int LIST_PLACES = 2;
-	private final static int ROUTE_A = 3;
-	private final static int ROUTE_B = 4;
+	private final static int MAKE_ROUTE_A = 3;
+	private final static int MAKE_ROUTE_B = 4;
+	private final static int LIST_FAVORITES = 5;
+	private final static int LIST_IMPORTANTS = 6;
 	
+	private int selectedMenu;
 	private Context context;
 	private Intent navIntent;
 	
@@ -66,7 +69,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		context = this;
         
         if(getIntent().getBooleanExtra("CREATION", false)){
-        	Toast.makeText(context, getString(R.string.toast_creation), Toast.LENGTH_LONG).show();
+        	Toast.makeText(context, getString(R.string.toast_creation), Toast.LENGTH_SHORT).show();
         }	
 	}
 	 
@@ -74,9 +77,10 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		if(Validator.hasInternetConnection()){
 			//if(Validator.isServiceOnline())
 			startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
-			createAlertDialog(LIST_ENVIRONMENTS);
+			createAlertDialog(VIEW_MAP);
 			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);						
+			navIntent.putExtra("SHOWMAP", true);	
+			selectedMenu = VIEW_MAP;
 			new SelectEnvironemntAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
@@ -109,7 +113,8 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 			createAlertDialog(LIST_PLACES);
 			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);			
+			navIntent.putExtra("SHOWMAP", true);		
+			selectedMenu = LIST_PLACES;
 			new SelectPlaceRouteAAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
@@ -125,9 +130,9 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		if(Validator.hasInternetConnection()){
 			//if(Validator.isServiceOnline())
 			startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
-			createAlertDialog(ROUTE_A);
+			createAlertDialog(MAKE_ROUTE_A);
 			navIntent = new Intent(this, MapViewController.class);
-			//navIntent.putExtra("SHOWMAP", true);			
+			selectedMenu = MAKE_ROUTE_A;
 			new SelectPlaceAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
@@ -159,7 +164,52 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
     
     @Override
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-	}
+	
+    	switch (selectedMenu) {
+		case VIEW_MAP:
+			navIntent.putExtra("ENVIRONMENT", listItens.get(position));
+			navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
+			navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
+			alertDialog.dismiss();
+			startActivity(navIntent);
+			break;
+		case LIST_PLACES:
+			navIntent.putExtra("PLACE", listItens.get(position));
+			navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+			alertDialog.dismiss();
+			startActivity(navIntent);
+			break;	
+		case MAKE_ROUTE_A:
+			navIntent.putExtra("ROUTE", true);
+			navIntent.putExtra("PLACE_A", listItens.get(position));
+			navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
+			listItens.remove(position);
+			places.remove(position);
+			alertDialog.dismiss();
+			
+			selectedMenu = MAKE_ROUTE_B;
+			createAlertDialog(MAKE_ROUTE_B);
+			break;
+		case MAKE_ROUTE_B:
+			navIntent.putExtra("PLACE_B", listItens.get(position));
+			navIntent.putExtra("LATITUDE_B", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_B", places.get(position).getPlaceLongitude());
+			alertDialog.dismiss();
+			startActivity(navIntent);
+			break;
+		case LIST_FAVORITES:
+			
+			break;
+			
+		case LIST_IMPORTANTS:
+			
+			break;
+		default:
+			break;
+		}
+    }
 
     
     public void onBackPressed() {
@@ -172,72 +222,27 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
     	LinearLayout layout = new LinearLayout(context);
     	
         layout.setOrientation(LinearLayout.VERTICAL);        
-        layout.addView(listViewResults);      
+        layout.addView(listViewResults);   
+        listViewResults.setOnItemClickListener(this);
         switch (type) {
-		case LIST_ENVIRONMENTS:
-	        listViewResults.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View v, int position,
-						long id) {				
-					navIntent.putExtra("ENVIRONMENT", listItens.get(position));
-					navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
-					navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
-					alertDialog.dismiss();
-					startActivity(navIntent);
-				}        	
-			});
+		case VIEW_MAP:
 	        alertDialogBuilder.setTitle(R.string.alertt_environment_list);
 			break;
-		case LIST_PLACES:
-	        listViewResults.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View v, int position,
-						long id) {				
-					navIntent.putExtra("PLACE", listItens.get(position));
-					navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
-					navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
-					alertDialog.dismiss();
-					startActivity(navIntent);
-				}        	
-			});
+		case LIST_PLACES:        
 	        alertDialogBuilder.setTitle(R.string.alertt_place_list);
 			break;
-		case ROUTE_A:
-			listViewResults.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View v, int position,
-						long id) {				
-					navIntent.putExtra("ROUTE", true);
-					navIntent.putExtra("PLACE_A", listItens.get(position));
-					navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
-					navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
-					listItens.remove(position);
-					places.remove(position);
-					alertDialog.dismiss();
-					
-					createAlertDialog(ROUTE_B);
-				}        	
-			});
+		case MAKE_ROUTE_A:		
 	        alertDialogBuilder.setTitle(R.string.alertt_route_A_list);			
 			break;
-		case ROUTE_B:
-			listViewResults.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View v, int position,
-						long id) {				
-					navIntent.putExtra("PLACE_B", listItens.get(position));
-					navIntent.putExtra("LATITUDE_B", places.get(position).getPlaceLatitude());
-					navIntent.putExtra("LONGITUDE_B", places.get(position).getPlaceLongitude());
-					alertDialog.dismiss();
-					startActivity(navIntent);
-				}        	
-			});
+		case MAKE_ROUTE_B:			
 	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
 	        new SelectPlaceRouteBAlertDialogFeedTask().execute();
+		case LIST_FAVORITES:
+			
+			break;
+		case LIST_IMPORTANTS:
+			
+			break;
 		default:
 			break;
 		}

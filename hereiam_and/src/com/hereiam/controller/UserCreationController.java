@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.helper.Alerts;
+import com.hereiam.helper.Security;
 import com.hereiam.helper.Validator;
 import com.hereiam.model.User;
 import com.hereiam.wsi.UserWSI;
@@ -31,6 +32,7 @@ public class UserCreationController extends BaseActivity implements OnClickListe
 	private EditText password;
 	private EditText confPassword;
 	private Button loginSend;
+	private String cryptPassword;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {	
@@ -92,6 +94,7 @@ public class UserCreationController extends BaseActivity implements OnClickListe
 		try {
 			UserWSI userWSI = new UserWSI();
 			User user = null;			    	
+			cryptPassword = Security.encrypt(Security.SEED, password.getText().toString());
     		user = userWSI.createUser(encodeUrl(name.getText().toString()), encodeUrl(userName.getText().toString()), encodeUrl(email.getText().toString()), encodeUrl(password.getText().toString()));
     		
     		if(user.getId() == 0){
@@ -114,6 +117,9 @@ public class UserCreationController extends BaseActivity implements OnClickListe
 				});
 			}        		
     	} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			
 			e.printStackTrace();
 		} finally {
     		finishProgressDialog();

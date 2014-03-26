@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.net.NetworkInfo.DetailedState;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.helper.Alerts;
+import com.hereiam.helper.Security;
 import com.hereiam.helper.Validator;
 import com.hereiam.model.Environment;
 import com.hereiam.model.User;
@@ -35,6 +37,8 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
 	private EditText loginPassword;
 	private Button loginSend;
 	private TextView loginNew;
+	private String decrypt;
+	private String password;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {	
@@ -101,6 +105,8 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
 					}   					
     			});    			
     		}else {
+    			password = user.getPassword();
+    			decrypt = teste(password);
     			if(user.getPassword().equals(loginPassword.getText().toString())){
     				finishProgressDialog();    				
     				savePreferences(user.getId(), user.getName(), user.getPassword());
@@ -138,6 +144,17 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
 
 	public void onBackPressed() {
 		moveTaskToBack(true);
+	}
+	
+	public String teste(String senha){
+		String retorno = null;
+		try {
+			retorno = Security.decrypt(Security.SEED, senha);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return retorno;
 	}
 	
 	// Validate the textfields
