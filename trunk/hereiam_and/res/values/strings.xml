@@ -55,6 +55,9 @@
     <string name="progresst_importants_list">Carregando Lista de Locais Importantes</string>
     <string name="progressm_importants_list">Por favor, aguarde enquanto a lista de locais importantes é carregada.</string>
 
+    <string name="progresst_make_route">Montando Rota</string>
+    <string name="progressm_make_route">Por favor, aguarde enquato a rota é montada.</string>
+    
 	<string name="alertt_withoutconnection">Sem conexão</string>
 	<string name="alertm_withoutconnection">Por favor, habilitar acesso a internet.</string>
 

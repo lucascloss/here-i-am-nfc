@@ -18,7 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Security {
 
-	private final static String SEED = "hereiam";
+	public final static String SEED = "hereiam";
 	
 	public static String encrypt(String seed, String cleartext) throws Exception {
 		byte[] rawKey = getRawKey(seed.getBytes());
