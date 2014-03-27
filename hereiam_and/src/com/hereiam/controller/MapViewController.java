@@ -2,6 +2,7 @@ package com.hereiam.controller;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.Marker.OnMarkerClickListener;
@@ -18,6 +19,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Overlay;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -66,6 +68,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private RoadManager roadManager;
 	private Drawable nodeIcon;
 	private Marker nodeMarker;
+	private Marker nodeMarkerRouteA;
+	private Marker nodeMarkerRouteB;
 	private Menu menu;
 		
 	//	
@@ -99,11 +103,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
         mapView.setMaxZoomLevel(19);
-        mapView.setOnClickListener(this);
+        //mapView.setMultiTouchControls(true);
+              
         mapController = (MapController) mapView.getController();
+        
         nodeMarker = new Marker(mapView);
         addListenerOnMarker(nodeMarker);
-        mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
+        
+        /*mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
         	@Override
         	public boolean onScroll(ScrollEvent e) {
 		    	if (mapView.getZoomLevel()>18){
@@ -114,17 +121,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
-				if(mapView.getZoomLevel() == 19){
-					
-					
+				if(mapView.getZoomLevel() == 19){										
 				}
 				return true;
-			}}, 500 ));
+			}}, 500 ));*/
         
-        /*mapOverlay = new MapOverlay(context);        
+        MapOverlay mapOverlay = new MapOverlay(context);        
         List<Overlay> listOfOverlays = mapView.getOverlays();
         listOfOverlays.clear();
-        listOfOverlays.add(mapOverlay); */                       
+        listOfOverlays.add(mapOverlay);                        
         
         if(getIntent().hasExtra("SHOWMAP")){        	             	
         	if(getIntent().getBooleanExtra("SHOWMAP", true)){
@@ -180,48 +185,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 
 	@Override
 	public void run() {		
-		try{
-			GeoPoint position = new GeoPoint(-29.7962346, -51.1514861);        
-	        GeoPoint position2 = new GeoPoint(-29.7949435, -51.1522033);
-	        	        
-	        mapController.setZoom(17);
-	        mapController.setCenter(position); 	       	        
-	        roadManager = getMapQuestKey();
-	        roadManager.addRequestOption("routeType=pedestrian");        
-	        //roadManager.addRequestOption("routeType=fastest");
-	        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-	        //waypoints.add(positionA);
-	        //waypoints.add(positionB); //end point        
-	        
-	        Road road = roadManager.getRoad(waypoints);
-	        
-	        if (road.mStatus == Road.STATUS_DEFAULT){
-	        	// Mensagem de sinal baixo aqui
-	        } else if(road.mStatus == Road.STATUS_OK){
-	        	
-	        	Polyline roadOverlay = RoadManager.buildRoadOverlay(road, this);
-	        	roadOverlay.setColor(Color.BLACK);
-	        	roadOverlay.setWidth(8);
-	            
-	            mapView.getOverlays().add(roadOverlay);            
-	            
-	            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
-	            for (int i=0; i<road.mNodes.size(); i++){
-                    RoadNode node = road.mNodes.get(i);
-                    Marker nodeMarker = new Marker(mapView);
-                    nodeMarker.setPosition(node.mLocation);
-                    nodeMarker.setIcon(nodeIcon);
-                    nodeMarker.setTitle("Step "+i);
-                    
-                    mapView.getOverlays().add(nodeMarker);
-	            }
-	            mapView.postInvalidate();
-	        }else {		
-	        	//
-	        }
-		} finally {
-			finishProgressDialog();
-        }
+					
 	}
 	
 	@Override
@@ -360,12 +324,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	}
 
 	@Override
-	public void onClick(View v) {
-		MenuItem menuItem = menu.findItem(R.id.action_info_place);
-		if(menuItem.isVisible()){
-			menuItem.setVisible(false);
-		}
-		
+	public void onClick(View v) {			
 	}
 	
 	public RoadManager getMapQuestKey(){
@@ -378,15 +337,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapController.setZoom(15);
         mapController.setCenter(position);  
     }
-    
-    // pegar as coordenadas
-    /*public void setToSelectedPlace(){
-    	GeoPoint position = new GeoPoint(-29.6849347, -51.45922);
-    	mapController = (MapController) mapView.getController();
-        mapController.setZoom(15);
-        mapController.setCenter(position);  
-    }*/
-    
+       
     public void addListenerOnMarker(Marker marker){
     	marker.setOnMarkerClickListener(new OnMarkerClickListener() {
             
@@ -444,22 +395,49 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     
     public class MapOverlay extends org.osmdroid.views.overlay.Overlay {
 
-        public MapOverlay(Context ctx) {super(ctx);}
+        public MapOverlay(Context ctx) {
+        	super(ctx);
+        }
 
         @Override
-        protected void draw(Canvas c, MapView osmv, boolean shadow) { }
+        protected void draw(Canvas c, MapView osmv, boolean shadow) {
+        	
+        }
 
         @Override
         public boolean onTouchEvent(MotionEvent e, MapView mapView) {
-        	int maskedAction = e.getActionMasked();
         	
-        	if(mapView.getZoomLevel()>18){            	
-        		if(e.getAction() == MotionEvent.ACTION_MOVE){
-        			mapController.setZoom(18);                	
+        	if(e.getAction() == MotionEvent.ACTION_DOWN){
+        		MenuItem menuItem = menu.findItem(R.id.action_info_place);        		        		
+        		
+        		if(nodeMarker != null){
+        			if(nodeMarker.isInfoWindowShown()){
+        				nodeMarker.hideInfoWindow();
+        			}
         		}
+        		
+        		if(nodeMarkerRouteA != null){
+        			if(nodeMarkerRouteA.isInfoWindowShown()){
+        				nodeMarkerRouteA.hideInfoWindow();
+        			}
+        		}
+        		
+        		if(nodeMarkerRouteB != null){
+        			if(nodeMarkerRouteB.isInfoWindowShown()){
+        				nodeMarkerRouteB.hideInfoWindow();
+        			}
+        		}
+        		
+        		if(menuItem.isVisible()){
+        			menuItem.setVisible(false);
+        		}
+        	}
+        	        	
+        	if(mapView.getZoomLevel() > 18){            	
         	}
         return false;
         }
+        
     }
     
     private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
@@ -541,7 +519,23 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	            mapView.getOverlays().add(roadOverlay);            
 	            
 	            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
-	            for (int i=0; i<road.mNodes.size(); i++){
+	            RoadNode node = road.mNodes.get(0);
+	            nodeMarkerRouteA = new Marker(mapView);
+	            nodeMarkerRouteA.setPosition(node.mLocation);
+                nodeMarkerRouteA.setIcon(nodeIcon);
+                nodeMarkerRouteA.setTitle(routeA.get(0).toString());//mudar nome
+                addListenerOnMarker(nodeMarkerRouteA);
+                
+                node = road.mNodes.get(1);
+	            nodeMarkerRouteB = new Marker(mapView);
+	            nodeMarkerRouteB.setPosition(node.mLocation);
+                nodeMarkerRouteB.setIcon(nodeIcon);
+                nodeMarkerRouteB.setTitle(routeB.get(0).toString());//mudar nome
+                addListenerOnMarker(nodeMarkerRouteB);
+                
+                mapView.getOverlays().add(nodeMarkerRouteA);
+                mapView.getOverlays().add(nodeMarkerRouteB);
+	            /*for (int i = 0; i < road.mNodes.size(); i++){
                     RoadNode node = road.mNodes.get(i);
                     Marker nodeMarker = new Marker(mapView);
                     nodeMarker.setPosition(node.mLocation);
@@ -550,7 +544,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     addListenerOnMarker(nodeMarker);
                     
                     mapView.getOverlays().add(nodeMarker);
-	            }
+	            }*/
 	            mapView.postInvalidate();
 	        }
 			return null;
