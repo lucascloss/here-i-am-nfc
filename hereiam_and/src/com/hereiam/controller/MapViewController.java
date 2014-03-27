@@ -4,6 +4,7 @@ package com.hereiam.controller;
 import java.util.ArrayList;
 
 import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.Marker.OnMarkerClickListener;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -25,8 +26,10 @@ import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -63,6 +66,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private RoadManager roadManager;
 	private Drawable nodeIcon;
 	private Marker nodeMarker;
+	private Menu menu;
 		
 	//	
     private ListView listViewResults;    
@@ -78,8 +82,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private PlaceWSI placeWSI;
 	private ArrayList<Place> places;
 	private ArrayList<String> listItens = new ArrayList<String>();	
-	private ArrayList<String> routeA;
-	private ArrayList<String> routeB;
+	private ArrayList<String> routeA = new ArrayList<String>();
+	private ArrayList<String> routeB = new ArrayList<String>();
 	
 	
 	@Override
@@ -95,8 +99,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
         mapView.setMaxZoomLevel(19);
+        mapView.setOnClickListener(this);
         mapController = (MapController) mapView.getController();
         nodeMarker = new Marker(mapView);
+        addListenerOnMarker(nodeMarker);
         mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
         	@Override
         	public boolean onScroll(ScrollEvent e) {
@@ -136,6 +142,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     nodeMarker.setPosition(new GeoPoint(latitude, longitude));
                     nodeMarker.setIcon(nodeIcon);
                     nodeMarker.setTitle(currentPlace);
+                    
                     mapView.getOverlays().add(nodeMarker);
                 }
             }
@@ -219,7 +226,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_map, menu);
+        this.menu = menu;
+		getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
 	    
@@ -263,7 +271,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 	        	createAlertDialog(ALERT_IMPORTANTS);
 	        	selectedMenu = ALERT_IMPORTANTS;
-	            //new AlertDialogFeedTask().execute(ALERTIMPORTANTS);
+	            new SelectPlaceByImportanceAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_logout:
         		clearPreferences();
@@ -280,7 +288,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		alertDialog.dismiss();
 		switch(getSelectedMenu()){
 			case ALERT_ROUTE_A:
-				routeA.clear();
+				if(routeA.size() > 1) {
+					routeA.clear();
+				}
+				
 				routeA.add(listItens.get(position));
 				routeA.add(places.get(position).getPlaceLatitude());
 				routeA.add(places.get(position).getPlaceLongitude());
@@ -292,7 +303,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				createAlertDialog(ALERT_ROUTE_B);	
 				break;
 			case ALERT_ROUTE_B:
-				routeB.clear();
+				if(routeB.size() > 1) {
+					routeB.clear();
+				}
+				
 				routeB.add(listItens.get(position));
 				routeB.add(places.get(position).getPlaceLatitude());
 				routeB.add(places.get(position).getPlaceLongitude());
@@ -302,6 +316,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
 				
 				mapView.getOverlays().clear();
+				startProgressDialog(getString(R.string.progresst_make_route), getString(R.string.progressm_make_route));
 				new ShowRouteTask().execute(positionA, positionB);
 				break;
 			case ALERT_ENVIRONMENTS:
@@ -329,14 +344,27 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				
 				break;
 			case ALERT_IMPORTANTS:
-				
+				nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+            	currentPlace = places.get(position).getPlaceName();
+				latitude = Double.parseDouble(places.get(position).getPlaceLatitude());
+            	longitude = Double.parseDouble(places.get(position).getPlaceLongitude());
+                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+                nodeMarker.setIcon(nodeIcon);
+                nodeMarker.setTitle(currentPlace);
+                mapView.getOverlays().clear();
+                mapView.getOverlays().add(nodeMarker);
+                setTo(latitude, longitude);
+                mapView.invalidate();
 				break;
 		}
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		MenuItem menuItem = menu.findItem(R.id.action_info_place);
+		if(menuItem.isVisible()){
+			menuItem.setVisible(false);
+		}
 		
 	}
 	
@@ -358,6 +386,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapController.setZoom(15);
         mapController.setCenter(position);  
     }*/
+    
+    public void addListenerOnMarker(Marker marker){
+    	marker.setOnMarkerClickListener(new OnMarkerClickListener() {
+            
+			@Override
+			public boolean onMarkerClick(Marker arg0, MapView arg1) {
+				arg0.showInfoWindow();
+				MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+				menuPlace.setVisible(true);
+				return false;
+			}
+        });
+    }
     
     public int getSelectedMenu(){
     	return selectedMenu;
@@ -387,7 +428,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			
 			break;
 		case ALERT_IMPORTANTS:
-			
+			alertDialogBuilder.setTitle(R.string.alertt_importants_list);
 			break;
 		default:
 			break;
@@ -505,7 +546,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     Marker nodeMarker = new Marker(mapView);
                     nodeMarker.setPosition(node.mLocation);
                     nodeMarker.setIcon(nodeIcon);
-                    nodeMarker.setTitle("Step "+i);
+                    nodeMarker.setTitle("Step "+i);//mudar nome
+                    addListenerOnMarker(nodeMarker);
                     
                     mapView.getOverlays().add(nodeMarker);
 	            }
@@ -553,6 +595,33 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		@Override
 		protected Void doInBackground(Void... arg0) {
 			try{			
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+    
+    private class SelectPlaceByImportanceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlaceByImportance();	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
 				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
 			    listViewResults.setAdapter(alertDialogAdapter);
 			}finally {

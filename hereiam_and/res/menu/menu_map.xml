@@ -1,6 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
     <item
+        android:id="@+id/action_info_environment"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"        
+        android:title="@string/map_info_environment"
+        android:visible="false"/>
+    
+    <item
+        android:id="@+id/action_info_place"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"        
+        android:title="@string/map_info_place"
+        android:visible="false"/>
+    
+    <item
         android:id="@+id/action_update"
         android:orderInCategory="100"
         android:showAsAction="never"
@@ -15,7 +29,7 @@
      <item
         android:id="@+id/action_listenvironments"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        android:showAsAction="never"        
         android:title="@string/map_listenvironments"/>
     
     <item
