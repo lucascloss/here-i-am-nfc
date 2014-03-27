@@ -1,92 +1,61 @@
 package com.hereiam.helper;
 
-import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Usage:
- * <pre>
- * String crypto = SimpleCrypto.encrypt(masterpassword, cleartext)
- * ...
- * String cleartext = SimpleCrypto.decrypt(masterpassword, crypto)
- * &lt;/pre&gt;
- * @author ferenc.hechler
- */
+
 public class Security {
 
-	public final static String SEED = "hereiam";
+	private final static String ALGORITHM = "AES";
+	public final static String secret = "hereiam123";
+	private final static String HEX = "0123456789ABCDEF";
+
+	public static String cipher(String secretKey, String data) throws Exception {
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), secretKey.getBytes(), 128, 256);
+		SecretKey tmp = factory.generateSecret(spec);
+		SecretKey key = new SecretKeySpec(tmp.getEncoded(), ALGORITHM);
+
+		Cipher cipher = Cipher.getInstance(ALGORITHM);
+		cipher.init(Cipher.ENCRYPT_MODE, key);
 	
-	public static String encrypt(String seed, String cleartext) throws Exception {
-		byte[] rawKey = getRawKey(seed.getBytes());
-		byte[] result = encrypt(rawKey, cleartext.getBytes());
-		return toHex(result);
-	}
-	
-	public static String decrypt(String seed, String encrypted) throws Exception {
-		byte[] rawKey = getRawKey(seed.getBytes());
-		byte[] enc = toByte(encrypted);
-		byte[] result = decrypt(rawKey, enc);
-		return new String(result);
-	}
-
-	private static byte[] getRawKey(byte[] seed) throws Exception {
-		KeyGenerator kgen = KeyGenerator.getInstance("AES");
-		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-		sr.setSeed(seed);
-	    kgen.init(128, sr); // 192 and 256 bits may not be available
-	    SecretKey skey = kgen.generateKey();
-	    byte[] raw = skey.getEncoded();
-	    return raw;
-	}
-
-	
-	private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
-	    SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-		Cipher cipher = Cipher.getInstance("AES");
-	    cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-	    byte[] encrypted = cipher.doFinal(clear);
-		return encrypted;
-	}
-
-	private static byte[] decrypt(byte[] raw, byte[] encrypted) throws Exception {
-	    SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-		Cipher cipher = Cipher.getInstance("AES");
-	    cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-	    byte[] decrypted = cipher.doFinal(encrypted);
-		return decrypted;
-	}
-
-	public static String toHex(String txt) {
-		return toHex(txt.getBytes());
-	}
-	public static String fromHex(String hex) {
-		return new String(toByte(hex));
+		return toHex(cipher.doFinal(data.getBytes()));
 	}
 	
-	public static byte[] toByte(String hexString) {
+	public static String decipher(String secretKey, String data) throws Exception {
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), secretKey.getBytes(), 128, 256);
+		SecretKey tmp = factory.generateSecret(spec);
+		SecretKey key = new SecretKeySpec(tmp.getEncoded(), ALGORITHM);
+	
+		Cipher cipher = Cipher.getInstance(ALGORITHM);
+	
+		cipher.init(Cipher.DECRYPT_MODE, key);
+	
+		return new String(cipher.doFinal(toByte(data)));
+	}
+
+	private static byte[] toByte(String hexString) {
 		int len = hexString.length()/2;
 		byte[] result = new byte[len];
-		for (int i = 0; i < len; i++)
+	
+		for (int i = 0; i < len; i++) {
 			result[i] = Integer.valueOf(hexString.substring(2*i, 2*i+2), 16).byteValue();
+		}
 		return result;
 	}
-
-	public static String toHex(byte[] buf) {
-		if (buf == null)
-			return "";
-		StringBuffer result = new StringBuffer(2*buf.length);
-		for (int i = 0; i < buf.length; i++) {
-			appendHex(result, buf[i]);
+	
+	public static String toHex(byte[] stringBytes) {
+		StringBuffer result = new StringBuffer(2*stringBytes.length);
+	
+		for (int i = 0; i < stringBytes.length; i++) {
+			result.append(HEX.charAt((stringBytes[i]>>4)&0x0f)).append(HEX.charAt(stringBytes[i]&0x0f));
 		}
 		return result.toString();
-	}
-	private final static String HEX = "0123456789ABCDEF";
-	private static void appendHex(StringBuffer sb, byte b) {
-		sb.append(HEX.charAt((b>>4)&0x0f)).append(HEX.charAt(b&0x0f));
-	}
-	
+	}	
 }

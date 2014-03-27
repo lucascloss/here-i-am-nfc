@@ -106,8 +106,8 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
     			});    			
     		}else {
     			password = user.getPassword();
-    			decrypt = teste(password);
-    			if(user.getPassword().equals(loginPassword.getText().toString())){
+    			decrypt = Security.decipher(Security.secret, password);
+    			if(decrypt.equals(loginPassword.getText().toString())){
     				finishProgressDialog();    				
     				savePreferences(user.getId(), user.getName(), user.getPassword());
     				startActivity(DashBoardController.class);
@@ -122,6 +122,8 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
     		}    		
     	} catch (UnsupportedEncodingException e) {
     		e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
     		finishProgressDialog();
     	}
@@ -144,17 +146,6 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
 
 	public void onBackPressed() {
 		moveTaskToBack(true);
-	}
-	
-	public String teste(String senha){
-		String retorno = null;
-		try {
-			retorno = Security.decrypt(Security.SEED, senha);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return retorno;
 	}
 	
 	// Validate the textfields

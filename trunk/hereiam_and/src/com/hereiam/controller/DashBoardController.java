@@ -48,7 +48,6 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	private Context context;
 	private Intent navIntent;
 	
-	///	
     private ListView listViewResults;
     private AlertDialog alertDialog;
     private AlertDialogAdapter alertDialogAdapter;
@@ -141,7 +140,18 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	}
 	
 	public void listImportants(View view) {
-	
+		if(Validator.hasInternetConnection()){
+			//if(Validator.isServiceOnline())
+			startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
+			createAlertDialog(LIST_IMPORTANTS);
+			navIntent = new Intent(this, MapViewController.class);
+			navIntent.putExtra("SHOWMAP", true);		
+			selectedMenu = LIST_IMPORTANTS;
+			new SelectPlaceByImportanceAlertDialogFeedTask().execute();			
+		}else {
+			finishProgressDialog();
+			Alerts.createErrorAlert(1, context);
+		}
 	}
 
     @Override
@@ -204,7 +214,11 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			break;
 			
 		case LIST_IMPORTANTS:
-			
+			navIntent.putExtra("PLACE", listItens.get(position));
+			navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+			alertDialog.dismiss();
+			startActivity(navIntent);
 			break;
 		default:
 			break;
@@ -241,7 +255,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			
 			break;
 		case LIST_IMPORTANTS:
-			
+			alertDialogBuilder.setTitle(R.string.alertt_importants_list);
 			break;
 		default:
 			break;
@@ -342,6 +356,33 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		@Override
 		protected Void doInBackground(Void... arg0) {
 			try{			
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+    
+    private class SelectPlaceByImportanceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				placeWSI = new PlaceWSI();
+				places = placeWSI.getListPlaceByImportance();	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
 				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
 			    listViewResults.setAdapter(alertDialogAdapter);
 			}finally {

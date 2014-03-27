@@ -86,7 +86,7 @@
     		android:drawableTop="@drawable/maps64"
     		android:layout_weight="1"
     		android:clickable="true"
-    		android:onClick="listImportant"/>
+    		android:onClick="listImportants"/>
 
 	</TableRow>
 </TableLayout>

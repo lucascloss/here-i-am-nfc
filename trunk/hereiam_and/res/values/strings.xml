@@ -27,6 +27,8 @@
     <string name="dashboard_route">montar rota</string>
     <string name="dashboard_important">listar locais importantes</string>
     
+    <string name="map_info_environment">info do ambiente</string>
+    <string name="map_info_place">info do local</string>
     <string name="map_update">atualizar posição</string>
     <string name="map_route">montar rota</string>
     <string name="map_listenvironments">listar ambientes</string>    
@@ -86,6 +88,8 @@
 	<string name="alertt_place_list">Lista de Locais</string>
 	<string name="alertt_route_A_list">Ponto A</string>
 	<string name="alertt_route_B_list">Ponto B</string>
+	<string name="alertt_importants_list">Lista de Locais Importantes</string>
+	<string name="alertt_favorites_list">Lista de Locais Favoritos</string>
 	
 	<string name="toast_creation">Usuário criado com sucesso</string>
 </resources>

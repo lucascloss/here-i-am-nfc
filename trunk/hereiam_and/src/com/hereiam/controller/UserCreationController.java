@@ -94,8 +94,8 @@ public class UserCreationController extends BaseActivity implements OnClickListe
 		try {
 			UserWSI userWSI = new UserWSI();
 			User user = null;			    	
-			cryptPassword = Security.encrypt(Security.SEED, password.getText().toString());
-    		user = userWSI.createUser(encodeUrl(name.getText().toString()), encodeUrl(userName.getText().toString()), encodeUrl(email.getText().toString()), encodeUrl(password.getText().toString()));
+			cryptPassword = Security.cipher(Security.secret, password.getText().toString());
+    		user = userWSI.createUser(encodeUrl(name.getText().toString()), encodeUrl(userName.getText().toString()), encodeUrl(email.getText().toString()), cryptPassword);//encodeUrl(password.getText().toString()));
     		
     		if(user.getId() == 0){
     			handler.post(new Runnable(){

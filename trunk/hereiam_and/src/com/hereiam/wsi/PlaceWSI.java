@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.hereiam.model.Environment;
 import com.hereiam.model.Place;
 import com.hereiam.wsi.rest.BaseWSI;
 
@@ -19,6 +18,7 @@ public class PlaceWSI extends BaseWSI{
 
 	public static final String PLACE_URI = URI + "place";
 	public static final String PLACE_LIST_URI = PLACE_URI + "/list";
+	public static final String PLACE_LIST_IMPORTANTS_URI = PLACE_URI + "/list/byimportance";
 	public static final String PLACE_FIND_URI = PLACE_URI + "/find?";
 	public static final String PLACE_CREATE_URI = PLACE_URI + "/create?";
 	public static final String PLACE_DELETE_URI = PLACE_URI + "/delete?";
@@ -49,6 +49,35 @@ public class PlaceWSI extends BaseWSI{
         ArrayList<Place> places = new ArrayList<Place>();
         try {
         	HttpGet httpGet = new HttpGet(PLACE_LIST_URI);            
+        	HttpResponse response = httpClient.execute(httpGet);
+        	InputStream resultStream = response.getEntity().getContent();
+        	
+        	result = convertInputStreamToString(resultStream);           
+        	JSONObject jsonObject = new JSONObject(result);        	
+        	Object check = jsonObject.get("place");
+        	if (check instanceof JSONArray) {
+        	    places = listFromJSON(jsonObject);//aqui
+        	}
+        	else if (check instanceof JSONObject) {       		
+        	    Place place = new Place();
+        	    place = placeFromJSON(jsonObject.getJSONObject("place"));
+        	    places.add(place);
+        	}
+        	else {        	    
+        	}        	        	        
+        } catch (Exception e) {
+        	e.printStackTrace();
+            Log.d("getListPlace", "Erro método getListPlace");
+        }
+        return places;
+    }
+	
+	public ArrayList<Place> getListPlaceByImportance() {        
+        httpClient = getHttpClient();
+        String result = null;                
+        ArrayList<Place> places = new ArrayList<Place>();
+        try {
+        	HttpGet httpGet = new HttpGet(PLACE_LIST_IMPORTANTS_URI);            
         	HttpResponse response = httpClient.execute(httpGet);
         	InputStream resultStream = response.getEntity().getContent();
         	
