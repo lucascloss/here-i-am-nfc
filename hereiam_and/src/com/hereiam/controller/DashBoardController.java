@@ -144,8 +144,8 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			//if(Validator.isServiceOnline())
 			startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 			createAlertDialog(LIST_IMPORTANTS);
-			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);		
+			navIntent = new Intent(this, MapViewController.class);		
+			navIntent.putExtra("SHOWMAP", true);
 			selectedMenu = LIST_IMPORTANTS;
 			new SelectPlaceByImportanceAlertDialogFeedTask().execute();			
 		}else {
@@ -214,9 +214,9 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			break;
 			
 		case LIST_IMPORTANTS:
-			navIntent.putExtra("PLACE", listItens.get(position));
-			navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+			navIntent.putExtra("IMPORTANTS", listItens.get(position));
+			navIntent.putExtra("LATITUDE_IMPORTANTS", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_IMPORTANTS", places.get(position).getPlaceLongitude());
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;

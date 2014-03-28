@@ -27,7 +27,6 @@ import com.hereiam.model.User;
 import com.hereiam.wsi.EnvironmentWSI;
 import com.hereiam.wsi.UserWSI;
 
-
 public class LoginAuthController extends BaseActivity implements OnClickListener, Runnable{
 
 	private Context context;

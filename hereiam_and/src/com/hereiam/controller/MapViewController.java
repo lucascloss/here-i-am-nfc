@@ -31,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +63,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	
 	protected int selectedMenu;
 	
+	final private Handler handler = new Handler();
 	private Context context;
 	private MapView mapView;
 	private MapController mapController;
@@ -72,8 +74,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private Marker nodeMarkerRouteA;
 	private Marker nodeMarkerRouteB;
 	private Menu menu;
-	private ArrayList<Marker> nodeMakerEnvironments = new ArrayList<Marker>();
+	private ArrayList<Marker> nodeMarkerEnvironments = new ArrayList<Marker>();
 	private MapOverlay mapOverlay;
+	private boolean showMap = false;
+	private boolean route = false;
 		
 	//	
     private ListView listViewResults;    
@@ -111,7 +115,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapController = (MapController) mapView.getController();
         
         nodeMarker = new Marker(mapView);
-        addListenerOnMarkerPlace(nodeMarker);
+        //addListenerOnMarkerPlace(nodeMarker);
         
         /*mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
         	@Override
@@ -132,126 +136,121 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapOverlay = new MapOverlay(context);        
         mapView.getOverlays().add(mapOverlay);                        
         
-        //startProgressDialog("teste", "teste");
-        //new GetEnvironmentsTask().execute();
-        //finishProgressDialog();
-        
-        /*if(getIntent().hasExtra("SHOWMAP")){        	             	
-        	if(getIntent().getBooleanExtra("SHOWMAP", true)){            	        		
+        if(getIntent().hasExtra("SHOWMAP")){      
+        	showMap = getIntent().getBooleanExtra("SHOWMAP", true);
+        	getIntent().removeExtra("SHOWMAP");
+        	if(showMap){            	        		
         		if(getIntent().hasExtra("ENVIRONMENT")){
-                	currentEnvironment = getIntent().getStringExtra("ENVIRONMENT");
-                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
+    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
                 	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
             		setTo(latitude, longitude);
-                }
-                
-                if(getIntent().hasExtra("PLACE")){
-                	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
-                	currentPlace = getIntent().getStringExtra("PLACE");
-                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_PLACE"));
-                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_PLACE"));
-                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
-                    nodeMarker.setIcon(nodeIconP);
-                    nodeMarker.setTitle(currentPlace);                    
-                    mapView.getOverlays().add(nodeMarker);
-                    setTo(latitude, longitude);
-                }
-            }
-        }
+        		}
         
-        if(getIntent().hasExtra("ROUTE")){
-        	if(getIntent().getBooleanExtra("ROUTE", true)){
-        		routeA.add(getIntent().getStringExtra("PLACE_A"));
-        		routeB.add(getIntent().getStringExtra("PLACE_B"));
-
-        		routeA.add(getIntent().getStringExtra("LATITUDE_A"));
-        		routeB.add(getIntent().getStringExtra("LATITUDE_B"));
-
-        		routeA.add(getIntent().getStringExtra("LONGITUDE_A"));
-        		routeB.add(getIntent().getStringExtra("LONGITUDE_B"));
+        		if(getIntent().hasExtra("PLACE")){
+    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_PLACE"));
+        			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_PLACE"));
+        			setTo(latitude, longitude);
+        		}
         		
-        		GeoPoint positionA = new GeoPoint(Double.parseDouble(routeA.get(1)), Double.parseDouble(routeA.get(2)));
-        		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
-            	
-            	mapController = (MapController) mapView.getController();
-                mapController.setZoom(15);
-                mapController.setCenter(positionA);
-            	startProgressDialog(getString(R.string.progresst_make_route), getString(R.string.progressm_make_route));
-            	
-            	new ShowRouteTask().execute(positionA, positionB);
+        		if(getIntent().hasExtra("IMPORTANTS")){
+    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANTS"));
+        			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANTS"));
+        			setTo(latitude, longitude);
+        		}
         	}
         }
         
-        if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
-        	            
+        if(getIntent().hasExtra("ROUTE")){
+        	route = getIntent().getBooleanExtra("ROUTE", true);
+        	getIntent().removeExtra("ROUTE");
+        	if(route){
+        		latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_A"));
+    			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_A"));
+    			setTo(latitude, longitude);
+        	}
         }
-        
-        mapView.invalidate();*/   
-        new Thread(this).run();
-    }
+                
+        mapView.invalidate();   
+        startProgressDialog("Carregando", "teste");
+        new InitialFeedTask().execute();
+    }	
 
 	@Override
 	public void run() {		
-		try{
-			startProgressDialog("Carregando", "teste");
-	        new GetEnvironmentsTask().execute();
-	        
-	        if(getIntent().hasExtra("SHOWMAP")){        	             	
-	        	if(getIntent().getBooleanExtra("SHOWMAP", true)){            	        		
-	        		if(getIntent().hasExtra("ENVIRONMENT")){
-	                	currentEnvironment = getIntent().getStringExtra("ENVIRONMENT");
-	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
-	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
-	            		setTo(latitude, longitude);
-	                }
-	                
-	                if(getIntent().hasExtra("PLACE")){
-	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
-	                	currentPlace = getIntent().getStringExtra("PLACE");
-	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_PLACE"));
-	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_PLACE"));
-	                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
-	                    nodeMarker.setIcon(nodeIconP);
-	                    nodeMarker.setTitle(currentPlace);                    
-	                    mapView.getOverlays().add(nodeMarker);
-	                    setTo(latitude, longitude);
-	                }	                
-	            }
-	        	mapView.invalidate();
-    	        finishProgressDialog();
-	        }
-	        
-	        if(getIntent().hasExtra("ROUTE")){
-	        	if(getIntent().getBooleanExtra("ROUTE", true)){
-	        		routeA.add(getIntent().getStringExtra("PLACE_A"));
-	        		routeB.add(getIntent().getStringExtra("PLACE_B"));
-
-	        		routeA.add(getIntent().getStringExtra("LATITUDE_A"));
-	        		routeB.add(getIntent().getStringExtra("LATITUDE_B"));
-
-	        		routeA.add(getIntent().getStringExtra("LONGITUDE_A"));
-	        		routeB.add(getIntent().getStringExtra("LONGITUDE_B"));
-	        		
-	        		GeoPoint positionA = new GeoPoint(Double.parseDouble(routeA.get(1)), Double.parseDouble(routeA.get(2)));
-	        		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
-	            	
-	            	mapController = (MapController) mapView.getController();
-	                mapController.setZoom(15);
-	                mapController.setCenter(positionA);
-	            	//startProgressDialog(getString(R.string.progresst_make_route), getString(R.string.progressm_make_route));
-	            	
-	            	new ShowRouteTask().execute(positionA, positionB);
-	        	}
-	        }
-	        
-	        if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
-	        	            
-	        }
-	        
-	        
-		}finally{
-			
+	}
+	
+	@Override
+	protected void onDestroy(){
+		mapView.setBuiltInZoomControls(false);
+		mapView.setClickable(false);
+		
+		super.onDestroy();
+	}
+		
+	public void getEnvironments(){
+		nodeIconE = getResources().getDrawable(R.drawable.marker_node_blue);
+		environmentWSI = new EnvironmentWSI();
+		environments = environmentWSI.getListEnvironment();	
+				
+		for (int i = 0; i < environments.size(); i++) {
+			nodeMarkerEnvironments.add(new Marker(mapView));
+			nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+			nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					Double.parseDouble(environments.get(i).getEnvtLongitude())));
+			nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+			addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+			mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 		}
+	}
+	
+	public void getRoute(GeoPoint positionA, GeoPoint positionB){
+		ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+        waypoints.add(positionA);
+        waypoints.add(positionB);
+        
+        RoadManager roadManager = null;                      
+        roadManager = new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");            
+        roadManager.addRequestOption("routeType=pedestrian");
+        
+    	Road road = roadManager.getRoad(waypoints);
+        
+        if (road.mStatus == Road.STATUS_DEFAULT){
+        	// Mensagem de sinal baixo aqui
+        } else if(road.mStatus == Road.STATUS_OK){	        	
+        	Polyline roadOverlay = RoadManager.buildRoadOverlay(road, context);
+        	roadOverlay.setColor(Color.BLACK);
+        	roadOverlay.setWidth(8);
+            
+            mapView.getOverlays().add(roadOverlay);            
+            
+            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+            RoadNode node = road.mNodes.get(0);
+            nodeMarkerRouteA = new Marker(mapView);
+            nodeMarkerRouteA.setPosition(node.mLocation);
+            nodeMarkerRouteA.setIcon(nodeIcon);
+            nodeMarkerRouteA.setTitle(routeA.get(0).toString());
+            addListenerOnMarkerPlace(nodeMarkerRouteA);
+            
+            node = road.mNodes.get(1);
+            nodeMarkerRouteB = new Marker(mapView);
+            nodeMarkerRouteB.setPosition(node.mLocation);
+            nodeMarkerRouteB.setIcon(nodeIcon);
+            nodeMarkerRouteB.setTitle(routeB.get(0).toString());
+            addListenerOnMarkerPlace(nodeMarkerRouteB);
+            
+            mapView.getOverlays().add(nodeMarkerRouteA);
+            mapView.getOverlays().add(nodeMarkerRouteB);
+            
+            /*for (int i = 0; i < environments.size(); i++) {
+				nodeMarkerEnvironments.add(new Marker(mapView));
+				nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+				nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+						Double.parseDouble(environments.get(i).getEnvtLongitude())));
+				nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+				addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+				mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
+			}*/ 
+        }
 	}
 	
 	@Override
@@ -361,13 +360,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             	mapView.getOverlays().add(mapOverlay);
             	
             	for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
             	
             	mapView.invalidate(); 
@@ -383,31 +382,33 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 mapView.getOverlays().clear();
                 
                 mapView.getOverlays().add(mapOverlay);
+                                
+                addListenerOnMarkerPlace(nodeMarker);
+                mapView.getOverlays().add(nodeMarker);
                 
                 for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
                 
-                mapView.getOverlays().add(nodeMarker);
                 setTo(latitude, longitude);
                 mapView.invalidate();
 				break;
 			case ALERT_FAVORITES:
 				
 				for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
 				
 				
@@ -423,18 +424,20 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 mapView.getOverlays().clear();
                 
                 mapView.getOverlays().add(mapOverlay);
+                                
+                addListenerOnMarkerPlace(nodeMarker);
+                mapView.getOverlays().add(nodeMarker);
                 
                 for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
                 
-                mapView.getOverlays().add(nodeMarker);
                 setTo(latitude, longitude);
                 mapView.invalidate();
 				break;
@@ -460,9 +463,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	marker.setOnMarkerClickListener(new OnMarkerClickListener() {
             
 			@Override
-			public boolean onMarkerClick(Marker arg0, MapView arg1) {
-				arg0.showInfoWindow();
+			public boolean onMarkerClick(final Marker arg0, final MapView arg1) {								
+				//arg0.showInfoWindow();
 				MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+				menuPlace.setTitle("INFO - " + arg0.getTitle());
 				menuPlace.setVisible(true);
 				return false;
 			}
@@ -474,8 +478,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             
 			@Override
 			public boolean onMarkerClick(Marker arg0, MapView arg1) {
-				arg0.showInfoWindow();
+				//arg0.showInfoWindow();
 				MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+				menuEnvironment.setTitle("INFO - " + arg0.getTitle());
 				menuEnvironment.setVisible(true);
 				return false;
 			}
@@ -560,10 +565,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         			}
         		}
         		
-        		if(nodeMakerEnvironments.size() > 0){
-        			for (int i = 0; i < nodeMakerEnvironments.size(); i++){
-        				if(nodeMakerEnvironments.get(i).isInfoWindowShown()){
-        					nodeMakerEnvironments.get(i).hideInfoWindow();
+        		if(nodeMarkerEnvironments.size() > 0){
+        			for (int i = 0; i < nodeMarkerEnvironments.size(); i++){
+        				if(nodeMarkerEnvironments.get(i).isInfoWindowShown()){
+        					nodeMarkerEnvironments.get(i).hideInfoWindow();
         				}
         			}
         		}
@@ -582,6 +587,79 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         return false;
         }
         
+    }
+    
+    private class InitialFeedTask extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			
+			//getEnvironments();
+			        
+	        if(showMap){        	             	
+	        	getEnvironments();            	        		
+	        		if(getIntent().hasExtra("ENVIRONMENT")){
+	                	currentEnvironment = getIntent().getStringExtra("ENVIRONMENT");
+	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
+	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
+	                }
+	                
+	                if(getIntent().hasExtra("PLACE")){
+	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
+	                	currentPlace = getIntent().getStringExtra("PLACE");
+	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_PLACE"));
+	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_PLACE"));
+	                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+	                    nodeMarker.setIcon(nodeIconP);
+	                    nodeMarker.setTitle(currentPlace);  
+	                    addListenerOnMarkerPlace(nodeMarker);
+	                    mapView.getOverlays().add(nodeMarker);
+	                }
+	                
+	                if(getIntent().hasExtra("IMPORTANTS")){
+	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
+	                	currentPlace = getIntent().getStringExtra("IMPORTANTS");
+	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANTS"));
+	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANTS"));
+	                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+	                    nodeMarker.setIcon(nodeIconP);
+	                    nodeMarker.setTitle(currentPlace);    
+	                    addListenerOnMarkerPlace(nodeMarker);
+	                    mapView.getOverlays().add(nodeMarker);
+	                }	
+    	        finishProgressDialog();
+	        }
+	        
+	        if(route){
+	        	getEnvironments();
+        		routeA.add(getIntent().getStringExtra("PLACE_A"));
+        		routeB.add(getIntent().getStringExtra("PLACE_B"));
+
+        		routeA.add(getIntent().getStringExtra("LATITUDE_A"));
+        		routeB.add(getIntent().getStringExtra("LATITUDE_B"));
+
+        		routeA.add(getIntent().getStringExtra("LONGITUDE_A"));
+        		routeB.add(getIntent().getStringExtra("LONGITUDE_B"));
+        		
+        		GeoPoint positionA = new GeoPoint(Double.parseDouble(routeA.get(1)), Double.parseDouble(routeA.get(2)));
+        		GeoPoint positionB = new GeoPoint(Double.parseDouble(routeB.get(1)), Double.parseDouble(routeB.get(2)));
+            	
+            	getRoute(positionA, positionB);	                	        	
+	        }
+	        
+	        if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
+	        	            
+	        }	        
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			showMap = false;
+			route = false;
+			mapView.postInvalidate();
+			finishProgressDialog();	        
+        }    	
     }
     
     private class SelectEnvironemntAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
@@ -648,12 +726,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				environments = environmentWSI.getListEnvironment();	
 						
 				for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}								
 			}finally {
 				
@@ -662,10 +741,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		}
 		
 		@Override
-        protected void onPostExecute(Void res){
-			for (int i = 0; i < nodeMakerEnvironments.size(); i++) {
-				mapView.getOverlays().add(nodeMakerEnvironments.get(i));
-			}
+        protected void onPostExecute(Void res){			
 			mapView.invalidate();	
 			//finishProgressDialog();
         }
@@ -700,27 +776,27 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	            nodeMarkerRouteA = new Marker(mapView);
 	            nodeMarkerRouteA.setPosition(node.mLocation);
                 nodeMarkerRouteA.setIcon(nodeIcon);
-                nodeMarkerRouteA.setTitle(routeA.get(0).toString());//mudar nome
+                nodeMarkerRouteA.setTitle(routeA.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteA);
                 
                 node = road.mNodes.get(1);
 	            nodeMarkerRouteB = new Marker(mapView);
 	            nodeMarkerRouteB.setPosition(node.mLocation);
                 nodeMarkerRouteB.setIcon(nodeIcon);
-                nodeMarkerRouteB.setTitle(routeB.get(0).toString());//mudar nome
+                nodeMarkerRouteB.setTitle(routeB.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteB);
                 
                 mapView.getOverlays().add(nodeMarkerRouteA);
                 mapView.getOverlays().add(nodeMarkerRouteB);
                 
                 for (int i = 0; i < environments.size(); i++) {
-					nodeMakerEnvironments.add(new Marker(mapView));
-					nodeMakerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMakerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
+					nodeMarkerEnvironments.add(new Marker(mapView));
+					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
+					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
 							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMakerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMakerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMakerEnvironments.get(i));
+					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
+					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
+					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}                
 	            //mapView.postInvalidate();
 	        }
