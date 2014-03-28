@@ -178,15 +178,15 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
     	switch (selectedMenu) {
 		case VIEW_MAP:
 			navIntent.putExtra("ENVIRONMENT", listItens.get(position));
-			navIntent.putExtra("LATITUDE", environments.get(position).getEnvtLatitude());
-			navIntent.putExtra("LONGITUDE", environments.get(position).getEnvtLongitude());
+			navIntent.putExtra("LATITUDE_ENVIRONMENT", environments.get(position).getEnvtLatitude());
+			navIntent.putExtra("LONGITUDE_ENVIRONMENT", environments.get(position).getEnvtLongitude());
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
 		case LIST_PLACES:
 			navIntent.putExtra("PLACE", listItens.get(position));
-			navIntent.putExtra("LATITUDE", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE", places.get(position).getPlaceLongitude());
+			navIntent.putExtra("LATITUDE_PLACE", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_PLACE", places.get(position).getPlaceLongitude());
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;	
