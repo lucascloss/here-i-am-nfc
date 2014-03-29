@@ -28,36 +28,36 @@ public class Alerts {
 		AlertDialog.Builder alert = new AlertDialog.Builder(context);
 		switch (typeAlert) {
 		case WITHOUTCONNECTION:
-			alert.setTitle(R.string.alertt_withoutconnection);
-			alert.setMessage(R.string.alertm_withoutconnection);
+			alert.setTitle(R.string.alertt_without_connection);
+			alert.setMessage(R.string.alertm_without_connection);
 			break;
 		case WRONGUSERORPASSWORD:
-			alert.setTitle(R.string.alertt_wronguserorpassword);
-			alert.setMessage(R.string.alertm_wronguserorpassword);
+			alert.setTitle(R.string.alertt_wrong_user_or_password);
+			alert.setMessage(R.string.alertm_wrong_user_or_password);
 			break;
 		case INVALIDUSER:
-			alert.setTitle(R.string.alertt_invaliduser);
-			alert.setMessage(R.string.alertm_invalidauser);
+			alert.setTitle(R.string.alertt_invalid_user);
+			alert.setMessage(R.string.alertm_invalid_user);
 			break;
 		case INVALIDEMAIL:
-			alert.setTitle(R.string.alertt_invalidemail);
-			alert.setMessage(R.string.alertm_invalidemail);
+			alert.setTitle(R.string.alertt_invalid_email);
+			alert.setMessage(R.string.alertm_invalid_email);
 			break;
 		case INVALIDPASSWORD:
-			alert.setTitle(R.string.alertt_invalidpassword);
-			alert.setMessage(R.string.alertm_invalidpassword);
+			alert.setTitle(R.string.alertt_invalid_password);
+			alert.setMessage(R.string.alertm_invalid_password);
 			break;
 		case WITHOUTNFC:
-			alert.setTitle(R.string.alertt_withoutnfc);
-			alert.setMessage(R.string.alertm_withoutnfc);
+			alert.setTitle(R.string.alertt_without_nfc);
+			alert.setMessage(R.string.alertm_without_nfc);
 			break;
 		case NFCISOFF:
-			alert.setTitle(R.string.alertt_nfcisoff);
-			alert.setMessage(R.string.alertm_nfcisoff);
+			alert.setTitle(R.string.alertt_nfc_is_off);
+			alert.setMessage(R.string.alertm_nfc_is_off);
 			break;
 		case SERVICEISOFF:
-			alert.setTitle(R.string.alertt_serviceisoff);
-			alert.setMessage(R.string.alertm_serviceisoff);
+			alert.setTitle(R.string.alertt_service_is_off);
+			alert.setMessage(R.string.alertm_service_is_off);
 			break;
 			//case WSTIMEOUT:
 			//alert.setTitle(R.string.msgTimeOutTitle);

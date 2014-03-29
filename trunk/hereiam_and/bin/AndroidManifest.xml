@@ -37,21 +37,31 @@
             </intent-filter>       
         </activity>
         
-        <activity android:name=".controller.NFCReaderController"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
-                        
+        <activity
+            android:label="@string/activity_nfc" 
+            android:name=".controller.NFCReaderController"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">             
         </activity>
-        <activity android:name=".controller.MapViewController"
+        <activity 
+            android:label="@string/activity_map"
+            android:name=".controller.MapViewController"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
-           
         </activity>
-        <activity android:name=".controller.DashBoardController"
+        <activity 
+            android:label="@string/activity_dashboard"
+            android:name=".controller.DashBoardController"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
-            
         </activity>                   
-        <activity android:name=".controller.UserCreationController"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
-            
+        <activity 
+            android:label="@string/activity_create"
+            android:name=".controller.UserCreationController"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">            
+        </activity>
+        
+        <activity 
+            android:label="@string/activity_info"
+            android:name=".controller.ShowInfoController"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">            
         </activity>
     </application>
     

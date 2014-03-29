@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="activity_create">Criar novo usuário</string>
+    <string name="activity_dashboard">Menu Principal</string>
+    <string name="activity_map">Mapa</string>
+    <string name="activity_info">Informações</string>
+    <string name="activity_nfc">Leitura Etiqueta NFC</string>
+    
     <string name="app_name">HereIAm</string>
     <string name="action_settings">configurações</string>
     <string name="ok">OK</string>
@@ -31,13 +37,27 @@
     <string name="map_info_place">info do local</string>
     <string name="map_update">atualizar posição</string>
     <string name="map_route">montar rota</string>
-    <string name="map_listenvironments">listar ambientes</string>    
-    <string name="map_listplaces">listar locais</string>
-    <string name="map_listfavorites">listar favoritos</string>
-    <string name="map_listimportants">listar importantes</string>
+    <string name="map_list_environments">listar ambientes</string>    
+    <string name="map_list_places">listar locais</string>
+    <string name="map_list_favorites">listar favoritos</string>
+    <string name="map_list_importants">listar importantes</string>    
+    
+    <string name="info_txt">Informações:</string>
+    <string name="info_add_favorite">adicionar aos favoritos</string>
+    <string name="info_delete_favorite">deletar dos favoritos</string>
+    <string name="info_show_calendar">visualizar agenda</string>
+    
+    <string name="progresst_loading_map">Carregando mapa</string>
+    <string name="progressm_loading_map">Por favor, aguarde a conclusão.</string>
+    
+    <string name="progresst_info_environment">Carregando Informações sobre o Ambiente</string>
+    <string name="progressm_info_environment">Por favor, aguarde a conclusão.</string>
+    
+    <string name="progresst_info_place">Carregando Informações sobre o Local</string>
+    <string name="progressm_info_place">Por favor, aguarde a conclusão.</string>
     
     <string name="progresst_nfc">Leitura Etiqueta NFC</string>
-    <string name="progressm_nfc">Aproxime o dispositivo na Etiqueta NFC</string>
+    <string name="progressm_nfc">Aproxime o dispositivo na Etiqueta NFC.</string>
     
     <string name="progresst_login">Acessando</string>
     <string name="progressm_login">Verificando credenciais, por favor aguarde.</string>
@@ -60,29 +80,29 @@
     <string name="progresst_make_route">Montando Rota</string>
     <string name="progressm_make_route">Por favor, aguarde enquato a rota é montada.</string>
     
-	<string name="alertt_withoutconnection">Sem conexão</string>
-	<string name="alertm_withoutconnection">Por favor, habilitar acesso a internet.</string>
+	<string name="alertt_without_connection">Sem conexão</string>
+	<string name="alertm_without_connection">Por favor, habilitar acesso a internet.</string>
 
-	<string name="alertt_wronguserorpassword">Credenciais inválidas</string>
-	<string name="alertm_wronguserorpassword">Por favor, verificar as credenciais inseridas.</string>
+	<string name="alertt_wrong_user_or_password">Credenciais inválidas</string>
+	<string name="alertm_wrong_user_or_password">Por favor, verificar as credenciais inseridas.</string>
 
-	<string name="alertt_invaliduser">Usuário já existe</string>
-	<string name="alertm_invalidauser">Por favor, inserir outra credencial.</string>
+	<string name="alertt_invalid_user">Usuário já existe</string>
+	<string name="alertm_invalid_user">Por favor, inserir outra credencial.</string>
 	
-	<string name="alertt_invalidemail">Email inválido</string>
-	<string name="alertm_invalidemail">Por favor, verificar as informações inseridas.</string>
+	<string name="alertt_invalid_email">Email inválido</string>
+	<string name="alertm_invalid_email">Por favor, verificar as informações inseridas.</string>
 	
-	<string name="alertt_invalidpassword">Senha inválida</string>
-	<string name="alertm_invalidpassword">Por favor, verificar as informações inseridas.</string>
+	<string name="alertt_invalid_password">Senha inválida</string>
+	<string name="alertm_invalid_password">Por favor, verificar as informações inseridas.</string>
 	
-	<string name="alertt_withoutnfc">Dispositivo não possui NFC</string>
-	<string name="alertm_withoutnfc">Infelizmente seu dispositivo não possui NFC.</string>
+	<string name="alertt_without_nfc">Dispositivo não possui NFC</string>
+	<string name="alertm_without_nfc">Infelizmente seu dispositivo não possui NFC.</string>
 	
-	<string name="alertt_nfcisoff">Recurso NFC desligado</string>
-	<string name="alertm_nfcisoff">Por favor, ative o recurso NFC em seu dispositivo.</string>
+	<string name="alertt_nfc_is_off">Recurso NFC desligado</string>
+	<string name="alertm_nfc_is_off">Por favor, ative o recurso NFC em seu dispositivo.</string>
 	
-	<string name="alertt_serviceisoff">Serviço Here I Am Indisponível</string>
-	<string name="alertm_serviceisoff">Por favor aguarde, o serviço Here I Am está indisponível no momento.</string>
+	<string name="alertt_service_is_off">Serviço Here I Am Indisponível</string>
+	<string name="alertm_service_is_off">Por favor aguarde, o serviço Here I Am está indisponível no momento.</string>
 	
 	<string name="alertt_environment_list">Lista de Ambientes</string>
 	<string name="alertt_place_list">Lista de Locais</string>
