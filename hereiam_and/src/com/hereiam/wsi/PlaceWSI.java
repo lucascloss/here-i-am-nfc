@@ -28,7 +28,7 @@ public class PlaceWSI extends BaseWSI{
         String result = null;        
         Place place = new Place();
         try {
-        	HttpGet httpGet = new HttpGet(PLACE_URI + "name=" + name);            
+        	HttpGet httpGet = new HttpGet(PLACE_FIND_URI + "name=" + name);            
         	HttpResponse response = httpClient.execute(httpGet);
         	InputStream resultStream = response.getEntity().getContent();
         	

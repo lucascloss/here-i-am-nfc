@@ -16,5 +16,7 @@
     <drawable name="color_gainsboro">#D3D3D3</drawable>
     <drawable name="color_seashell1">#FFF5EE</drawable>
     <drawable name="color_seashell2">#EEE5DE</drawable>
+    <drawable name="color_environment">#6699ff</drawable>
+    <drawable name="color_place">#ff7417</drawable>
 
 </resources>

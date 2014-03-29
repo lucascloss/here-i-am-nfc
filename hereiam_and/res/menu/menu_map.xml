@@ -27,28 +27,28 @@
         android:title="@string/map_route"/>
     
      <item
-        android:id="@+id/action_listenvironments"
+        android:id="@+id/action_list_environments"
         android:orderInCategory="100"
         android:showAsAction="never"        
-        android:title="@string/map_listenvironments"/>
+        android:title="@string/map_list_environments"/>
     
     <item
-        android:id="@+id/action_listplaces"
+        android:id="@+id/action_list_places"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/map_listplaces"/>
+        android:title="@string/map_list_places"/>
     
     <item
-        android:id="@+id/action_listfavorites"
+        android:id="@+id/action_list_favorites"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/map_listfavorites"/>
+        android:title="@string/map_list_favorites"/>
     
     <item
-        android:id="@+id/action_listimportants"
+        android:id="@+id/action_list_importants"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/map_listimportants"/>
+        android:title="@string/map_list_importants"/>
     
     <item
         android:id="@+id/action_logout"

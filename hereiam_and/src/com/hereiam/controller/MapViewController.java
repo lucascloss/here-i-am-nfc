@@ -1,6 +1,7 @@
 package com.hereiam.controller;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +26,13 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,8 +63,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private static final int ALERT_IMPORTANTS = 6;
 	
 	protected int selectedMenu;
-	
-	final private Handler handler = new Handler();
+		
 	private Context context;
 	private MapView mapView;
 	private MapController mapController;
@@ -73,13 +73,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private Marker nodeMarker;
 	private Marker nodeMarkerRouteA;
 	private Marker nodeMarkerRouteB;
+	private String currentMarker;
 	private Menu menu;
+	private Intent navIntent;
 	private ArrayList<Marker> nodeMarkerEnvironments = new ArrayList<Marker>();
 	private MapOverlay mapOverlay;
 	private boolean showMap = false;
-	private boolean route = false;
-		
-	//	
+	private boolean route = false;		
     private ListView listViewResults;    
     private AlertDialog alertDialog;
     private AlertDialogAdapter alertDialogAdapter;
@@ -88,8 +88,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     private double longitude;    
     private String currentEnvironment;
     private String currentPlace;    
+    private Environment environment;
     private EnvironmentWSI environmentWSI;
 	private ArrayList<Environment> environments;
+	private Place place;
 	private PlaceWSI placeWSI;
 	private ArrayList<Place> places;
 	private ArrayList<String> listItens = new ArrayList<String>();	
@@ -171,7 +173,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
                 
         mapView.invalidate();   
-        startProgressDialog("Carregando", "teste");
+        startProgressDialog(getString(R.string.progresst_loading_map), getString(R.string.progressm_loading_map));
         new InitialFeedTask().execute();
     }	
 
@@ -223,18 +225,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             
             mapView.getOverlays().add(roadOverlay);            
             
-            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+            Drawable nodeIconA = getResources().getDrawable(R.drawable.marker_node_a);
             RoadNode node = road.mNodes.get(0);
             nodeMarkerRouteA = new Marker(mapView);
             nodeMarkerRouteA.setPosition(node.mLocation);
-            nodeMarkerRouteA.setIcon(nodeIcon);
+            nodeMarkerRouteA.setIcon(nodeIconA);
             nodeMarkerRouteA.setTitle(routeA.get(0).toString());
             addListenerOnMarkerPlace(nodeMarkerRouteA);
             
+            Drawable nodeIconB = getResources().getDrawable(R.drawable.marker_node_b);
             node = road.mNodes.get(1);
             nodeMarkerRouteB = new Marker(mapView);
             nodeMarkerRouteB.setPosition(node.mLocation);
-            nodeMarkerRouteB.setIcon(nodeIcon);
+            nodeMarkerRouteB.setIcon(nodeIconB);
             nodeMarkerRouteB.setTitle(routeB.get(0).toString());
             addListenerOnMarkerPlace(nodeMarkerRouteB);
             
@@ -267,40 +270,47 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	//////////////////// chamar NFC, verificar se está roteando
 	        	/// atualizar rota
 	        	return true;
-	        case R.id.action_route:
-	        	
+	        case R.id.action_route:	        	
 	        	startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 	        	createAlertDialog(ALERT_ROUTE_A);
 	        	selectedMenu = ALERT_ROUTE_A;
 	            new SelectPlaceRouteAAlertDialogFeedTask().execute();
 	        	return true;
-	        case R.id.action_listenvironments:
-	        	
+	        case R.id.action_list_environments:	        	
 	            startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
 	            createAlertDialog(ALERT_ENVIRONMENTS);
 	            selectedMenu = ALERT_ENVIRONMENTS;
 	            new SelectEnvironemntAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
-	        case R.id.action_listplaces:
-	        	
+	        case R.id.action_list_places:	        	
 	            startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 	            createAlertDialog(ALERT_PLACES);
 	            selectedMenu = ALERT_PLACES;
 	            new SelectPlaceAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
-	        case R.id.action_listfavorites:
-	        	
+	        case R.id.action_list_favorites:	        	
 	        	startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
 	        	createAlertDialog(ALERT_FAVORITES);
 	        	selectedMenu = ALERT_FAVORITES;
 	            //new AlertDialogFeedTask().execute(ALERTFAVORITES);
 	        	return true;
-	        case R.id.action_listimportants:
-	        	
+	        case R.id.action_list_importants:	        	
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 	        	createAlertDialog(ALERT_IMPORTANTS);
 	        	selectedMenu = ALERT_IMPORTANTS;
 	            new SelectPlaceByImportanceAlertDialogFeedTask().execute();
+	        	return true;
+	        case R.id.action_info_environment:	        	
+	        	navIntent = new Intent(context, ShowInfoController.class);
+	        	navIntent.putExtra("ENVIRONMENT", currentMarker);
+	        	startProgressDialog(getString(R.string.progresst_info_environment), getString(R.string.progressm_info_environment));
+	        	new GetEnvironmentInfoFeedTask().execute(currentMarker);
+	        	return true;
+	        case R.id.action_info_place:	        	
+	        	navIntent = new Intent(context, ShowInfoController.class);
+	        	navIntent.putExtra("PLACE", currentMarker);
+	        	startProgressDialog(getString(R.string.progresst_info_place), getString(R.string.progressm_info_place));
+	        	new GetPlaceInfoFeedTask().execute(currentMarker);
 	        	return true;
 	        case R.id.action_logout:
         		clearPreferences();
@@ -467,6 +477,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				//arg0.showInfoWindow();
 				MenuItem menuPlace = menu.findItem(R.id.action_info_place);
 				menuPlace.setTitle("INFO - " + arg0.getTitle());
+				currentMarker = arg0.getTitle();
 				menuPlace.setVisible(true);
 				return false;
 			}
@@ -481,6 +492,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				//arg0.showInfoWindow();
 				MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 				menuEnvironment.setTitle("INFO - " + arg0.getTitle());
+				currentMarker = arg0.getTitle();
 				menuEnvironment.setVisible(true);
 				return false;
 			}
@@ -771,18 +783,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	            
 	            mapView.getOverlays().add(roadOverlay);            
 	            
-	            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+	            Drawable nodeIconA = getResources().getDrawable(R.drawable.marker_node_a);
 	            RoadNode node = road.mNodes.get(0);
 	            nodeMarkerRouteA = new Marker(mapView);
 	            nodeMarkerRouteA.setPosition(node.mLocation);
-                nodeMarkerRouteA.setIcon(nodeIcon);
+                nodeMarkerRouteA.setIcon(nodeIconA);
                 nodeMarkerRouteA.setTitle(routeA.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteA);
                 
+                Drawable nodeIconB = getResources().getDrawable(R.drawable.marker_node_b);
                 node = road.mNodes.get(1);
 	            nodeMarkerRouteB = new Marker(mapView);
 	            nodeMarkerRouteB.setPosition(node.mLocation);
-                nodeMarkerRouteB.setIcon(nodeIcon);
+                nodeMarkerRouteB.setIcon(nodeIconB);
                 nodeMarkerRouteB.setTitle(routeB.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteB);
                 
@@ -881,6 +894,52 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         protected void onPostExecute(Void res){
 			finishProgressDialog();
 	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+    
+    private class GetEnvironmentInfoFeedTask extends AsyncTask<String, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(String... environmentName) {
+			try{
+				environmentWSI = new EnvironmentWSI();
+				environment = environmentWSI.getEnvironment(encodeUrl(environmentName[0]));	
+				navIntent.putExtra("INFO", environment.getEnvtInfo());														
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        startActivity(navIntent);
+        }
+    }
+    
+    private class GetPlaceInfoFeedTask extends AsyncTask<String, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(String... placeName) {
+			try{
+				placeWSI = new PlaceWSI();
+				place = placeWSI.getPlace(encodeUrl(placeName[0]));	
+				navIntent.putExtra("INFO", place.getPlaceInfo());														
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        startActivity(navIntent);
         }
     }
 }

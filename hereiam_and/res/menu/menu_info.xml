@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/action_add_favorite"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/info_add_favorite"/>
+    
+    <item
+        android:id="@+id/action_delete_favorite"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/info_delete_favorite"
+        android:visible="false"/>
+    
+     <item
+        android:id="@+id/action_show_calendar"
+        android:orderInCategory="100"
+        android:showAsAction="never"        
+        android:title="@string/info_show_calendar"/>
+    
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/logout"/>
+
+</menu>
