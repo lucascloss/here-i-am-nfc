@@ -82,7 +82,7 @@ public class NFCReaderController extends BaseActivity{
                 nfcReaderResult = nfcReader.execute(tag);
                 
                 Intent navIntent = new Intent(context, MapViewController.class);
-                navIntent.putExtra("NFC_WITHOUT_ROUTE", nfcReaderResult);
+                navIntent.putExtra("NFC", nfcReaderResult);
                 startActivity(navIntent);
             } /*else {
                 

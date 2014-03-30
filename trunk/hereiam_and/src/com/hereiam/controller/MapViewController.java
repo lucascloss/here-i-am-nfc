@@ -49,22 +49,26 @@ import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.controller.adapter.AlertDialogAdapter;
 import com.hereiam.model.Environment;
+import com.hereiam.model.FavoritePlace;
 import com.hereiam.model.Place;
 import com.hereiam.wsi.EnvironmentWSI;
+import com.hereiam.wsi.FavoritePlaceWSI;
 import com.hereiam.wsi.PlaceWSI;
 
 public class MapViewController extends BaseActivity implements Runnable, OnClickListener, OnItemClickListener{
 	
 	private static final int ALERT_ROUTE_A = 1;
 	private static final int ALERT_ROUTE_B = 2;
-	private static final int ALERT_ENVIRONMENTS = 3;
-	private static final int ALERT_PLACES = 4;
-	private static final int ALERT_FAVORITES = 5;
-	private static final int ALERT_IMPORTANTS = 6;
+	private static final int ALERT_ENVIRONMENT = 3;
+	private static final int ALERT_PLACE = 4;
+	private static final int ALERT_FAVORITE = 5;
+	private static final int ALERT_IMPORTANT = 6;
 	
 	protected int selectedMenu;
 		
 	private Context context;
+	private int userId;
+	private String userName;
 	private MapView mapView;
 	private MapController mapController;
 	private RoadManager roadManager;
@@ -97,6 +101,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private ArrayList<String> listItens = new ArrayList<String>();	
 	private ArrayList<String> routeA = new ArrayList<String>();
 	private ArrayList<String> routeB = new ArrayList<String>();
+	private FavoritePlaceWSI favoritePlaceWSI;
+	private FavoritePlace favoritePlace;
+	private ArrayList<String> currentActions = new ArrayList<String>();
 	
 	
 	@Override
@@ -105,6 +112,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         setContentView(R.layout.activity_mapview);
         
         context = this;
+        userId = getUserId();
+        userName = getUserName();
         
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
@@ -112,29 +121,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
         mapView.setMaxZoomLevel(19);
-        //mapView.setMultiTouchControls(true);
-              
+        //mapView.setMultiTouchControls(true);    
         mapController = (MapController) mapView.getController();
         
         nodeMarker = new Marker(mapView);
-        //addListenerOnMarkerPlace(nodeMarker);
-        
-        /*mapView.setMapListener(new DelayedMapListener(new MapListener(){  		    
-        	@Override
-        	public boolean onScroll(ScrollEvent e) {
-		    	if (mapView.getZoomLevel()>18){
-		    		mapView.getController().zoomOut();//getController().setZoom(18);		    		
-		    	}		    	
-		        return true;
-		    }
-
-			@Override
-			public boolean onZoom(ZoomEvent arg0) {
-				if(mapView.getZoomLevel() == 19){										
-				}
-				return true;
-			}}, 500 ));*/
-        
+       
         mapOverlay = new MapOverlay(context);        
         mapView.getOverlays().add(mapOverlay);                        
         
@@ -154,9 +145,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         			setTo(latitude, longitude);
         		}
         		
-        		if(getIntent().hasExtra("IMPORTANTS")){
-    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANTS"));
-        			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANTS"));
+        		if(getIntent().hasExtra("IMPORTANT")){
+    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANT"));
+        			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANT"));
+        			setTo(latitude, longitude);
+        		}
+        		
+        		if(getIntent().hasExtra("FAVORITE")){
+    				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_FAVORITE"));
+        			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_FAVORITE"));
         			setTo(latitude, longitude);
         		}
         	}
@@ -171,8 +168,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     			setTo(latitude, longitude);
         	}
         }
-                
-        mapView.invalidate();   
+           
+        if(getIntent().hasExtra("NFC")){
+        	
+        }
+        
+        mapView.invalidate();           
         startProgressDialog(getString(R.string.progresst_loading_map), getString(R.string.progressm_loading_map));
         new InitialFeedTask().execute();
     }	
@@ -189,6 +190,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		super.onDestroy();
 	}
 		
+	@Override
+	public void onBackPressed(){
+		navIntent = new Intent(context, DashBoardController.class);
+		startActivity(navIntent);
+	}
+	
 	public void getEnvironments(){
 		nodeIconE = getResources().getDrawable(R.drawable.marker_node_blue);
 		environmentWSI = new EnvironmentWSI();
@@ -262,6 +269,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		getMenuInflater().inflate(R.menu.menu_map, menu);
         return true;
     }
+	
+	@Override
+	public void onRestart(){
+		super.onRestart();
+	}
+	
+	@Override
+	public void onStart(){
+		super.onStart();
+	}
 	    
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -278,37 +295,107 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	return true;
 	        case R.id.action_list_environments:	        	
 	            startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
-	            createAlertDialog(ALERT_ENVIRONMENTS);
-	            selectedMenu = ALERT_ENVIRONMENTS;
+	            createAlertDialog(ALERT_ENVIRONMENT);
+	            selectedMenu = ALERT_ENVIRONMENT;
 	            new SelectEnvironemntAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_list_places:	        	
 	            startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
-	            createAlertDialog(ALERT_PLACES);
-	            selectedMenu = ALERT_PLACES;
+	            createAlertDialog(ALERT_PLACE);
+	            selectedMenu = ALERT_PLACE;
 	            new SelectPlaceAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_list_favorites:	        	
 	        	startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
-	        	createAlertDialog(ALERT_FAVORITES);
-	        	selectedMenu = ALERT_FAVORITES;
-	            //new AlertDialogFeedTask().execute(ALERTFAVORITES);
+	        	createAlertDialog(ALERT_FAVORITE);
+	        	selectedMenu = ALERT_FAVORITE;
+	        	new SelectFavoritePlaceAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_list_importants:	        	
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
-	        	createAlertDialog(ALERT_IMPORTANTS);
-	        	selectedMenu = ALERT_IMPORTANTS;
+	        	createAlertDialog(ALERT_IMPORTANT);
+	        	selectedMenu = ALERT_IMPORTANT;
 	            new SelectPlaceByImportanceAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_info_environment:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
-	        	navIntent.putExtra("ENVIRONMENT", currentMarker);
+	        	navIntent.putExtra("ENVIRONMENT", currentMarker);	  
+	        	
+	        	if(currentActions.size() > 0){
+	        		if(currentActions.get(0).equals("SHOWMAP")){
+		        		navIntent.putExtra(currentActions.get(0), true);
+		        		if(currentActions.get(1).equals("ENVIRONMENT_M")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		if(currentActions.get(1).equals("PLACE_M")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		
+		        		if(currentActions.get(1).equals("IMPORTANT")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		if(currentActions.get(1).equals("FAVORITE")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        	}else {
+		        		navIntent.putExtra(currentActions.get(0), true);
+		        		navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+	        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+	        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+	        			navIntent.putExtra(currentActions.get(7), currentActions.get(8));
+	        			navIntent.putExtra(currentActions.get(9), currentActions.get(10));
+	        			navIntent.putExtra(currentActions.get(11), currentActions.get(12));
+		        	}
+	        	}
 	        	startProgressDialog(getString(R.string.progresst_info_environment), getString(R.string.progressm_info_environment));
 	        	new GetEnvironmentInfoFeedTask().execute(currentMarker);
 	        	return true;
 	        case R.id.action_info_place:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
 	        	navIntent.putExtra("PLACE", currentMarker);
+	        	
+	        	if(currentActions.size() > 0){
+		        	if(currentActions.get(0).equals("SHOWMAP")){
+		        		navIntent.putExtra(currentActions.get(0), true);
+		        		if(currentActions.get(1).equals("ENVIRONMENT_M")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		if(currentActions.get(1).equals("PLACE_M")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		
+		        		if(currentActions.get(1).equals("IMPORTANT")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        		if(currentActions.get(1).equals("FAVORITE")){
+		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+		        		}
+		        	}else {
+		        		navIntent.putExtra(currentActions.get(0), true);
+		        		navIntent.putExtra(currentActions.get(1), currentActions.get(2));
+	        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
+	        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
+	        			navIntent.putExtra(currentActions.get(7), currentActions.get(8));
+	        			navIntent.putExtra(currentActions.get(9), currentActions.get(10));
+	        			navIntent.putExtra(currentActions.get(11), currentActions.get(12));
+		        	}
+	        	}
 	        	startProgressDialog(getString(R.string.progresst_info_place), getString(R.string.progressm_info_place));
 	        	new GetPlaceInfoFeedTask().execute(currentMarker);
 	        	return true;
@@ -360,11 +447,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				startProgressDialog(getString(R.string.progresst_make_route), getString(R.string.progressm_make_route));
 				new ShowRouteTask().execute(positionA, positionB);
 				break;
-			case ALERT_ENVIRONMENTS:
+			case ALERT_ENVIRONMENT:
 				currentEnvironment = environments.get(position).getEnvtName();
 				latitude = Double.parseDouble(environments.get(position).getEnvtLatitude());
-            	longitude = Double.parseDouble(environments.get(position).getEnvtLongitude());
-            	setTo(latitude, longitude);
+            	longitude = Double.parseDouble(environments.get(position).getEnvtLongitude());            	
             	mapView.getOverlays().clear();
             	
             	mapView.getOverlays().add(mapOverlay);
@@ -379,9 +465,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
             	
+            	currentActions.clear();
+            	currentActions.add("SHOWMAP");
+            	currentActions.add("ENVIRONMENT_M");
+            	currentActions.add(currentEnvironment);
+            	currentActions.add("LATITUDE_ENVIRONMENT");
+            	currentActions.add(String.valueOf(latitude));
+            	currentActions.add("LONGITUDE_ENVIRONMENT");
+            	currentActions.add(String.valueOf(longitude));
+            	
+            	setTo(latitude, longitude);
             	mapView.invalidate(); 
 				break;
-			case ALERT_PLACES:
+			case ALERT_PLACE:
 				nodeIconP = getResources().getDrawable(R.drawable.marker_node);
             	currentPlace = places.get(position).getPlaceName();
 				latitude = Double.parseDouble(places.get(position).getPlaceLatitude());
@@ -406,11 +502,33 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
                 
+                currentActions.clear();
+            	currentActions.add("SHOWMAP");
+            	currentActions.add("PLACE_M");
+            	currentActions.add(currentPlace);
+            	currentActions.add("LATITUDE_PLACE");
+            	currentActions.add(String.valueOf(latitude));
+            	currentActions.add("LONGITUDE_PLACE");
+            	currentActions.add(String.valueOf(longitude));
+                
                 setTo(latitude, longitude);
                 mapView.invalidate();
 				break;
-			case ALERT_FAVORITES:
-				
+			case ALERT_FAVORITE:
+				nodeIconP = getResources().getDrawable(R.drawable.marker_node_fav);
+            	currentPlace = places.get(position).getPlaceName();
+				latitude = Double.parseDouble(places.get(position).getPlaceLatitude());
+            	longitude = Double.parseDouble(places.get(position).getPlaceLongitude());
+                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+                nodeMarker.setIcon(nodeIconP);
+                nodeMarker.setTitle(currentPlace);
+                mapView.getOverlays().clear();
+                
+                mapView.getOverlays().add(mapOverlay);
+                                
+                addListenerOnMarkerPlace(nodeMarker);
+                mapView.getOverlays().add(nodeMarker);
+                
 				for (int i = 0; i < environments.size(); i++) {
 					nodeMarkerEnvironments.add(new Marker(mapView));
 					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
@@ -421,10 +539,20 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
 				
+				currentActions.clear();
+            	currentActions.add("SHOWMAP");
+            	currentActions.add("FAVORITE");
+            	currentActions.add(currentPlace);
+            	currentActions.add("LATITUDE_FAVORITE");
+            	currentActions.add(String.valueOf(latitude));
+            	currentActions.add("LONGITUDE_FAVORITE");
+            	currentActions.add(String.valueOf(longitude));
 				
+				setTo(latitude, longitude);
+                mapView.invalidate();
 				break;
-			case ALERT_IMPORTANTS:
-				nodeIconP = getResources().getDrawable(R.drawable.marker_node);
+			case ALERT_IMPORTANT:
+				nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
             	currentPlace = places.get(position).getPlaceName();
 				latitude = Double.parseDouble(places.get(position).getPlaceLatitude());
             	longitude = Double.parseDouble(places.get(position).getPlaceLongitude());
@@ -447,6 +575,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
 					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
 				}
+                
+                currentActions.clear();
+            	currentActions.add("SHOWMAP");
+            	currentActions.add("IMPORTANT");
+            	currentActions.add(currentPlace);
+            	currentActions.add("LATITUDE_IMPORTANT");
+            	currentActions.add(String.valueOf(latitude));
+            	currentActions.add("LONGITUDE_IMPORTANT");
+            	currentActions.add(String.valueOf(longitude));
                 
                 setTo(latitude, longitude);
                 mapView.invalidate();
@@ -511,10 +648,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         layout.addView(listViewResults);   
         listViewResults.setOnItemClickListener(this);
         switch (type) {
-		case ALERT_ENVIRONMENTS:
+		case ALERT_ENVIRONMENT:
 	        alertDialogBuilder.setTitle(R.string.alertt_environment_list);
 			break;
-		case ALERT_PLACES:        
+		case ALERT_PLACE:        
 	        alertDialogBuilder.setTitle(R.string.alertt_place_list);
 			break;
 		case ALERT_ROUTE_A:		
@@ -523,10 +660,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		case ALERT_ROUTE_B:			
 	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
 	        new SelectPlaceRouteBAlertDialogFeedTask().execute();
-		case ALERT_FAVORITES:
-			
+	        break;
+		case ALERT_FAVORITE:
+			alertDialogBuilder.setTitle(R.string.alertt_favorites_list);			
 			break;
-		case ALERT_IMPORTANTS:
+		case ALERT_IMPORTANT:
 			alertDialogBuilder.setTitle(R.string.alertt_importants_list);
 			break;
 		default:
@@ -628,17 +766,29 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	                    mapView.getOverlays().add(nodeMarker);
 	                }
 	                
-	                if(getIntent().hasExtra("IMPORTANTS")){
-	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
-	                	currentPlace = getIntent().getStringExtra("IMPORTANTS");
-	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANTS"));
-	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANTS"));
+	                if(getIntent().hasExtra("IMPORTANT")){
+	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
+	                	currentPlace = getIntent().getStringExtra("IMPORTANT");
+	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANT"));
+	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANT"));
 	                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
 	                    nodeMarker.setIcon(nodeIconP);
 	                    nodeMarker.setTitle(currentPlace);    
 	                    addListenerOnMarkerPlace(nodeMarker);
 	                    mapView.getOverlays().add(nodeMarker);
 	                }	
+	                
+	                if(getIntent().hasExtra("FAVORITE")){
+	                	nodeIconP = getResources().getDrawable(R.drawable.marker_node_fav);
+	                	currentPlace = getIntent().getStringExtra("FAVORITE");
+	                	latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_FAVORITE"));
+	                	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_FAVORITE"));
+	                    nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+	                    nodeMarker.setIcon(nodeIconP);
+	                    nodeMarker.setTitle(currentPlace);    
+	                    addListenerOnMarkerPlace(nodeMarker);
+	                    mapView.getOverlays().add(nodeMarker);
+	                }
     	        finishProgressDialog();
 	        }
 	        
@@ -791,6 +941,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 nodeMarkerRouteA.setTitle(routeA.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteA);
                 
+                currentActions.clear();
+            	currentActions.add("ROUTE");
+            	currentActions.add("PLACE_A");
+            	currentActions.add(routeA.get(0));
+            	currentActions.add("LATITUDE_A");
+            	currentActions.add(routeA.get(1));
+            	currentActions.add("LONGITUDE_A");
+            	currentActions.add(routeA.get(2));
+                
                 Drawable nodeIconB = getResources().getDrawable(R.drawable.marker_node_b);
                 node = road.mNodes.get(1);
 	            nodeMarkerRouteB = new Marker(mapView);
@@ -802,6 +961,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 mapView.getOverlays().add(nodeMarkerRouteA);
                 mapView.getOverlays().add(nodeMarkerRouteB);
                 
+                currentActions.add("PLACE_B");
+                currentActions.add(routeB.get(0));
+            	currentActions.add("LATITUDE_B");
+            	currentActions.add(routeB.get(1));
+            	currentActions.add("LONGITUDE_B");
+            	currentActions.add(routeB.get(2));
+                
                 for (int i = 0; i < environments.size(); i++) {
 					nodeMarkerEnvironments.add(new Marker(mapView));
 					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
@@ -810,14 +976,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
 					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
 					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
-				}                
-	            //mapView.postInvalidate();
+				}                                                            	
 	        }
 			return null;
     }
     	
 		@Override
-        protected void onPostExecute(Void res){
+        protected void onPostExecute(Void res){								
 			mapView.invalidate(); 
 			finishProgressDialog();			
         }
@@ -897,6 +1062,33 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
     }
     
+    private class SelectFavoritePlaceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				favoritePlaceWSI = new FavoritePlaceWSI();
+				places = favoritePlaceWSI.getListFavoritePlace(userId);	
+				listItens.clear();				
+				for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+				}
+				
+				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+			    listViewResults.setAdapter(alertDialogAdapter);
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+    
     private class GetEnvironmentInfoFeedTask extends AsyncTask<String, Void, Void>{
 
     	@Override
@@ -904,7 +1096,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			try{
 				environmentWSI = new EnvironmentWSI();
 				environment = environmentWSI.getEnvironment(encodeUrl(environmentName[0]));	
-				navIntent.putExtra("INFO", environment.getEnvtInfo());														
+				navIntent.putExtra("INFO", environment.getEnvtInfo());	
+				navIntent.putExtra("ENVIRONMENTID", environment.getEnvtId());
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}finally {
@@ -927,7 +1120,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			try{
 				placeWSI = new PlaceWSI();
 				place = placeWSI.getPlace(encodeUrl(placeName[0]));	
-				navIntent.putExtra("INFO", place.getPlaceInfo());														
+				navIntent.putExtra("INFO", place.getPlaceInfo());	
+				navIntent.putExtra("PLACEID", place.getPlaceId());
+				
+				favoritePlaceWSI = new FavoritePlaceWSI();
+				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, place.getPlaceId());
+				if(favoritePlace.getFpId() != 0){
+					navIntent.putExtra("FAVORITEID", favoritePlace.getFpId());
+				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}finally {
