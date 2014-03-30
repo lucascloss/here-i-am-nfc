@@ -16,6 +16,9 @@ public class Alerts {
 	private final static int WITHOUTNFC = 6;
 	private final static int NFCISOFF = 7;
 	private final static int SERVICEISOFF = 8;
+	private final static int WITHOUTFAVORITES = 9;
+	private final static int ADDFAVORITESERROR = 10;
+	private final static int DELETEFAVORITESERROR = 11;
 	//private final static int WSTIMEOUT = 4;
 	//private final static int INVALIDEMAIL = 8;
 	// private final static int NEWPASSWORDNOTCONFIRMED = 9;
@@ -59,6 +62,18 @@ public class Alerts {
 			alert.setTitle(R.string.alertt_service_is_off);
 			alert.setMessage(R.string.alertm_service_is_off);
 			break;
+		case WITHOUTFAVORITES:
+			alert.setTitle(R.string.alertt_without_favorites);
+			alert.setMessage(R.string.alertm_without_favorites);
+			break;
+		case ADDFAVORITESERROR:
+			alert.setTitle(R.string.alertt_add_favorites_error);
+			alert.setMessage(R.string.alertm_add_favorites_error);
+			break;
+		case DELETEFAVORITESERROR:
+			alert.setTitle(R.string.alertt_delete_favorites_error);
+			alert.setMessage(R.string.alertm_delete_favorites_error);
+			break;
 			//case WSTIMEOUT:
 			//alert.setTitle(R.string.msgTimeOutTitle);
 			//alert.setMessage(R.string.msgTimeOutContent);
@@ -70,6 +85,7 @@ public class Alerts {
 			//break;
 		}
 		//alert.setNeutralButton(R.string.ok, null);
+		alert.setNeutralButton(R.string.ok, null);
 		alert.show();
 	}
 

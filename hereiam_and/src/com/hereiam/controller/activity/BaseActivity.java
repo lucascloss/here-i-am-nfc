@@ -38,7 +38,7 @@ public class BaseActivity extends Activity{
 		SharedPreferences preferences = this.getSharedPreferences("INFO", MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putInt("userid", userId);
-		editor.putString("usernama", userName);
+		editor.putString("username", userName);
 		editor.putString("password", password);
 		editor.putBoolean("islogged", true);
 		editor.commit();		
@@ -49,16 +49,21 @@ public class BaseActivity extends Activity{
 		SharedPreferences preferences = this.getSharedPreferences("INFO", MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putInt("userid", 0);
-		editor.putString("usernama", "");
+		editor.putString("username", "");
 		editor.putString("password", "");
 		editor.putBoolean("islogged", false);
 		editor.commit();		
 	}
 	
-	// Salva a senha do usuário
-	protected void savePassword() {
-		
-	}		
+	protected int getUserId(){	
+		SharedPreferences preferences = this.getSharedPreferences("INFO", MODE_PRIVATE);		
+		return preferences.getInt("userid", 0);
+	}
+	
+	protected String getUserName(){	
+		SharedPreferences preferences = this.getSharedPreferences("INFO", MODE_PRIVATE);		
+		return preferences.getString("username", "");
+	}
 	
 	public void startActivity(@SuppressWarnings("rawtypes") Class activityClass) {
 		final Intent nav = new Intent(this, activityClass);

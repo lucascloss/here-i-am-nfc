@@ -85,7 +85,7 @@ public class PlaceWSI extends BaseWSI{
         	JSONObject jsonObject = new JSONObject(result);        	
         	Object check = jsonObject.get("place");
         	if (check instanceof JSONArray) {
-        	    places = listFromJSON(jsonObject);//aqui
+        	    places = listFromJSON(jsonObject);
         	}
         	else if (check instanceof JSONObject) {       		
         	    Place place = new Place();
@@ -122,7 +122,7 @@ public class PlaceWSI extends BaseWSI{
 			//place.setEnvtCalendar
 		} catch (JSONException e) {			
 			e.printStackTrace();
-			Log.d("environmentFromJSONPlace", "Erro ao executar placeFromJSON");
+			Log.d("placeFromJSON", "Erro ao executar placeFromJSON");
 		}    	    	
     	return place;
     }

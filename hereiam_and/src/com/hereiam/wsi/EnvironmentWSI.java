@@ -76,7 +76,7 @@ public class EnvironmentWSI extends BaseWSI{
         String result = null;                
         ArrayList<Environment> environments = new ArrayList<Environment>();
         try {
-        	HttpGet httpGet = new HttpGet(ENVIRONMENT_LIST_BY_ADM_URI + "environment_adm_un=" + environmentAdmUn);            
+        	HttpGet httpGet = new HttpGet(ENVIRONMENT_LIST_BY_ADM_URI + "environmentadmun=" + environmentAdmUn);            
         	HttpResponse response = httpClient.execute(httpGet);
         	InputStream resultStream = response.getEntity().getContent();
         	

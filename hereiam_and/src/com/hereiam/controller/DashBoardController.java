@@ -33,6 +33,7 @@ import com.hereiam.helper.Validator;
 import com.hereiam.model.Environment;
 import com.hereiam.model.Place;
 import com.hereiam.wsi.EnvironmentWSI;
+import com.hereiam.wsi.FavoritePlaceWSI;
 import com.hereiam.wsi.PlaceWSI;
 
 public class DashBoardController extends BaseActivity implements OnItemClickListener{
@@ -41,12 +42,14 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	private final static int LIST_PLACES = 2;
 	private final static int MAKE_ROUTE_A = 3;
 	private final static int MAKE_ROUTE_B = 4;
-	private final static int LIST_FAVORITES = 5;
-	private final static int LIST_IMPORTANTS = 6;
+	private final static int LIST_FAVORITE = 5;
+	private final static int LIST_IMPORTANT = 6;
 	
 	private int selectedMenu;
 	private Context context;
 	private Intent navIntent;
+	private int userId;
+	private String userName;
 	
     private ListView listViewResults;
     private AlertDialog alertDialog;
@@ -58,6 +61,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	private PlaceWSI placeWSI;
 	private ArrayList<Place> places;
 	private ArrayList<String> listItens = new ArrayList<String>();
+	private FavoritePlaceWSI favoritePlaceWSI;
 	private NfcManager nfcManager;
     private NfcAdapter nfcAdapter;
     
@@ -66,10 +70,12 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 		context = this;
+		userId = getUserId();
+        userName = getUserName();
         
         if(getIntent().getBooleanExtra("CREATION", false)){
         	Toast.makeText(context, getString(R.string.toast_creation), Toast.LENGTH_SHORT).show();
-        }	
+        }	 
 	}
 	 
 	public void showMap(View view) {		
@@ -122,7 +128,18 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	}
 
 	public void listFavorites(View view) {
-	
+		if(Validator.hasInternetConnection()){
+			//if(Validator.isServiceOnline())
+			startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
+			createAlertDialog(LIST_FAVORITE);
+			navIntent = new Intent(this, MapViewController.class);
+			navIntent.putExtra("SHOWMAP", true);
+			selectedMenu = LIST_FAVORITE;
+			new SelectFavoritePlaceAlertDialogFeedTask().execute();			
+		}else {
+			finishProgressDialog();
+			Alerts.createErrorAlert(1, context);
+		}
 	}
 	
 	public void startRoute(View view) {
@@ -143,10 +160,10 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		if(Validator.hasInternetConnection()){
 			//if(Validator.isServiceOnline())
 			startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
-			createAlertDialog(LIST_IMPORTANTS);
+			createAlertDialog(LIST_IMPORTANT);
 			navIntent = new Intent(this, MapViewController.class);		
 			navIntent.putExtra("SHOWMAP", true);
-			selectedMenu = LIST_IMPORTANTS;
+			selectedMenu = LIST_IMPORTANT;
 			new SelectPlaceByImportanceAlertDialogFeedTask().execute();			
 		}else {
 			finishProgressDialog();
@@ -209,14 +226,17 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
-		case LIST_FAVORITES:
-			
-			break;
-			
-		case LIST_IMPORTANTS:
-			navIntent.putExtra("IMPORTANTS", listItens.get(position));
-			navIntent.putExtra("LATITUDE_IMPORTANTS", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_IMPORTANTS", places.get(position).getPlaceLongitude());
+		case LIST_FAVORITE:
+			navIntent.putExtra("FAVORITE", listItens.get(position));
+			navIntent.putExtra("LATITUDE_FAVORITE", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_FAVORITE", places.get(position).getPlaceLongitude());
+			alertDialog.dismiss();
+			startActivity(navIntent);
+			break;			
+		case LIST_IMPORTANT:
+			navIntent.putExtra("IMPORTANT", listItens.get(position));
+			navIntent.putExtra("LATITUDE_IMPORTANT", places.get(position).getPlaceLatitude());
+			navIntent.putExtra("LONGITUDE_IMPORTANT", places.get(position).getPlaceLongitude());
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
@@ -251,10 +271,11 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		case MAKE_ROUTE_B:			
 	        alertDialogBuilder.setTitle(R.string.alertt_route_B_list);
 	        new SelectPlaceRouteBAlertDialogFeedTask().execute();
-		case LIST_FAVORITES:
-			
+	        break;
+		case LIST_FAVORITE:
+			alertDialogBuilder.setTitle(R.string.alertt_favorites_list);
 			break;
-		case LIST_IMPORTANTS:
+		case LIST_IMPORTANT:
 			alertDialogBuilder.setTitle(R.string.alertt_importants_list);
 			break;
 		default:
@@ -395,6 +416,41 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
         protected void onPostExecute(Void res){
 			finishProgressDialog();
 	        alertDialog = alertDialogBuilder.show(); 
+        }
+    }
+    
+    private class SelectFavoritePlaceAlertDialogFeedTask extends AsyncTask<Void, Void, Void>{
+
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+			try{
+				favoritePlaceWSI = new FavoritePlaceWSI();
+				places = favoritePlaceWSI.getListFavoritePlace(userId);	
+				listItens.clear();		
+				if(places.size() != 0){
+					for (int i = 0; i < places.size(); i++) {
+					listItens.add(places.get(i).getPlaceName());
+					alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+				    listViewResults.setAdapter(alertDialogAdapter);
+					}
+				}else {
+					
+				}				
+			}finally {
+				
+			}
+			return null;
+		}
+		
+		@Override
+        protected void onPostExecute(Void res){
+			finishProgressDialog();
+	        if(places.size() != 0){
+	        	alertDialog = alertDialogBuilder.show();
+	        }else{
+	        	Alerts.createErrorAlert(9, context);
+	        }
+	        
         }
     }
 }

@@ -45,7 +45,7 @@
     <string name="info_txt">Informações:</string>
     <string name="info_add_favorite">adicionar aos favoritos</string>
     <string name="info_delete_favorite">deletar dos favoritos</string>
-    <string name="info_show_calendar">visualizar agenda</string>
+    <string name="info_show_calendar">visualizar agenda</string>    
     
     <string name="progresst_loading_map">Carregando mapa</string>
     <string name="progressm_loading_map">Por favor, aguarde a conclusão.</string>
@@ -55,6 +55,12 @@
     
     <string name="progresst_info_place">Carregando Informações sobre o Local</string>
     <string name="progressm_info_place">Por favor, aguarde a conclusão.</string>
+    
+    <string name="progresst_add_favorite">Adicionando aos Favoritos</string>
+    <string name="progressm_add_favorite">Por favor, aguarde a conclusão.</string>
+    
+    <string name="progresst_delete_favorite">Deletando dos Favoritos</string>
+    <string name="progressm_delete_favorite">Por favor, aguarde a conclusão.</string>
     
     <string name="progresst_nfc">Leitura Etiqueta NFC</string>
     <string name="progressm_nfc">Aproxime o dispositivo na Etiqueta NFC.</string>
@@ -82,6 +88,9 @@
     
 	<string name="alertt_without_connection">Sem conexão</string>
 	<string name="alertm_without_connection">Por favor, habilitar acesso a internet.</string>
+	
+	<string name="alertt_without_favorites">Sem Locais Favoritos</string>
+	<string name="alertm_without_favorites">Por favor, adicione Locais Favoritos.</string>
 
 	<string name="alertt_wrong_user_or_password">Credenciais inválidas</string>
 	<string name="alertm_wrong_user_or_password">Por favor, verificar as credenciais inseridas.</string>
@@ -104,6 +113,12 @@
 	<string name="alertt_service_is_off">Serviço Here I Am Indisponível</string>
 	<string name="alertm_service_is_off">Por favor aguarde, o serviço Here I Am está indisponível no momento.</string>
 	
+	<string name="alertt_add_favorites_error">Erro ao adicionar Local Favorito</string>
+	<string name="alertm_add_favorites_error">Houve um erro ao adicionar o local aos favoritos, por favor tente mais tarde.</string>
+	
+	<string name="alertt_delete_favorites_error">Erro ao deletar Local Favorito</string>
+	<string name="alertm_delete_favorites_error">Houve um erro ao deletar o local aos favoritos, por favor tente mais tarde.</string>
+	
 	<string name="alertt_environment_list">Lista de Ambientes</string>
 	<string name="alertt_place_list">Lista de Locais</string>
 	<string name="alertt_route_A_list">Ponto A</string>
@@ -111,5 +126,7 @@
 	<string name="alertt_importants_list">Lista de Locais Importantes</string>
 	<string name="alertt_favorites_list">Lista de Locais Favoritos</string>
 	
-	<string name="toast_creation">Usuário criado com sucesso</string>
+	<string name="toast_creation">Usuário criado com sucesso.</string>
+	<string name="toast_added_favorite">Local adicionado aos Locais Favoritos com sucesso.</string>
+	<string name="toast_deleted_favorite">Local deletado dos Locais Favoritos com sucesso.</string>
 </resources>

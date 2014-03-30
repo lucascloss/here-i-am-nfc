@@ -51,6 +51,7 @@ public class UserCreationController extends BaseActivity implements OnClickListe
 		password = (EditText) findViewById(R.id.createUserETxtPassword);
 		confPassword = (EditText) findViewById(R.id.createUserETxtConfirmPassword);
 		loginSend = (Button) findViewById(R.id.createUserBtSend);
+		
 		loginSend.setOnClickListener(this);				
 	}
 
