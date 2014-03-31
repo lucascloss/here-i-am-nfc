@@ -20,6 +20,7 @@ public class EnvironmentWSI extends BaseWSI{
 	public static final String ENVIRONMENT_URI = URI + "environment";
 	public static final String ENVIRONMENT_LIST_URI = ENVIRONMENT_URI + "/list";
 	public static final String ENVIRONMENT_FIND_URI = ENVIRONMENT_URI + "/find?";
+	public static final String ENVIRONMENT_FIND_BY_NFC_URI = ENVIRONMENT_URI + "/find/bynfc?";
 	public static final String ENVIRONMENT_LIST_BY_ADM_URI = ENVIRONMENT_URI + "/list/byenvironmentadm?";
 		
 	public Environment getEnvironment(String name) {        
@@ -38,6 +39,26 @@ public class EnvironmentWSI extends BaseWSI{
         } catch (Exception e) {
         	e.printStackTrace();
         	Log.d("getEnvironment", "Erro método getEnvironment");
+        }        
+        return environment;
+    }
+	
+	public Environment getEnvironmentByNfc(String idNfc) {        
+        httpClient = getHttpClient();
+        String result = null;        
+        Environment environment = new Environment();
+        try {
+        	HttpGet httpGet = new HttpGet(ENVIRONMENT_FIND_BY_NFC_URI + "idnfc=" + idNfc);            
+        	HttpResponse response = httpClient.execute(httpGet);
+        	InputStream resultStream = response.getEntity().getContent();
+        	
+        	result = convertInputStreamToString(resultStream);
+        	JSONObject jsonObject = new JSONObject(result);  
+        	environment = environmentFromJSON(jsonObject);
+        	
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	Log.d("getEnvironmentByNfc", "Erro método getEnvironmentByNfc");
         }        
         return environment;
     }

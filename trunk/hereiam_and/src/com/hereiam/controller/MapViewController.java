@@ -104,6 +104,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private FavoritePlaceWSI favoritePlaceWSI;
 	private FavoritePlace favoritePlace;
 	private ArrayList<String> currentActions = new ArrayList<String>();
+	private String idNfc;
+	private boolean nfc;
+	private boolean nfcEnvironment;
+	private boolean nfcPlace;
 	
 	
 	@Override
@@ -170,7 +174,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
            
         if(getIntent().hasExtra("NFC")){
+        	nfc = true;
+        	idNfc = getIntent().getStringExtra("NFC");
+        	if(idNfc.split("-").length == 3){        		
+        		nfcEnvironment = true;
+        		nfcPlace = false;
+        	}
         	
+        	if(idNfc.split("-").length == 4){        		
+        		nfcEnvironment = false;
+        		nfcPlace = true;
+        	}
+        }else {
+        	nfc = false;
         }
         
         mapView.invalidate();           
@@ -249,17 +265,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             addListenerOnMarkerPlace(nodeMarkerRouteB);
             
             mapView.getOverlays().add(nodeMarkerRouteA);
-            mapView.getOverlays().add(nodeMarkerRouteB);
-            
-            /*for (int i = 0; i < environments.size(); i++) {
-				nodeMarkerEnvironments.add(new Marker(mapView));
-				nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-				nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
-						Double.parseDouble(environments.get(i).getEnvtLongitude())));
-				nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
-				addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
-				mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
-			}*/ 
+            mapView.getOverlays().add(nodeMarkerRouteB);            
         }
 	}
 	
@@ -735,17 +741,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         	if(mapView.getZoomLevel() > 18){            	
         	}
         return false;
-        }
-        
+        }        
     }
     
     private class InitialFeedTask extends AsyncTask<Void, Void, Void>{
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			
-			//getEnvironments();
-			        
+					        
 	        if(showMap){        	             	
 	        	getEnvironments();            	        		
 	        		if(getIntent().hasExtra("ENVIRONMENT")){
@@ -809,6 +812,39 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             	getRoute(positionA, positionB);	                	        	
 	        }
 	        
+	        if(nfc){
+	        	getEnvironments();
+	        	if(nfcEnvironment){
+	        		environmentWSI = new EnvironmentWSI();
+	        		environment = environmentWSI.getEnvironmentByNfc(idNfc);
+	        		
+	        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
+	            	currentEnvironment = environment.getEnvtName();
+	            	latitude = Double.parseDouble(environment.getEnvtLatitude());
+	            	longitude = Double.parseDouble(environment.getEnvtLongitude());
+	                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+	                nodeMarker.setIcon(nodeIconP);
+	                nodeMarker.setTitle(currentEnvironment);  
+	                addListenerOnMarkerPlace(nodeMarker);
+	                mapView.getOverlays().add(nodeMarker);	                
+	        	}
+	        	
+	        	if(nfcPlace){
+	        		placeWSI = new PlaceWSI();
+	        		place = placeWSI.getPlaceByNfc(idNfc);	        		
+	        		
+		        	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
+	            	currentPlace = place.getPlaceName();
+	            	latitude = Double.parseDouble(place.getPlaceLatitude());
+	            	longitude = Double.parseDouble(place.getPlaceLongitude());
+	                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+	                nodeMarker.setIcon(nodeIconP);
+	                nodeMarker.setTitle(currentPlace);  
+	                addListenerOnMarkerPlace(nodeMarker);
+	                mapView.getOverlays().add(nodeMarker);		                
+	        	}
+	        }
+	        
 	        if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
 	        	            
 	        }	        
@@ -819,6 +855,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         protected void onPostExecute(Void res){
 			showMap = false;
 			route = false;
+			if(nfcEnvironment){
+				setTo(Double.parseDouble(environment.getEnvtLatitude()), Double.parseDouble(environment.getEnvtLongitude()));
+			}
+			if(nfcPlace){
+				setTo(Double.parseDouble(place.getPlaceLatitude()), Double.parseDouble(place.getPlaceLongitude()));
+			}
 			mapView.postInvalidate();
 			finishProgressDialog();	        
         }    	
@@ -876,38 +918,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			finishProgressDialog();
 	        alertDialog = alertDialogBuilder.show(); 
         }
-    }
-    
-    private class GetEnvironmentsTask extends AsyncTask<Void, Void, Void>{
-
-    	@Override
-    	protected Void doInBackground(Void... arg0) {
-			try{
-				nodeIconE = getResources().getDrawable(R.drawable.marker_node_blue);
-				environmentWSI = new EnvironmentWSI();
-				environments = environmentWSI.getListEnvironment();	
-						
-				for (int i = 0; i < environments.size(); i++) {
-					nodeMarkerEnvironments.add(new Marker(mapView));
-					nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
-					nodeMarkerEnvironments.get(i).setPosition(new GeoPoint(Double.parseDouble(environments.get(i).getEnvtLatitude()), 
-							Double.parseDouble(environments.get(i).getEnvtLongitude())));
-					nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
-					addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
-					mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
-				}								
-			}finally {
-				
-			}
-			return null;
-		}
-		
-		@Override
-        protected void onPostExecute(Void res){			
-			mapView.invalidate();	
-			//finishProgressDialog();
-        }
-    }
+    }        
 
     private class ShowRouteTask extends AsyncTask<GeoPoint, Void, Void>{
 

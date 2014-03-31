@@ -244,8 +244,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			break;
 		}
     }
-
-    
+ 
     public void onBackPressed() {
 		moveTaskToBack(true);
 	}
@@ -453,4 +452,5 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	        
         }
     }
+    
 }
