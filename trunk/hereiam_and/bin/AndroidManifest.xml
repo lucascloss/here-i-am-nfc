@@ -63,6 +63,12 @@
             android:name=".controller.ShowInfoController"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">            
         </activity>
+        
+        <activity 
+            
+            android:name=".controller.CalendarController"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">            
+        </activity>
     </application>
     
     
