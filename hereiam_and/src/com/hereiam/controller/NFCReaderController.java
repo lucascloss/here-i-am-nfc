@@ -1,5 +1,8 @@
 package com.hereiam.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.helper.Alerts;
@@ -11,13 +14,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class NFCReaderController extends BaseActivity{
 	
@@ -49,7 +57,8 @@ public class NFCReaderController extends BaseActivity{
     		Alerts.createErrorAlert(7, context);
         } else {
         	startProgressDialog(getString(R.string.progresst_nfc), getString(R.string.progressm_nfc));
-            handleIntent(getIntent());
+            //handleIntent(getIntent());    
+        	resolveIntent(getIntent());
         }                
     }
      
@@ -68,9 +77,67 @@ public class NFCReaderController extends BaseActivity{
      
     @Override
     protected void onNewIntent(Intent intent) { 
-        handleIntent(intent);
+        //handleIntent(intent);
+    	setIntent(intent);
+        resolveIntent(intent);
     }
      
+    void resolveIntent(Intent intent) {
+        // Parse the intent
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+        	Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            NFCReader nfcReader = new NFCReader();
+            nfcReaderResult = nfcReader.execute(tag);
+        	//NdefMessage[] messages = getNdefMessages(getIntent());
+            //byte[] payload = messages[0].getRecords()[0].getPayload();
+            //String id = new String(payload);
+            goDetails(nfcReaderResult);
+        }
+    }
+    
+    public void goDetails(String id){
+    	final Intent intent = new Intent(this, MapViewController.class);
+    	//int id_int = Integer.valueOf(id);
+        intent.putExtra("NFC", id);
+        //startActivity(intent);
+        Toast.makeText(context, id, Toast.LENGTH_LONG).show();
+        this.finish();
+        startActivity(intent);
+    }
+    
+    NdefMessage[] getNdefMessages(Intent intent) {
+        // Parse the intent
+        NdefMessage[] msgs = null;
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+            || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable[] rawMsgs = 
+                intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if (rawMsgs != null) {
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+            } else {
+                // Unknown tag type
+                byte[] empty = new byte[] {};
+                NdefRecord record = 
+                    new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+                NdefMessage msg = new NdefMessage(new NdefRecord[] {
+                    record
+                });
+                msgs = new NdefMessage[] {
+                    msg
+                };
+            }
+        } else {
+            
+            finish();
+        }
+        return msgs;
+    }
+    
+    
     private void handleIntent(Intent intent) {
     	String action = intent.getAction();
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
@@ -78,32 +145,27 @@ public class NFCReaderController extends BaseActivity{
             String type = intent.getType();
             if (MIME_TEXT_PLAIN.equals(type)) {     
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                NFCReader nfcReader = new NFCReader();
-                nfcReaderResult = nfcReader.execute(tag);
+                //NFCReader nfcReader = new NFCReader();
+                //nfcReaderResult = nfcReader.execute(tag);
+                new NFCReaderTask().execute(tag);
                 
-                Intent navIntent = new Intent(context, MapViewController.class);
+                /*Intent navIntent = new Intent(context, MapViewController.class);
                 navIntent.putExtra("NFC", nfcReaderResult);
-                startActivity(navIntent);
+                finishProgressDialog();
+                startActivity(navIntent);*/
             } /*else {
                 
             }*/
-        } /*else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {             
-            // In case we would still use the Tech Discovered Intent
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String[] techList = tag.getTechList();
-            String searchedTech = Ndef.class.getName();
-             
-            for (String tech : techList) {
-                if (searchedTech.equals(tech)) {
-                	NFCReader nfcReader = new NFCReader();
-                    nfcReader.execute(tag);
-                    Log.d(TAG, nfcReader.teste);                   
-                    break;
-                }
-            }
-        }*/
+        }
     }
-     
+         
+    @Override
+    public void onDestroy(){
+    	//finishProgressDialog();
+    	super.onDestroy();
+    	finishProgressDialog();
+    }
+    
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -130,9 +192,7 @@ public class NFCReaderController extends BaseActivity{
         adapter.disableForegroundDispatch(activity);
     }
 
-    /*private class NFCReaderTask extends AsyncTask<Tag, Void, String>{
-
-    	private static final String TAG = null;
+    private class NFCReaderTask extends AsyncTask<Tag, Void, String>{
 
     	@Override
     	protected void onPreExecute() {
@@ -155,9 +215,10 @@ public class NFCReaderController extends BaseActivity{
             for (NdefRecord ndefRecord : records) {
                 if (ndefRecord.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(ndefRecord.getType(), NdefRecord.RTD_TEXT)) {
                     try {
-                    	return readText(ndefRecord);
+                    	nfcReaderResult = readText(ndefRecord);
+                    	return nfcReaderResult;
                     } catch (UnsupportedEncodingException e) {
-                        Log.e(TAG, "Unsupported Encoding", e);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -166,17 +227,8 @@ public class NFCReaderController extends BaseActivity{
         }
          
         private String readText(NdefRecord record) throws UnsupportedEncodingException {
-            /*
-             * See NFC forum specification for "Text Record Type Definition" at 3.2.1 
-             * 
-             * http://www.nfc-forum.org/specs/
-             * 
-             * bit_7 defines encoding
-             * bit_6 reserved for future use, must be 0
-             * bit_5..0 length of IANA language code
-             */
-     
-            /*byte[] payload = record.getPayload();
+                            
+            byte[] payload = record.getPayload();
      
             // Get the Text Encoding
             String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16";
@@ -197,9 +249,19 @@ public class NFCReaderController extends BaseActivity{
         	// finaliza progressDialog
         	if (result != null) {
                 //mTextView.setText("Read content: " + result);
-            	Log.v(TAG, result);
+        		startMap(result);
+            	
             }
         }
-    }*/
+    }
 
+    public void startMap(String string){
+    	Intent navIntent = new Intent(context, MapViewController.class);
+        navIntent.putExtra("NFC", nfcReaderResult);
+        finishProgressDialog();
+        
+        startActivity(navIntent);
+        this.finish();
+    }
+    
 }

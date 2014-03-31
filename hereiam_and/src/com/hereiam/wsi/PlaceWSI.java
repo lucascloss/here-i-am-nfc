@@ -20,6 +20,7 @@ public class PlaceWSI extends BaseWSI{
 	public static final String PLACE_LIST_URI = PLACE_URI + "/list";
 	public static final String PLACE_LIST_IMPORTANTS_URI = PLACE_URI + "/list/byimportance";
 	public static final String PLACE_FIND_URI = PLACE_URI + "/find?";
+	public static final String PLACE_FIND_BY_NFC_URI = PLACE_URI + "/find/bynfc?";
 	public static final String PLACE_CREATE_URI = PLACE_URI + "/create?";
 	public static final String PLACE_DELETE_URI = PLACE_URI + "/delete?";
 	
@@ -39,6 +40,26 @@ public class PlaceWSI extends BaseWSI{
         } catch (Exception e) {
         	e.printStackTrace();
         	Log.d("getPlace", "Erro método getPlace");
+        }        
+        return place;
+    }
+	
+	public Place getPlaceByNfc(String idNfc) {        
+        httpClient = getHttpClient();
+        String result = null;        
+        Place place = new Place();
+        try {
+        	HttpGet httpGet = new HttpGet(PLACE_FIND_BY_NFC_URI + "idnfc=" + idNfc);            
+        	HttpResponse response = httpClient.execute(httpGet);
+        	InputStream resultStream = response.getEntity().getContent();
+        	
+        	result = convertInputStreamToString(resultStream);
+        	JSONObject jsonObject = new JSONObject(result);  
+        	place = placeFromJSON(jsonObject);
+        	
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	Log.d("getPlaceByNfc", "Erro método getPlaceByNfc");
         }        
         return place;
     }
