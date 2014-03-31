@@ -177,6 +177,7 @@ public class ShowInfoController extends BaseActivity{
 	        	new DeleteFavoritePlaceTask().execute();
 	        	return true;
 	        case R.id.action_show_calendar:        	
+	        	startActivity(CalendarController.class);
 	        	return true;
 	        case R.id.action_logout:
 	        	clearPreferences();
