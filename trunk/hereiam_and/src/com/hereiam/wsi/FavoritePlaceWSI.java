@@ -18,10 +18,11 @@ import com.hereiam.wsi.rest.BaseWSI;
 
 public class FavoritePlaceWSI extends BaseWSI{
 	
-	public static final String FAVORITE_PLACES_LIST = URI + "favplace/list?";
-	public static final String FAVORITE_PLACES_CREATE = URI + "favplace/create?";
-	public static final String FAVORITE_PLACES_DELETE = URI + "favplace/delete?";
-	public static final String FAVORITE_PLACES_FIND = URI + "favplace/find?";
+	public static final String FAVORITE_PLACES_URI = URI + "favplace";
+	public static final String FAVORITE_PLACES_LIST = FAVORITE_PLACES_URI + "/list?";
+	public static final String FAVORITE_PLACES_CREATE = FAVORITE_PLACES_URI + "/create?";
+	public static final String FAVORITE_PLACES_DELETE = FAVORITE_PLACES_URI + "/delete?";
+	public static final String FAVORITE_PLACES_FIND = FAVORITE_PLACES_URI + "/find?";
 
 	public ArrayList<Place> getListFavoritePlace(int userId){
 		httpClient = getHttpClient();

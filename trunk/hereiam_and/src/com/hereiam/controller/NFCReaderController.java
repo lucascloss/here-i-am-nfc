@@ -99,8 +99,7 @@ public class NFCReaderController extends BaseActivity{
     	final Intent intent = new Intent(this, MapViewController.class);
     	//int id_int = Integer.valueOf(id);
         intent.putExtra("NFC", id);
-        //startActivity(intent);
-        Toast.makeText(context, id, Toast.LENGTH_LONG).show();
+        //startActivity(intent);        
         this.finish();
         startActivity(intent);
     }

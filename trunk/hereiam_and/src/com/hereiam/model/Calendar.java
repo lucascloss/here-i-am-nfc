@@ -9,21 +9,26 @@ public class Calendar implements Serializable{
 	private int calendarId;
 	private String calendarEvent;
 	private String calendarInfo;
-	private Date calendarStarts;
-	private Date calendarEnds;
+	private String calendarStarts;
+	private String calendarEnds;
+	private int environmentId;
+	private int placeId;
 	
-	private Calendar() {
+	public Calendar() {
 		
 	}
 
 	public Calendar(int calendarId, String calendarEvent, String calendarInfo,
-			Date calendarStarts, Date calendarEnds) {
+			String calendarStarts, String calendarEnds, int environmentId,
+			int placeId) {
 		super();
 		this.calendarId = calendarId;
 		this.calendarEvent = calendarEvent;
 		this.calendarInfo = calendarInfo;
 		this.calendarStarts = calendarStarts;
 		this.calendarEnds = calendarEnds;
+		this.environmentId = environmentId;
+		this.placeId = placeId;
 	}
 
 	public int getCalendarId() {
@@ -50,22 +55,35 @@ public class Calendar implements Serializable{
 		this.calendarInfo = calendarInfo;
 	}
 
-	public Date getCalendarStarts() {
+	public String getCalendarStarts() {
 		return calendarStarts;
 	}
 
-	public void setCalendarStarts(Date calendarStarts) {
+	public void setCalendarStarts(String calendarStarts) {
 		this.calendarStarts = calendarStarts;
 	}
 
-	public Date getCalendarEnds() {
+	public String getCalendarEnds() {
 		return calendarEnds;
 	}
 
-	public void setCalendarEnds(Date calendarEnds) {
+	public void setCalendarEnds(String calendarEnds) {
 		this.calendarEnds = calendarEnds;
 	}
 
-	
-	
+	public int getEnvironmentId() {
+		return environmentId;
+	}
+
+	public void setEnvironmentId(int environmentId) {
+		this.environmentId = environmentId;
+	}
+
+	public int getPlaceId() {
+		return placeId;
+	}
+
+	public void setPlaceId(int placeId) {
+		this.placeId = placeId;
+	}	
 }

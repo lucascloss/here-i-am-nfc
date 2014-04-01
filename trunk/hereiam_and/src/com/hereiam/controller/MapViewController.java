@@ -136,7 +136,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         if(getIntent().hasExtra("SHOWMAP")){      
         	showMap = getIntent().getBooleanExtra("SHOWMAP", true);
         	getIntent().removeExtra("SHOWMAP");
-        	if(showMap){            	        		
+        	if(showMap){           		
         		if(getIntent().hasExtra("ENVIRONMENT")){
     				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
                 	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
@@ -205,6 +205,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		
 		super.onDestroy();
 	}
+	
+	@Override
+	protected void onPause(){
+		mapView.setBuiltInZoomControls(false);
+		mapView.setClickable(false);
+		
+		super.onPause();
+	}
+	
 		
 	@Override
 	public void onBackPressed(){
@@ -847,7 +856,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        
 	        if(getIntent().hasExtra("NFC_WITHOUT_ROUTE")){
 	        	            
-	        }	        
+	        }
+	        
 			return null;
 		}
 		
@@ -1108,7 +1118,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				environmentWSI = new EnvironmentWSI();
 				environment = environmentWSI.getEnvironment(encodeUrl(environmentName[0]));	
 				navIntent.putExtra("INFO", environment.getEnvtInfo());	
-				navIntent.putExtra("ENVIRONMENTID", environment.getEnvtId());
+				navIntent.putExtra("ENVIRONMENT_ID", environment.getEnvtId());
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}finally {
@@ -1132,12 +1142,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				placeWSI = new PlaceWSI();
 				place = placeWSI.getPlace(encodeUrl(placeName[0]));	
 				navIntent.putExtra("INFO", place.getPlaceInfo());	
-				navIntent.putExtra("PLACEID", place.getPlaceId());
+				navIntent.putExtra("PLACE_ID", place.getPlaceId());
 				
 				favoritePlaceWSI = new FavoritePlaceWSI();
 				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, place.getPlaceId());
 				if(favoritePlace.getFpId() != 0){
-					navIntent.putExtra("FAVORITEID", favoritePlace.getFpId());
+					navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();

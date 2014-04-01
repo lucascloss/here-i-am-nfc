@@ -89,7 +89,7 @@ public class Alerts {
 		alert.show();
 	}
 
-	// Cria alerta com mensagem customizada (parâmetro)
+
 	public static void createErrorAlert(String errorMessage, Context context) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(context);
 		//alert.setTitle(R.string.msgGeneralErrorTitle);

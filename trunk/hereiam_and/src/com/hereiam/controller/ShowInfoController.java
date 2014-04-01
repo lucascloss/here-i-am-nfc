@@ -30,6 +30,7 @@ public class ShowInfoController extends BaseActivity{
 	private TextView showInfo;
 	private String info;
 	private int placeId;
+	private int environmentId; 
 	private LinearLayout linearLayoutName;
 	private Menu menu;
 	private int userId;
@@ -50,6 +51,7 @@ public class ShowInfoController extends BaseActivity{
 		if(getIntent().hasExtra("ENVIRONMENT")){
 			name = getIntent().getStringExtra("ENVIRONMENT");
 			info = getIntent().getStringExtra("INFO");
+			environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);
 			
 			if(getIntent().hasExtra("LATITUDE_ENVIRONMENT") && getIntent().hasExtra("LONGITUDE_ENVIRONMENT")){
 				previousAction.add("SHOWMAP");
@@ -65,7 +67,7 @@ public class ShowInfoController extends BaseActivity{
 		if(getIntent().hasExtra("PLACE")){
 			name = getIntent().getStringExtra("PLACE");
 			info = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACEID", 0);	
+			placeId = getIntent().getIntExtra("PLACE_ID", 0);	
 			
 			if(getIntent().hasExtra("PLACE_M")){
 				previousAction.add("SHOWMAP");
@@ -75,6 +77,8 @@ public class ShowInfoController extends BaseActivity{
 				previousAction.add(getIntent().getStringExtra("LATITUDE_PLACE"));
 				previousAction.add("LONGITUDE_PLACE");
 				previousAction.add(getIntent().getStringExtra("LONGITUDE_PLACE"));
+				previousAction.add("PLACE_M");
+				previousAction.add(getIntent().getStringExtra("PLACE_M"));
 			}
 			
 			if(getIntent().hasExtra("IMPORTANT")){
@@ -142,7 +146,7 @@ public class ShowInfoController extends BaseActivity{
 		}
 		
 		if(getIntent().hasExtra("PLACE")){
-			if(getIntent().hasExtra("FAVORITEID")){
+			if(getIntent().hasExtra("FAVORITE_ID")){
 				MenuItem menuAddFavorite = menu.findItem(R.id.action_add_favorite);
 				menuAddFavorite.setVisible(false);
 				
@@ -176,8 +180,23 @@ public class ShowInfoController extends BaseActivity{
 	        	startProgressDialog(getString(R.string.progresst_delete_favorite), getString(R.string.progressm_delete_favorite));
 	        	new DeleteFavoritePlaceTask().execute();
 	        	return true;
-	        case R.id.action_show_calendar:        	
-	        	startActivity(CalendarController.class);
+	        case R.id.action_show_calendar:   
+	        	navIntent = new Intent(context, CalendarController.class);
+	    		if(getIntent().hasExtra("ENVIRONMENT")){
+	    			navIntent.putExtra("CALENDAR_ENVIRONMENT", name);
+	    			navIntent.putExtra("CALENDAR_ENVIRONMENT_ID", environmentId);	    				    			
+	    		}
+	        	
+	    		if(getIntent().hasExtra("PLACE")){
+	    			navIntent.putExtra("CALENDAR_PLACE", name);
+	    			navIntent.putExtra("CALENDAR_PLACE_ID", placeId);
+	    		}
+	    		
+	    		if(previousAction.size() > 0){
+	    			addIntent(navIntent);
+	    		}
+	    		
+	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_logout:
 	        	clearPreferences();
@@ -205,15 +224,16 @@ public class ShowInfoController extends BaseActivity{
 			if(favoritePlace.getFpId() != 0){
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_added_favorite), Toast.LENGTH_SHORT).show();
-        		navIntent = new Intent(context, ShowInfoController.class);
+        		/*navIntent = new Intent(context, ShowInfoController.class);
         		navIntent.putExtra("PLACE", name);
         		navIntent.putExtra("INFO", info);	
-				navIntent.putExtra("PLACEID", placeId);
-				navIntent.putExtra("FAVORITEID", favoritePlace.getFpId());
+				navIntent.putExtra("PLACE_ID", placeId);
+				navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());
 				if(previousAction.size() > 0){
 					addIntent(navIntent);
-				}
-        		finish();
+				}*/
+        		//finish();
+        		navIntent = new Intent(context, MapViewController.class);
         		startActivity(navIntent);
         	}else {
         		finishProgressDialog();
@@ -239,14 +259,15 @@ public class ShowInfoController extends BaseActivity{
 			if(result){
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_deleted_favorite), Toast.LENGTH_SHORT).show();
-        		navIntent = new Intent(context, ShowInfoController.class);
+        		/*navIntent = new Intent(context, ShowInfoController.class);
         		navIntent.putExtra("PLACE", name);
         		navIntent.putExtra("INFO", info);	
-				navIntent.putExtra("PLACEID", placeId);	
+				navIntent.putExtra("PLACE_ID", placeId);	
 				if(previousAction.size() > 0){
 					addIntent(navIntent);
-				}
-        		finish();
+				}*/
+        		//finish();
+        		navIntent = new Intent(context, MapViewController.class);
         		startActivity(navIntent);
         	}else {
         		finishProgressDialog();
@@ -267,6 +288,7 @@ public class ShowInfoController extends BaseActivity{
     			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
     			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
     			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
+    			navIntent.putExtra(previousAction.get(7), previousAction.get(8));
     		}
     		
     		if(previousAction.get(1).equals("IMPORTANT")){
