@@ -9,7 +9,7 @@
     
     <string name="app_name">HereIAm</string>
     <string name="action_settings">configurações</string>
-    <string name="ok">OK</string>
+    <string name="ok">ok</string>
     <string name="logout">logout</string>
     <string name="cancel">cancelar</string>
     <string name="required_field">campo obrigatório</string>
@@ -45,7 +45,9 @@
     <string name="info_txt">Informações:</string>
     <string name="info_add_favorite">adicionar aos favoritos</string>
     <string name="info_delete_favorite">deletar dos favoritos</string>
-    <string name="info_show_calendar">visualizar agenda</string>    
+    <string name="info_show_calendar">visualizar agenda</string>  
+    
+    <string name="calendar_no_results">Sem Eventos na Agenda.</string>
     
     <string name="progresst_loading_map">Carregando mapa</string>
     <string name="progressm_loading_map">Por favor, aguarde a conclusão.</string>
@@ -85,6 +87,10 @@
 
     <string name="progresst_make_route">Montando Rota</string>
     <string name="progressm_make_route">Por favor, aguarde enquato a rota é montada.</string>
+    
+    <string name="progresst_loading_calendar">Carregando Agenda</string>
+    <string name="progressm_loading_environment_calendar">Por favor, aguarde enquato a Agenda do Ambiente é carregada.</string>
+    <string name="progressm_loading_place_calendar">Por favor, aguarde enquato a Agenda do Local é carregada.</string>
     
 	<string name="alertt_without_connection">Sem conexão</string>
 	<string name="alertm_without_connection">Por favor, habilitar acesso a internet.</string>
@@ -129,4 +135,7 @@
 	<string name="toast_creation">Usuário criado com sucesso.</string>
 	<string name="toast_added_favorite">Local adicionado aos Locais Favoritos com sucesso.</string>
 	<string name="toast_deleted_favorite">Local deletado dos Locais Favoritos com sucesso.</string>
+	
+	<string name="alertt_add_calendar">Adicionar a Agenda</string>
+	<string name="alertm_add_calendar">Você deseja adicionar a Agenda o Evento:</string>
 </resources>
