@@ -140,24 +140,64 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		if(getIntent().hasExtra("ENVIRONMENT")){
     				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
                 	longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
+                	
+                	currentActions.clear();
+                	currentActions.add("SHOWMAP");
+                	currentActions.add("ENVIRONMENT");
+                	currentActions.add(getIntent().getStringExtra("ENVIRONMENT"));
+                	currentActions.add("LATITUDE_ENVIRONMENT");
+                	currentActions.add(String.valueOf(latitude));
+                	currentActions.add("LONGITUDE_ENVIRONMENT");
+                	currentActions.add(String.valueOf(longitude));
+                	
             		setTo(latitude, longitude);
         		}
         
         		if(getIntent().hasExtra("PLACE")){
     				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_PLACE"));
         			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_PLACE"));
+        			
+        			currentActions.clear();
+                	currentActions.add("SHOWMAP");
+                	currentActions.add("PLACE");
+                	currentActions.add(getIntent().getStringExtra("PLACE"));
+                	currentActions.add("LATITUDE_PLACE");
+                	currentActions.add(String.valueOf(latitude));
+                	currentActions.add("LONGITUDE_PLACE");
+                	currentActions.add(String.valueOf(longitude));
+        			
         			setTo(latitude, longitude);
         		}
         		
         		if(getIntent().hasExtra("IMPORTANT")){
     				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_IMPORTANT"));
         			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_IMPORTANT"));
+        			
+        			currentActions.clear();
+                	currentActions.add("SHOWMAP");
+                	currentActions.add("IMPORTANT");
+                	currentActions.add(getIntent().getStringExtra("IMPORTANT"));
+                	currentActions.add("LATITUDE_IMPORTANT");
+                	currentActions.add(String.valueOf(latitude));
+                	currentActions.add("LONGITUDE_IMPORTANT");
+                	currentActions.add(String.valueOf(longitude));
+        			
         			setTo(latitude, longitude);
         		}
         		
         		if(getIntent().hasExtra("FAVORITE")){
     				latitude = Double.parseDouble(getIntent().getStringExtra("LATITUDE_FAVORITE"));
         			longitude = Double.parseDouble(getIntent().getStringExtra("LONGITUDE_FAVORITE"));
+        			
+        			currentActions.clear();
+                	currentActions.add("SHOWMAP");
+                	currentActions.add("FAVORITE_M");
+                	currentActions.add(getIntent().getStringExtra("FAVORITE"));
+                	currentActions.add("LATITUDE_FAVORITE");
+                	currentActions.add(String.valueOf(latitude));
+                	currentActions.add("LONGITUDE_FAVORITE");
+                	currentActions.add(String.valueOf(longitude));
+        			
         			setTo(latitude, longitude);
         		}
         	}
@@ -234,7 +274,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
 			addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
 			mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
-		}
+		}		
 	}
 	
 	public void getRoute(GeoPoint positionA, GeoPoint positionB){
@@ -265,6 +305,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             nodeMarkerRouteA.setTitle(routeA.get(0).toString());
             addListenerOnMarkerPlace(nodeMarkerRouteA);
             
+            currentActions.clear();
+        	currentActions.add("ROUTE");
+        	currentActions.add("PLACE_A");
+        	currentActions.add(routeA.get(0));
+        	currentActions.add("LATITUDE_A");
+        	currentActions.add(routeA.get(1));
+        	currentActions.add("LONGITUDE_A");
+        	currentActions.add(routeA.get(2));
+                        
             Drawable nodeIconB = getResources().getDrawable(R.drawable.marker_node_b);
             node = road.mNodes.get(1);
             nodeMarkerRouteB = new Marker(mapView);
@@ -273,6 +322,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             nodeMarkerRouteB.setTitle(routeB.get(0).toString());
             addListenerOnMarkerPlace(nodeMarkerRouteB);
             
+            currentActions.add("PLACE_B");
+            currentActions.add(routeB.get(0));
+        	currentActions.add("LATITUDE_B");
+        	currentActions.add(routeB.get(1));
+        	currentActions.add("LONGITUDE_B");
+        	currentActions.add(routeB.get(2));
+                        
             mapView.getOverlays().add(nodeMarkerRouteA);
             mapView.getOverlays().add(nodeMarkerRouteB);            
         }
@@ -335,16 +391,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        case R.id.action_info_environment:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
 	        	navIntent.putExtra("ENVIRONMENT", currentMarker);	  
-	        	
+	        	navIntent.putExtra("INFO_ENVIRONMENT", true);
 	        	if(currentActions.size() > 0){
 	        		if(currentActions.get(0).equals("SHOWMAP")){
 		        		navIntent.putExtra(currentActions.get(0), true);
-		        		if(currentActions.get(1).equals("ENVIRONMENT_M")){
+		        		if(currentActions.get(1).equals("ENVIRONMENT")){
 		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
 		        		}
-		        		if(currentActions.get(1).equals("PLACE_M")){
+		        		if(currentActions.get(1).equals("PLACE")){
 		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
@@ -360,7 +416,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
 		        		}
-		        	}else {
+		        	}
+	        		if(currentActions.get(0).equals("ROUTE")) {
 		        		navIntent.putExtra(currentActions.get(0), true);
 		        		navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 	        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
@@ -376,16 +433,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        case R.id.action_info_place:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
 	        	navIntent.putExtra("PLACE", currentMarker);
-	        	
+	        	navIntent.putExtra("INFO_PLACE", true);
 	        	if(currentActions.size() > 0){
 		        	if(currentActions.get(0).equals("SHOWMAP")){
 		        		navIntent.putExtra(currentActions.get(0), true);
-		        		if(currentActions.get(1).equals("ENVIRONMENT_M")){
+		        		if(currentActions.get(1).equals("ENVIRONMENT")){
 		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
 		        		}
-		        		if(currentActions.get(1).equals("PLACE_M")){
+		        		if(currentActions.get(1).equals("PLACE")){
 		        			navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
@@ -401,7 +458,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
 		        			navIntent.putExtra(currentActions.get(5), currentActions.get(6));
 		        		}
-		        	}else {
+		        	}
+		        	if(currentActions.get(0).equals("ROUTE")) {
 		        		navIntent.putExtra(currentActions.get(0), true);
 		        		navIntent.putExtra(currentActions.get(1), currentActions.get(2));
 	        			navIntent.putExtra(currentActions.get(3), currentActions.get(4));
@@ -482,7 +540,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             	
             	currentActions.clear();
             	currentActions.add("SHOWMAP");
-            	currentActions.add("ENVIRONMENT_M");
+            	currentActions.add("ENVIRONMENT");
             	currentActions.add(currentEnvironment);
             	currentActions.add("LATITUDE_ENVIRONMENT");
             	currentActions.add(String.valueOf(latitude));
@@ -519,7 +577,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 
                 currentActions.clear();
             	currentActions.add("SHOWMAP");
-            	currentActions.add("PLACE_M");
+            	currentActions.add("PLACE");
             	currentActions.add(currentPlace);
             	currentActions.add("LATITUDE_PLACE");
             	currentActions.add(String.valueOf(latitude));
