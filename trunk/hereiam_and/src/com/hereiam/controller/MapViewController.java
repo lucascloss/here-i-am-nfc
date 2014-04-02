@@ -118,7 +118,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     private JSONObject json;
     private String action;
 	private Environment mapOverlayEnvironment;
-	private Environment environmentExtra;
+	private Environment environmentExtra = null;
+	private ArrayList<Environment> environmentsExtra = new ArrayList<Environment>();
 	private Place mapOverlayPlace;
 	private Place placeExtra;
 	private ArrayList<Place> mapOverlayPlaces = new ArrayList<Place>();
@@ -302,7 +303,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		nodeIconE = getResources().getDrawable(R.drawable.marker_node_blue);
 		environmentWSI = new EnvironmentWSI();
 		environments = environmentWSI.getListEnvironment();	
-//				AQUI
+						
 		for (int i = 0; i < environments.size(); i++) {
 			nodeMarkerEnvironments.add(new Marker(mapView));
 			nodeMarkerEnvironments.get(i).setTitle(environments.get(i).getEnvtName());
@@ -311,6 +312,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			nodeMarkerEnvironments.get(i).setIcon(nodeIconE);
 			addListenerOnMarkerEnvironment(nodeMarkerEnvironments.get(i));
 			mapView.getOverlays().add(nodeMarkerEnvironments.get(i));
+			
+			environmentsExtra.add(environments.get(i));
 		}		
 	}
 	
@@ -329,6 +332,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         if (road.mStatus == Road.STATUS_DEFAULT){
         	// Mensagem de sinal baixo aqui
         } else if(road.mStatus == Road.STATUS_OK){	        	
+        	
+        	route = true;
+        	
         	Polyline roadOverlay = RoadManager.buildRoadOverlay(road, context);
         	roadOverlay.setColor(Color.BLACK);
         	roadOverlay.setWidth(6);
@@ -352,7 +358,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
             addListenerOnMarkerPlace(nodeMarkerRouteB);                       
                         
             mapView.getOverlays().add(nodeMarkerRouteA);
-            mapView.getOverlays().add(nodeMarkerRouteB);            
+            mapView.getOverlays().add(nodeMarkerRouteB);
+            
+            placesExtra.add(mapOverlayPlaces.get(0));
+            placesExtra.add(mapOverlayPlaces.get(1));
         }
 	}
 	
@@ -404,25 +413,44 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	return true;
 	        case R.id.action_info_environment:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
-
-	        	navIntent.putExtra("ENVIRONMENT", true);
-        		navIntent.putExtra("ENVIRONMENT_NAME", environmentExtra.getEnvtName());
-	        	navIntent.putExtra("ENVIRONMENT_INFO", environmentExtra.getEnvtInfo());
-	        	navIntent.putExtra("ENVIROMENT_ID", environmentExtra.getEnvtId());
+	        	
+	        	if(!(environmentExtra == null)){
+		        	navIntent.putExtra("ENVIRONMENT", true);
+	        		navIntent.putExtra("ENVIRONMENT_NAME", environmentExtra.getEnvtName());
+		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentExtra.getEnvtInfo());
+		        	navIntent.putExtra("ENVIROMENT_ID", environmentExtra.getEnvtId());
+	        	}else {
+	        		for(int i = 0; i < environmentsExtra.size(); i++){
+	        			if(environmentsExtra.get(i).getEnvtName().equals(currentMarker)){
+	        				navIntent.putExtra("ENVIRONMENT", true);
+	    	        		navIntent.putExtra("ENVIRONMENT_NAME", environmentsExtra.get(i).getEnvtName());
+	    		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentsExtra.get(i).getEnvtInfo());
+	    		        	navIntent.putExtra("ENVIROMENT_ID", environmentsExtra.get(i).getEnvtId());
+	        			}
+	        		}
+	        	}
 	        		        		        	
 	        	startProgressDialog(getString(R.string.progresst_info_environment), getString(R.string.progressm_info_environment));
 	        	new GetEnvironmentInfoFeedTask().execute(currentMarker);
 	        	return true;
 	        case R.id.action_info_place:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
-//	        	if(route){
-	        		
-//	        	}else {
+	        	
+	        	if(route){
+	        		for(int i = 0; i < placesExtra.size(); i++){
+	        			if(placesExtra.get(i).getPlaceName().equals(currentMarker)){
+	        				navIntent.putExtra("PLACE", true);
+	    	        		navIntent.putExtra("PLACE_NAME", placesExtra.get(i).getPlaceName());
+	    		        	navIntent.putExtra("PLACE_INFO", placesExtra.get(i).getPlaceInfo());
+	    		        	navIntent.putExtra("PLACE_ID", placesExtra.get(i).getPlaceId());
+	        			}
+	        		}
+	        	}else {
 		        	navIntent.putExtra("PLACE", true);
 	        		navIntent.putExtra("PLACE_NAME", placeExtra.getPlaceName());
 		        	navIntent.putExtra("PLACE_INFO", placeExtra.getPlaceInfo());
 		        	navIntent.putExtra("PLACE_ID", placeExtra.getPlaceId());
-//	        	}
+	        	}
 	        		        	
 	        	startProgressDialog(getString(R.string.progresst_info_place), getString(R.string.progressm_info_place));
 	        	new GetPlaceInfoFeedTask().execute(currentMarker);
@@ -1030,6 +1058,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	@Override
     	protected Void doInBackground(GeoPoint... geopoints) {
             
+    		route = true;
+    		
             ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
             waypoints.add(geopoints[0]);
             waypoints.add(geopoints[1]);
@@ -1212,8 +1242,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			try{
 				environmentWSI = new EnvironmentWSI();
 				environment = environmentWSI.getEnvironment(encodeUrl(environmentName[0]));	
-				navIntent.putExtra("INFO", environment.getEnvtInfo());	
-				navIntent.putExtra("ENVIRONMENT_ID", environment.getEnvtId());
+				//navIntent.putExtra("INFO", environment.getEnvtInfo());	
+				//navIntent.putExtra("ENVIRONMENT_ID", environment.getEnvtId());
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}finally {
@@ -1236,8 +1266,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			try{
 				placeWSI = new PlaceWSI();
 				place = placeWSI.getPlace(encodeUrl(placeName[0]));	
-				navIntent.putExtra("INFO", place.getPlaceInfo());	
-				navIntent.putExtra("PLACE_ID", place.getPlaceId());
+				//navIntent.putExtra("INFO", place.getPlaceInfo());	
+				//navIntent.putExtra("PLACE_ID", place.getPlaceId());
 				
 				favoritePlaceWSI = new FavoritePlaceWSI();
 				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, place.getPlaceId());
