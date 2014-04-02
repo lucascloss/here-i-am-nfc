@@ -53,76 +53,21 @@ public class ShowInfoController extends BaseActivity{
         userName = getUserName();
 		
 		if(getIntent().hasExtra("ENVIRONMENT")){
-			environmentName = getIntent().getStringExtra("ENVIRONMENT");
-			environmentInfo = getIntent().getStringExtra("INFO");
-			environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);
-			
-			if(getIntent().hasExtra("LATITUDE_ENVIRONMENT") && getIntent().hasExtra("LONGITUDE_ENVIRONMENT")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("ENVIRONMENT"));
-				previousAction.add("LATITUDE_ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
-				previousAction.add("LONGITUDE_ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
-			}
+			environmentName = getIntent().getStringExtra("ENVIRONMENT_NAME");
+			environmentInfo = getIntent().getStringExtra("ENVIRONMENT_INFO");
+			environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);						
 		}
 		
 		if(getIntent().hasExtra("PLACE")){
-			placeName = getIntent().getStringExtra("PLACE");
-			placeInfo = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);								
-			
-			if(getIntent().hasExtra("PLACE")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("PLACE");
-				previousAction.add(getIntent().getStringExtra("PLACE"));
-				previousAction.add("LATITUDE_PLACE");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_PLACE"));
-				previousAction.add("LONGITUDE_PLACE");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_PLACE"));
-				//previousAction.add("PLACE_M");
-				//previousAction.add(getIntent().getStringExtra("PLACE_M"));
-			}
-			
-			if(getIntent().hasExtra("IMPORTANT")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("IMPORTANT"));
-				previousAction.add("LATITUDE_IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_IMPORTANT"));
-				previousAction.add("LONGITUDE_IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_IMPORTANT"));
-			}
-			
-			if(getIntent().hasExtra("FAVORITE")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("FAVORITE");
-				previousAction.add(getIntent().getStringExtra("FAVORITE"));
-				previousAction.add("LATITUDE_FAVORITE");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_FAVORITE"));
-				previousAction.add("LONGITUDE_FAVORITE");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_FAVORITE"));
-			}
+			placeName = getIntent().getStringExtra("PLACE_NAME");
+			placeInfo = getIntent().getStringExtra("PLACE_INFO");
+			placeId = getIntent().getIntExtra("PLACE_ID", 0);														
 		}
 		
 		if(getIntent().hasExtra("ROUTE")){
 			placeName = getIntent().getStringExtra("PLACE");
 			placeInfo = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);
-			previousAction.add("ROUTE");
-			previousAction.add("PLACE_A");
-			previousAction.add(getIntent().getStringExtra("PLACE_A"));
-			previousAction.add("LATITUDE_A");
-			previousAction.add(getIntent().getStringExtra("LATITUDE_A"));
-			previousAction.add("LONGITUDE_A");
-			previousAction.add(getIntent().getStringExtra("LONGITUDE_A"));        	
-			previousAction.add("PLACE_B");
-			previousAction.add(getIntent().getStringExtra("PLACE_B"));
-			previousAction.add("LATITUDE_B");
-			previousAction.add(getIntent().getStringExtra("LATITUDE_B"));
-			previousAction.add("LONGITUDE_B");
-			previousAction.add(getIntent().getStringExtra("LONGITUDE_B"));   
+			placeId = getIntent().getIntExtra("PLACE_ID", 0);			 
 		}
 		
 		if(getIntent().hasExtra("NFC")){
@@ -136,7 +81,7 @@ public class ShowInfoController extends BaseActivity{
 		showInfo = (TextView) findViewById(R.id.info_txt_info);
 		linearLayoutName = (LinearLayout) findViewById(R.id.linear_layout_name);					
 		
-		if(getIntent().hasExtra("INFO_ENVIRONMENT")){
+		if(getIntent().hasExtra("ENVIRONMENT")){
 			showName.setText(environmentName);
 			showInfo.setText(environmentInfo);
 			linearLayoutName.setBackgroundResource(R.drawable.color_environment);

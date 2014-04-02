@@ -3,11 +3,16 @@ package com.hereiam.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.AsyncTask;
@@ -65,6 +70,11 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	private NfcManager nfcManager;
     private NfcAdapter nfcAdapter;
     
+    private SharedPreferences preferences; 
+	private SharedPreferences.Editor editor;
+    private JSONArray jsonArray;
+    private JSONObject json;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,7 +82,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 		context = this;
 		userId = getUserId();
         userName = getUserName();
-        
+        preferences = getApplicationContext().getSharedPreferences("STATE", MODE_PRIVATE);
         if(getIntent().getBooleanExtra("CREATION", false)){
         	Toast.makeText(context, getString(R.string.toast_creation), Toast.LENGTH_SHORT).show();
         }	 
@@ -118,7 +128,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 			createAlertDialog(LIST_PLACES);
 			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);		
+					
 			selectedMenu = LIST_PLACES;
 			new SelectPlaceRouteAAlertDialogFeedTask().execute();			
 		}else {
@@ -133,7 +143,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
 			createAlertDialog(LIST_FAVORITE);
 			navIntent = new Intent(this, MapViewController.class);
-			navIntent.putExtra("SHOWMAP", true);
+			
 			selectedMenu = LIST_FAVORITE;
 			new SelectFavoritePlaceAlertDialogFeedTask().execute();			
 		}else {
@@ -162,7 +172,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 			createAlertDialog(LIST_IMPORTANT);
 			navIntent = new Intent(this, MapViewController.class);		
-			navIntent.putExtra("SHOWMAP", true);
+			
 			selectedMenu = LIST_IMPORTANT;
 			new SelectPlaceByImportanceAlertDialogFeedTask().execute();			
 		}else {
@@ -193,25 +203,72 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 	public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
 	
     	switch (selectedMenu) {
-		case VIEW_MAP:
-			navIntent.putExtra("ENVIRONMENT", listItens.get(position));
-			navIntent.putExtra("LATITUDE_ENVIRONMENT", environments.get(position).getEnvtLatitude());
-			navIntent.putExtra("LONGITUDE_ENVIRONMENT", environments.get(position).getEnvtLongitude());
+		case VIEW_MAP:			
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    json = new JSONObject();
+		    try {
+				json.put("SHOWMAP", true);
+				json.put("ACTION", "ENVIRONMENT");
+				json.put("ENVIRONMENT_ID", environments.get(position).getEnvtId());
+			    json.put("ENVIRONMENT_NAME", environments.get(position).getEnvtName());
+			    json.put("ENVIRONMENT_INFO", environments.get(position).getEnvtInfo());			    
+			    json.put("ENVIRONMENT_LATITUDE", environments.get(position).getEnvtLatitude());
+			    json.put("ENVIRONMENT_LONGITUDE", environments.get(position).getEnvtLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+			
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
-		case LIST_PLACES:
-			navIntent.putExtra("PLACE", listItens.get(position));
-			navIntent.putExtra("LATITUDE_PLACE", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_PLACE", places.get(position).getPlaceLongitude());
-			alertDialog.dismiss();
+		case LIST_PLACES:			
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    json = new JSONObject();
+		    try {
+				json.put("SHOWMAP", true);
+				json.put("ACTION", "PLACE");
+				json.put("PLACE_ID", places.get(position).getPlaceId());
+			    json.put("PLACE_NAME", places.get(position).getPlaceName());
+			    json.put("PLACE_INFO", places.get(position).getPlaceInfo());			    
+			    json.put("PLACE_LATITUDE", places.get(position).getPlaceLatitude());
+			    json.put("PLACE_LONGITUDE", places.get(position).getPlaceLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+		    
+		    alertDialog.dismiss();
 			startActivity(navIntent);
 			break;	
 		case MAKE_ROUTE_A:
-			navIntent.putExtra("ROUTE", true);
-			navIntent.putExtra("PLACE_A", listItens.get(position));
-			navIntent.putExtra("LATITUDE_A", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_A", places.get(position).getPlaceLongitude());
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    json = new JSONObject();
+		    try {
+				json.put("ROUTE", true);
+				json.put("ACTION", "ROUTE");
+				json.put("PLACE_A_ID", places.get(position).getPlaceId());
+			    json.put("PLACE_A_NAME", places.get(position).getPlaceName());
+			    json.put("PLACE_A_INFO", places.get(position).getPlaceInfo());			    
+			    json.put("PLACE_A_LATITUDE", places.get(position).getPlaceLatitude());
+			    json.put("PLACE_A_LONGITUDE", places.get(position).getPlaceLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+			
 			listItens.remove(position);
 			places.remove(position);
 			alertDialog.dismiss();
@@ -220,23 +277,69 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			createAlertDialog(MAKE_ROUTE_B);
 			break;
 		case MAKE_ROUTE_B:
-			navIntent.putExtra("PLACE_B", listItens.get(position));
-			navIntent.putExtra("LATITUDE_B", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_B", places.get(position).getPlaceLongitude());
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    //json = new JSONObject();
+		    try {
+				json.put("PLACE_B_ID", places.get(position).getPlaceId());
+			    json.put("PLACE_B_NAME", places.get(position).getPlaceName());
+			    json.put("PLACE_B_INFO", places.get(position).getPlaceInfo());			    
+			    json.put("PLACE_B_LATITUDE", places.get(position).getPlaceLatitude());
+			    json.put("PLACE_B_LONGITUDE", places.get(position).getPlaceLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+			
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
-		case LIST_FAVORITE:
-			navIntent.putExtra("FAVORITE", listItens.get(position));
-			navIntent.putExtra("LATITUDE_FAVORITE", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_FAVORITE", places.get(position).getPlaceLongitude());
+		case LIST_FAVORITE:			
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    json = new JSONObject();
+		    try {
+				json.put("SHOWMAP", true);
+				json.put("ACTION", "FAVORITE");
+				json.put("FAVORITE_ID", places.get(position).getPlaceId());
+			    json.put("FAVORITE_NAME", places.get(position).getPlaceName());
+			    json.put("FAVORITE_INFO", places.get(position).getPlaceInfo());			    
+			    json.put("FAVORITE_LATITUDE", places.get(position).getPlaceLatitude());
+			    json.put("FAVORITE_LONGITUDE", places.get(position).getPlaceLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+			
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;			
-		case LIST_IMPORTANT:
-			navIntent.putExtra("IMPORTANT", listItens.get(position));
-			navIntent.putExtra("LATITUDE_IMPORTANT", places.get(position).getPlaceLatitude());
-			navIntent.putExtra("LONGITUDE_IMPORTANT", places.get(position).getPlaceLongitude());
+		case LIST_IMPORTANT:			
+			editor = preferences.edit();
+		    jsonArray = new JSONArray();
+		    json = new JSONObject();
+		    try {
+				json.put("SHOWMAP", true);
+				json.put("ACTION", "IMPORTANT");
+				json.put("IMPORTANT_ID", places.get(position).getPlaceId());
+			    json.put("IMPORTANT_NAME", places.get(position).getPlaceName());
+			    json.put("IMPORTANT_INFO", places.get(position).getPlaceInfo());
+			    json.put("IMPORTANT_LATITUDE", places.get(position).getPlaceLatitude());
+			    json.put("IMPORTANT_LONGITUDE", places.get(position).getPlaceLongitude());
+			    jsonArray.put(json);
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();	
+			
 			alertDialog.dismiss();
 			startActivity(navIntent);
 			break;
