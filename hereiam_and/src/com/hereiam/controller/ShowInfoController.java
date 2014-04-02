@@ -3,8 +3,13 @@ package com.hereiam.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,10 +44,14 @@ public class ShowInfoController extends BaseActivity{
 	private String userName;
 	private FavoritePlaceWSI favoritePlaceWSI;
 	private FavoritePlace favoritePlace;
-	private boolean result;
+	private boolean result = false;
 	private ArrayList<String> previousAction = new ArrayList<String>();
 	private String latitudePlace;
 	private String longitudePlace;
+	private SharedPreferences preferences; 
+	private SharedPreferences.Editor editor;
+	private JSONObject json;
+	private JSONObject oldJson;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +60,7 @@ public class ShowInfoController extends BaseActivity{
 		context = this;
 		userId = getUserId();
         userName = getUserName();
-		
+        preferences = getApplicationContext().getSharedPreferences("STATE", MODE_PRIVATE);
 		if(getIntent().hasExtra("ENVIRONMENT")){
 			environmentName = getIntent().getStringExtra("ENVIRONMENT_NAME");
 			environmentInfo = getIntent().getStringExtra("ENVIRONMENT_INFO");
@@ -64,15 +73,6 @@ public class ShowInfoController extends BaseActivity{
 			placeId = getIntent().getIntExtra("PLACE_ID", 0);														
 		}
 		
-		if(getIntent().hasExtra("ROUTE")){
-			placeName = getIntent().getStringExtra("PLACE");
-			placeInfo = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);			 
-		}
-		
-		if(getIntent().hasExtra("NFC")){
-			
-		}
 		getReferences();		        
 	}
 	
@@ -85,7 +85,9 @@ public class ShowInfoController extends BaseActivity{
 			showName.setText(environmentName);
 			showInfo.setText(environmentInfo);
 			linearLayoutName.setBackgroundResource(R.drawable.color_environment);
-		}else {
+		}
+		
+		if(getIntent().hasExtra("PLACE")){
 			showName.setText(placeName);
 			showInfo.setText(placeInfo);
 			linearLayoutName.setBackgroundResource(R.drawable.color_place);
@@ -96,6 +98,7 @@ public class ShowInfoController extends BaseActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
 		getMenuInflater().inflate(R.menu.menu_info, menu);
+		
 		if(getIntent().hasExtra("ENVIRONMENT")){
 			MenuItem menuAddFavorite = menu.findItem(R.id.action_add_favorite);
 			menuAddFavorite.setVisible(false);
@@ -105,7 +108,6 @@ public class ShowInfoController extends BaseActivity{
 			if(getIntent().hasExtra("FAVORITE_ID")){
 				MenuItem menuAddFavorite = menu.findItem(R.id.action_add_favorite);
 				menuAddFavorite.setVisible(false);
-				
 				MenuItem menuDeleteFavorite = menu.findItem(R.id.action_delete_favorite);
 				menuDeleteFavorite.setVisible(true);
 			}
@@ -115,14 +117,57 @@ public class ShowInfoController extends BaseActivity{
 	
 	@Override
 	public void onBackPressed(){
-		navIntent = new Intent(context, MapViewController.class);
-		if(previousAction.size() > 0){
-			addIntent(navIntent);
-			startActivity(navIntent);
-		}else {
-			super.onBackPressed();
-		}
+		navIntent = new Intent(context, MapViewController.class);							
 		
+		if(getIntent().hasExtra("DELETE")){
+			editor = preferences.edit();
+		    
+		    json = new JSONObject();
+		   
+		    try {
+		    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));	
+				if(!oldJson.has("ROUTE")){
+			    	json.put("SHOWMAP", true);
+					json.put("ACTION", "PLACE");
+					json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
+				    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
+				    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
+				    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
+				    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
+				}
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();
+    	}
+		
+		if(getIntent().hasExtra("ADD")){
+			editor = preferences.edit();
+		    
+		    json = new JSONObject();
+		   
+		    try {
+		    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+		    	if(!oldJson.has("ROUTE")){
+					json.put("SHOWMAP", true);
+					json.put("ACTION", "FAVORITE");
+					json.put("FAVORITE_ID", oldJson.getInt("PLACE_ID"));
+				    json.put("FAVORITE_NAME", oldJson.getString("PLACE_NAME"));
+				    json.put("FAVORITE_INFO", oldJson.getString("PLACE_INFO"));			    
+				    json.put("FAVORITE_LATITUDE", oldJson.getString("PLACE_LATITUDE"));
+				    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));
+		    	}
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+		    		    
+		    editor.putString("MAP_OVERLAY", json.toString());
+		    editor.commit();
+		}
+		startActivity(navIntent);		
+		//super.onBackPressed();		
 	}
 	
     @Override
@@ -138,36 +183,23 @@ public class ShowInfoController extends BaseActivity{
 	        	return true;
 	        case R.id.action_show_calendar:   
 	        	navIntent = new Intent(context, CalendarController.class);
-	    		/*if(getIntent().hasExtra("ENVIRONMENT")){
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT", environmentName);
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT_ID", environmentId);	
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT_INFO", environmentInfo);
+	    		if(getIntent().hasExtra("ENVIRONMENT")){
+	    			navIntent.putExtra("ENVIRONMENT", true);
+	    			navIntent.putExtra("ENVIRONMENT_NAME", environmentName);
+	    			navIntent.putExtra("ENVIRONMENT_ID", environmentId);	
+	    			navIntent.putExtra("ENVIRONMENT_INFO", environmentInfo);
 	    		}
 	        	
 	    		if(getIntent().hasExtra("PLACE")){
-	    			navIntent.putExtra("CALENDAR_PLACE", placeName);
-	    			navIntent.putExtra("CALENDAR_PLACE_ID", placeId);
-	    			navIntent.putExtra("CALENDAR_PLACE_INFO", placeInfo);
-	    		}*/
-	    		
-	        	if(getIntent().hasExtra("INFO_ENVIRONMENT")){
-	        		navIntent.putExtra("INFO_ENVIRONMENT", true);
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT", environmentName);
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT_ID", environmentId);	
-	    			navIntent.putExtra("CALENDAR_ENVIRONMENT_INFO", environmentInfo);
-	        	}
-        	
-	        	if(getIntent().hasExtra("INFO_PLACE")){
-	        		navIntent.putExtra("INFO_PLACE", true);
-	        		navIntent.putExtra("CALENDAR_PLACE", placeName);
-	    			navIntent.putExtra("CALENDAR_PLACE_ID", placeId);
-	    			navIntent.putExtra("CALENDAR_PLACE_INFO", placeInfo);
-	        	}
+	    			navIntent.putExtra("PLACE", true);
+	    			navIntent.putExtra("PLACE_NAME", placeName);
+	    			navIntent.putExtra("PLACE_ID", placeId);
+	    			navIntent.putExtra("PLACE_INFO", placeInfo);
+	    			if(getIntent().hasExtra("FAVORITE_ID")){
+	    				navIntent.putExtra("FAVORITE_ID", getIntent().getIntExtra("FAVORITE_ID", 0));
+	    			}
+	    		}	    		
 	        	
-	    		if(previousAction.size() > 0){
-	    			addIntent(navIntent);
-	    		}
-	    		
 	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_logout:
@@ -196,14 +228,14 @@ public class ShowInfoController extends BaseActivity{
 			if(favoritePlace.getFpId() != 0){
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_added_favorite), Toast.LENGTH_SHORT).show();
+
         		navIntent = new Intent(context, ShowInfoController.class);
-        		navIntent.putExtra("PLACE", placeName);
-        		navIntent.putExtra("INFO", placeInfo);	
+        		navIntent.putExtra("PLACE", true);
+        		navIntent.putExtra("PLACE_NAME", placeName);
+        		navIntent.putExtra("PLACE_INFO", placeInfo);	
 				navIntent.putExtra("PLACE_ID", placeId);
-				navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());
-				if(previousAction.size() > 0){
-					addIntent(navIntent);
-				}
+				navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());	
+				navIntent.putExtra("ADD", true);
         		//finish();
         		
         		startActivity(navIntent);
@@ -220,7 +252,9 @@ public class ShowInfoController extends BaseActivity{
     	protected Void doInBackground(String... placeName) {
 			try{
 				favoritePlaceWSI = new FavoritePlaceWSI();
-	        	result = favoritePlaceWSI.deleteFavoritePlace(userId, placeId);
+	        	result = favoritePlaceWSI.deleteFavoritePlace(userId, placeId);	
+	        	boolean teste = false;
+	        	teste = true;
 			}finally {				
 			}
 			return null;
@@ -232,13 +266,12 @@ public class ShowInfoController extends BaseActivity{
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_deleted_favorite), Toast.LENGTH_SHORT).show();
         		navIntent = new Intent(context, ShowInfoController.class);
-        		navIntent.putExtra("PLACE", placeName);
-        		navIntent.putExtra("INFO", placeInfo);	
+        		navIntent.putExtra("PLACE", true);
+        		navIntent.putExtra("PLACE_NAME", placeName);
+        		navIntent.putExtra("PLACE_INFO", placeInfo);	
 				navIntent.putExtra("PLACE_ID", placeId);
-        		
-				if(previousAction.size() > 0){
-					addIntentWithOutFavorite(navIntent);
-				}
+				navIntent.putExtra("DELETE", true);
+
         		finish();
         		//navIntent = new Intent(context, MapViewController.class);
         		startActivity(navIntent);
@@ -247,85 +280,5 @@ public class ShowInfoController extends BaseActivity{
         		Alerts.createErrorAlert(11, context);
         	}
         }
-    }
-    
-    public void addIntent(Intent intent){
-    	
-    	if(previousAction.get(0).equals("SHOWMAP")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		if(previousAction.get(1).equals("ENVIRONMENT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", environmentInfo);
-    		}
-    		if(previousAction.get(1).equals("PLACE")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			//navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    		
-    		if(previousAction.get(1).equals("IMPORTANT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    		if(previousAction.get(1).equals("FAVORITE")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    	}
-    	if(previousAction.get(0).equals("ROUTE")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-			navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-			navIntent.putExtra(previousAction.get(9), previousAction.get(10));
-			navIntent.putExtra(previousAction.get(11), previousAction.get(12));
-			navIntent.putExtra("INFO", placeInfo);
-    	}
-    }
-    
-    public void addIntentWithOutFavorite(Intent intent){
-    	
-    	if(previousAction.get(0).equals("SHOWMAP")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		if(previousAction.get(1).equals("ENVIRONMENT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", environmentInfo);
-    		}
-    		if(previousAction.get(1).equals("PLACE")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			//navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    		
-    		if(previousAction.get(1).equals("IMPORTANT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}   		
-    	}
-    	if(previousAction.get(0).equals("ROUTE")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-			navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-			navIntent.putExtra(previousAction.get(9), previousAction.get(10));
-			navIntent.putExtra(previousAction.get(11), previousAction.get(12));
-			navIntent.putExtra("INFO", placeInfo);
-    	}
-    }
+    }       
 }

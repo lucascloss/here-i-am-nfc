@@ -69,99 +69,23 @@ public class CalendarController extends BaseActivity implements OnClickListener,
 		listViewResults.setOnItemClickListener(this);
 		
 		if(getIntent().hasExtra("ENVIRONMENT")){
-			environmentName = getIntent().getStringExtra("ENVIRONMENT");
-			environmentInfo = getIntent().getStringExtra("INFO");
+			environmentName = getIntent().getStringExtra("ENVIRONMENT_NAME");
+			environmentInfo = getIntent().getStringExtra("ENVIRONMENT_INFO");
 			environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);
-			
-			if(getIntent().hasExtra("LATITUDE_ENVIRONMENT") && getIntent().hasExtra("LONGITUDE_ENVIRONMENT")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("ENVIRONMENT"));
-				previousAction.add("LATITUDE_ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_ENVIRONMENT"));
-				previousAction.add("LONGITUDE_ENVIRONMENT");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_ENVIRONMENT"));
-			}
+			getReferences(environmentName);
+			startProgressDialog(getString(R.string.progresst_loading_calendar), getString(R.string.progressm_loading_environment_calendar));
+			new GetEnvironmentCalendarFeedTask().execute();
+						
 		}
 		
 		if(getIntent().hasExtra("PLACE")){
-			placeName = getIntent().getStringExtra("PLACE");
-			placeInfo = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);								
-			
-			if(getIntent().hasExtra("PLACE")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("PLACE");
-				previousAction.add(getIntent().getStringExtra("PLACE"));
-				previousAction.add("LATITUDE_PLACE");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_PLACE"));
-				previousAction.add("LONGITUDE_PLACE");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_PLACE"));
-				//previousAction.add("PLACE_M");
-				//previousAction.add(getIntent().getStringExtra("PLACE_M"));
-			}
-			
-			if(getIntent().hasExtra("IMPORTANT")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("IMPORTANT"));
-				previousAction.add("LATITUDE_IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_IMPORTANT"));
-				previousAction.add("LONGITUDE_IMPORTANT");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_IMPORTANT"));
-			}
-			
-			if(getIntent().hasExtra("FAVORITE")){
-				previousAction.add("SHOWMAP");
-				previousAction.add("FAVORITE");
-				previousAction.add(getIntent().getStringExtra("FAVORITE"));
-				previousAction.add("LATITUDE_FAVORITE");
-				previousAction.add(getIntent().getStringExtra("LATITUDE_FAVORITE"));
-				previousAction.add("LONGITUDE_FAVORITE");
-				previousAction.add(getIntent().getStringExtra("LONGITUDE_FAVORITE"));
-			}
-		}
-		
-		if(getIntent().hasExtra("ROUTE")){
-			placeName = getIntent().getStringExtra("PLACE");
-			placeInfo = getIntent().getStringExtra("INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);
-			previousAction.add("ROUTE");
-			previousAction.add("PLACE_A");
-			previousAction.add(getIntent().getStringExtra("PLACE_A"));
-			previousAction.add("LATITUDE_A");
-			previousAction.add(getIntent().getStringExtra("LATITUDE_A"));
-			previousAction.add("LONGITUDE_A");
-			previousAction.add(getIntent().getStringExtra("LONGITUDE_A"));        	
-			previousAction.add("PLACE_B");
-			previousAction.add(getIntent().getStringExtra("PLACE_B"));
-			previousAction.add("LATITUDE_B");
-			previousAction.add(getIntent().getStringExtra("LATITUDE_B"));
-			previousAction.add("LONGITUDE_B");
-			previousAction.add(getIntent().getStringExtra("LONGITUDE_B"));   
-		}
-		
-		if(getIntent().hasExtra("NFC")){
-			
-		}
-		
-		if(getIntent().hasExtra("INFO_ENVIRONMENT")){
-			calendarEnvironment = getIntent().getStringExtra("CALENDAR_ENVIRONMENT");
-			calendarEnvironmentId = getIntent().getIntExtra("CALENDAR_ENVIRONMENT_ID", 0);
-			calendarEnvironmentInfo = getIntent().getStringExtra("CALENDAR_ENVIRONMENT_INFO");
-			getReferences(calendarEnvironment);
-			startProgressDialog(getString(R.string.progresst_loading_calendar), getString(R.string.progressm_loading_environment_calendar));
-			new GetEnvironmentCalendarFeedTask().execute();
-		}
-		
-		if(getIntent().hasExtra("INFO_PLACE")){
-			calendarPlace = getIntent().getStringExtra("CALENDAR_PLACE");
-			calendarPlaceId = getIntent().getIntExtra("CALENDAR_PLACE_ID", 0);
-			calendarPlaceInfo = getIntent().getStringExtra("CALENDAR_PLACE_INFO");
-			getReferences(calendarPlace);
+			placeName = getIntent().getStringExtra("PLACE_NAME");
+			placeInfo = getIntent().getStringExtra("PLACE_INFO");
+			placeId = getIntent().getIntExtra("PLACE_ID", 0);	
+			getReferences(placeName);
 			startProgressDialog(getString(R.string.progresst_loading_calendar), getString(R.string.progressm_loading_place_calendar));
 			new GetPlaceCalendarFeedTask().execute();
-		}
+		}				
 	}
 
 	public void getReferences(String name){
@@ -169,11 +93,13 @@ public class CalendarController extends BaseActivity implements OnClickListener,
 		
 		linearLayoutName = (LinearLayout) findViewById(R.id.linear_layout_name);		
 		
-		if(getIntent().hasExtra("INFO_ENVIRONMENT")){
-			showName.setText(calendarEnvironment);
+		if(getIntent().hasExtra("ENVIRONMENT")){
+			showName.setText(environmentName);
 			linearLayoutName.setBackgroundResource(R.drawable.color_environment);
-		}else {
-			showName.setText(calendarPlace);
+		}
+		
+		if(getIntent().hasExtra("PLACE")){
+			showName.setText(placeName);
 			linearLayoutName.setBackgroundResource(R.drawable.color_place);
 		}		
 	}
@@ -184,7 +110,7 @@ public class CalendarController extends BaseActivity implements OnClickListener,
     	protected Void doInBackground(Void... arg0) {
 			try{
 				calendarWSI = new CalendarWSI();
-				calendars = calendarWSI.getListCalendarP(calendarPlaceId);
+				calendars = calendarWSI.getListCalendarP(placeId);
 				listItens.clear();				
 				for (int i = 0; i < calendars.size(); i++) {
 					listItens.add(calendars.get(i).getCalendarEvent());
@@ -214,7 +140,7 @@ public class CalendarController extends BaseActivity implements OnClickListener,
     	protected Void doInBackground(Void... arg0) {
 			try{
 				calendarWSI = new CalendarWSI();
-				calendars = calendarWSI.getListCalendarE(calendarEnvironmentId);
+				calendars = calendarWSI.getListCalendarE(environmentId);
 				listItens.clear();				
 				for (int i = 0; i < calendars.size(); i++) {
 					listItens.add(calendars.get(i).getCalendarEvent());
@@ -234,82 +160,35 @@ public class CalendarController extends BaseActivity implements OnClickListener,
 		@Override
         protected void onPostExecute(Void res){
 			finishProgressDialog();
-			listViewResults.setAdapter(adapter);
-			
+			listViewResults.setAdapter(adapter);			
         }
-    }
-	
-	public void addIntent(Intent intent){
-    	
-    	if(previousAction.get(0).equals("SHOWMAP")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		if(previousAction.get(1).equals("ENVIRONMENT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", environmentInfo);
-    		}
-    		if(previousAction.get(1).equals("PLACE")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			//navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    		
-    		if(previousAction.get(1).equals("IMPORTANT")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    		if(previousAction.get(1).equals("FAVORITE")){
-    			navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-    			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-    			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-    			navIntent.putExtra("INFO", placeInfo);
-    		}
-    	}
-    	if(previousAction.get(0).equals("ROUTE")){
-    		navIntent.putExtra(previousAction.get(0), true);
-    		navIntent.putExtra(previousAction.get(1), previousAction.get(2));
-			navIntent.putExtra(previousAction.get(3), previousAction.get(4));
-			navIntent.putExtra(previousAction.get(5), previousAction.get(6));
-			navIntent.putExtra(previousAction.get(7), previousAction.get(8));
-			navIntent.putExtra(previousAction.get(9), previousAction.get(10));
-			navIntent.putExtra(previousAction.get(11), previousAction.get(12));
-			navIntent.putExtra("INFO", placeInfo);
-    	}
-    	
-    	if(getIntent().hasExtra("INFO_ENVIRONMENT")){
-    		navIntent.putExtra("INFO_ENVIRONMENT", true);
-    		navIntent.putExtra("ENVIRONMENT", calendarEnvironment);
-    		navIntent.putExtra("INFO", calendarEnvironmentInfo);
-    		navIntent.putExtra("ENVIRONMENT_ID", calendarEnvironmentId);
-    	}else{
-    		navIntent.putExtra("INFO_PLACE", true);
-    		navIntent.putExtra("PLACE", calendarPlace);    		
-    		navIntent.putExtra("INFO", calendarPlaceInfo);
-    		navIntent.putExtra("PLACE_ID", calendarPlaceId);
-    	}
     }
 	
 	@Override
 	public void onBackPressed(){
-		navIntent = new Intent(context, ShowInfoController.class);
-		if(previousAction.size() > 0){
-			addIntent(navIntent);
-			startActivity(navIntent);
-		}else {
-			super.onBackPressed();
+		navIntent = new Intent(context, ShowInfoController.class);	
+		if(getIntent().hasExtra("ENVIRONMENT")){
+			navIntent.putExtra("ENVIRONMENT", true);
+    		navIntent.putExtra("ENVIRONMENT_NAME", environmentName);
+        	navIntent.putExtra("ENVIRONMENT_INFO", environmentInfo);
+        	navIntent.putExtra("ENVIROMENT_ID", environmentId);
 		}
-		
+			
+		if(getIntent().hasExtra("PLACE")){
+			navIntent.putExtra("PLACE", true);
+    		navIntent.putExtra("PLACE_NAME", placeName);
+        	navIntent.putExtra("PLACE_INFO", placeInfo);
+        	navIntent.putExtra("PLACE_ID", placeId);
+        	if(getIntent().hasExtra("FAVORITE_ID")){
+        		navIntent.putExtra("FAVORITE_ID", getIntent().getIntExtra("FAVORITE_ID", 0));
+        	}
+		}		
+		startActivity(navIntent);
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
@@ -322,13 +201,14 @@ public class CalendarController extends BaseActivity implements OnClickListener,
 			alert.setPositiveButton(getStringResource(R.string.ok), new DialogInterface.OnClickListener() {	            	 
 	            @Override
 	            public void onClick(DialogInterface dialog, int which) {
-	            	if(getIntent().hasExtra("CALENDAR_ENVIRONMENT")){
-	            		addToCalendar(calendars.get(position).getCalendarEvent(), calendarEnvironment, 
+	            	if(getIntent().hasExtra("ENVIRONMENT")){
+	            		addToCalendar(calendars.get(position).getCalendarEvent(), environmentName, 
 	            					calendars.get(position).getCalendarInfo(), calendars.get(position).getCalendarStarts(), 
 								 calendars.get(position).getCalendarEnds());
 	            	}
-	            	if(getIntent().hasExtra("CALENDAR_PLACE")){
-	            		addToCalendar(calendars.get(position).getCalendarEvent(), calendarPlace, calendars.get(position).getCalendarInfo(), calendars.get(position).getCalendarStarts(), 
+	            	if(getIntent().hasExtra("PLACE")){
+	            		addToCalendar(calendars.get(position).getCalendarEvent(), placeName, 
+	            				calendars.get(position).getCalendarInfo(), calendars.get(position).getCalendarStarts(), 
 								 calendars.get(position).getCalendarEnds());
 	            	}	            	
 	            }
