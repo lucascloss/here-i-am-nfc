@@ -41,6 +41,8 @@ public class NFCReaderController extends BaseActivity{
     private NfcAdapter nfcAdapter;
     private String nfcReaderResult;
     private Intent navIntent;
+    private boolean update;
+    private Intent mapIntent;
     
     private SharedPreferences preferences; 
 	private SharedPreferences.Editor editor;    
@@ -56,6 +58,8 @@ public class NFCReaderController extends BaseActivity{
         preferences = getApplicationContext().getSharedPreferences("STATE", MODE_PRIVATE);
         nfcManager = (NfcManager) context.getSystemService(Context.NFC_SERVICE);
         nfcAdapter = nfcManager.getDefaultAdapter();
+        update = getIntent().hasExtra("UPDATE");
+        mapIntent = getIntent();
         //nfcAdapter = NfcAdapter.getDefaultAdapter(this);
                 
         if (nfcAdapter == null) {
@@ -95,18 +99,26 @@ public class NFCReaderController extends BaseActivity{
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
         	Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             NFCReader nfcReader = new NFCReader();
-            nfcReaderResult = nfcReader.execute(tag);
-
-            goDetails(nfcReaderResult);
+            nfcReaderResult = nfcReader.execute(tag);            
+    		goDetails(nfcReaderResult);            
         }
     }
     
-    public void goDetails(String id){
+    public void goDetails(String nfcId){
     	navIntent = new Intent(this, MapViewController.class);
-        navIntent.putExtra("NFC", id);   
-        this.finish();
+        navIntent.putExtra("NFC", true);
+        navIntent.putExtra("NFC_ID", nfcId);
+        if(mapIntent.hasExtra("ROUTE_NFC")){
+        	navIntent.putExtra("ROUTE_NFC", mapIntent.getBooleanExtra("ROUTE_NFC", true));
+        }
+        if(mapIntent.hasExtra("UPDATE_NFC")){
+        	navIntent.putExtra("UPDATE_NFC", mapIntent.getBooleanExtra("UPDATE_NFC", true));
+        }
+//        this.finish();
         
         startActivity(navIntent);
+        
+        this.finish();
     }
          
     @Override
