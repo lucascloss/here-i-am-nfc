@@ -44,15 +44,12 @@ public class ShowInfoController extends BaseActivity{
 	private String userName;
 	private FavoritePlaceWSI favoritePlaceWSI;
 	private FavoritePlace favoritePlace;
-	private boolean result = false;
-	private ArrayList<String> previousAction = new ArrayList<String>();
-	private String latitudePlace;
-	private String longitudePlace;
+	private boolean result = false;	
 	private SharedPreferences preferences; 
 	private SharedPreferences.Editor editor;
 	private JSONObject json;
 	private JSONObject oldJson;
-	
+	private String action;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,19 +58,26 @@ public class ShowInfoController extends BaseActivity{
 		userId = getUserId();
         userName = getUserName();
         preferences = getApplicationContext().getSharedPreferences("STATE", MODE_PRIVATE);
-		if(getIntent().hasExtra("ENVIRONMENT")){
-			environmentName = getIntent().getStringExtra("ENVIRONMENT_NAME");
-			environmentInfo = getIntent().getStringExtra("ENVIRONMENT_INFO");
-			environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);						
-		}
 		
-		if(getIntent().hasExtra("PLACE")){
-			placeName = getIntent().getStringExtra("PLACE_NAME");
-			placeInfo = getIntent().getStringExtra("PLACE_INFO");
-			placeId = getIntent().getIntExtra("PLACE_ID", 0);														
-		}
-		
-		getReferences();		        
+        try {
+			json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+			action = json.getString("ACTION");
+			if(getIntent().hasExtra("ENVIRONMENT")){
+				environmentName = getIntent().getStringExtra("ENVIRONMENT_NAME");
+				environmentInfo = getIntent().getStringExtra("ENVIRONMENT_INFO");
+				environmentId = getIntent().getIntExtra("ENVIRONMENT_ID", 0);						
+			}
+			
+			if(getIntent().hasExtra("PLACE")){
+				placeName = getIntent().getStringExtra("PLACE_NAME");
+				placeInfo = getIntent().getStringExtra("PLACE_INFO");
+				placeId = getIntent().getIntExtra("PLACE_ID", 0);														
+			}
+			
+			getReferences();
+		} catch (JSONException e) {			
+			e.printStackTrace();
+		}        
 	}
 	
 	public void getReferences(){
@@ -126,15 +130,14 @@ public class ShowInfoController extends BaseActivity{
 		   
 		    try {
 		    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));	
-				if(!oldJson.has("ROUTE")){
-			    	json.put("SHOWMAP", true);
-					json.put("ACTION", "PLACE");
-					json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
-				    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
-				    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
-				    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
-				    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
-				}
+
+		    	json.put("SHOWMAP", true);
+				json.put("ACTION", "PLACE");
+				json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
+			    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
+			    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
+			    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
+			    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
 			} catch (JSONException e) {				
 				e.printStackTrace();
 			}
@@ -150,15 +153,14 @@ public class ShowInfoController extends BaseActivity{
 		   
 		    try {
 		    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
-		    	if(!oldJson.has("ROUTE")){
-					json.put("SHOWMAP", true);
-					json.put("ACTION", "FAVORITE");
-					json.put("FAVORITE_ID", oldJson.getInt("PLACE_ID"));
-				    json.put("FAVORITE_NAME", oldJson.getString("PLACE_NAME"));
-				    json.put("FAVORITE_INFO", oldJson.getString("PLACE_INFO"));			    
-				    json.put("FAVORITE_LATITUDE", oldJson.getString("PLACE_LATITUDE"));
-				    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));
-		    	}
+		    	
+				json.put("SHOWMAP", true);
+				json.put("ACTION", "FAVORITE");
+				json.put("FAVORITE_ID", oldJson.getInt("PLACE_ID"));
+			    json.put("FAVORITE_NAME", oldJson.getString("PLACE_NAME"));
+			    json.put("FAVORITE_INFO", oldJson.getString("PLACE_INFO"));			    
+			    json.put("FAVORITE_LATITUDE", oldJson.getString("PLACE_LATITUDE"));
+			    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));
 			} catch (JSONException e) {				
 				e.printStackTrace();
 			}
@@ -228,15 +230,18 @@ public class ShowInfoController extends BaseActivity{
 			if(favoritePlace.getFpId() != 0){
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_added_favorite), Toast.LENGTH_SHORT).show();
-
-        		navIntent = new Intent(context, ShowInfoController.class);
-        		navIntent.putExtra("PLACE", true);
-        		navIntent.putExtra("PLACE_NAME", placeName);
-        		navIntent.putExtra("PLACE_INFO", placeInfo);	
-				navIntent.putExtra("PLACE_ID", placeId);
-				navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());	
-				navIntent.putExtra("ADD", true);
-        		//finish();
+        		
+        		if(action.equals("ROUTE")){
+        			navIntent = new Intent(context, MapViewController.class);
+        		}else {        		
+	        		navIntent = new Intent(context, ShowInfoController.class);
+	        		navIntent.putExtra("PLACE", true);
+	        		navIntent.putExtra("PLACE_NAME", placeName);
+	        		navIntent.putExtra("PLACE_INFO", placeInfo);	
+					navIntent.putExtra("PLACE_ID", placeId);
+					navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());	
+					navIntent.putExtra("ADD", true);
+        		}
         		
         		startActivity(navIntent);
         	}else {
@@ -265,15 +270,18 @@ public class ShowInfoController extends BaseActivity{
 			if(result){
 				finishProgressDialog();
         		Toast.makeText(context, getString(R.string.toast_deleted_favorite), Toast.LENGTH_SHORT).show();
-        		navIntent = new Intent(context, ShowInfoController.class);
-        		navIntent.putExtra("PLACE", true);
-        		navIntent.putExtra("PLACE_NAME", placeName);
-        		navIntent.putExtra("PLACE_INFO", placeInfo);	
-				navIntent.putExtra("PLACE_ID", placeId);
-				navIntent.putExtra("DELETE", true);
-
-        		finish();
-        		//navIntent = new Intent(context, MapViewController.class);
+        		
+        		if(action.equals("ROUTE")){
+        			navIntent = new Intent(context, MapViewController.class);
+        		}else {
+	        		navIntent = new Intent(context, ShowInfoController.class);
+	        		navIntent.putExtra("PLACE", true);
+	        		navIntent.putExtra("PLACE_NAME", placeName);
+	        		navIntent.putExtra("PLACE_INFO", placeInfo);	
+					navIntent.putExtra("PLACE_ID", placeId);
+					navIntent.putExtra("DELETE", true);
+        		}
+					
         		startActivity(navIntent);
         	}else {
         		finishProgressDialog();

@@ -40,7 +40,7 @@
         <activity
             android:label="@string/activity_nfc" 
             android:name=".controller.NFCReaderController"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">             
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">         
         </activity>
         <activity 
             android:label="@string/activity_map"

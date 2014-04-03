@@ -27,6 +27,7 @@ import org.osmdroid.views.overlay.Overlay;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +35,8 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -112,6 +115,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private boolean nfc;
 	private boolean nfcEnvironment;
 	private boolean nfcPlace;
+	private boolean updateNfc;
+	private boolean routeNfc;
 	private SharedPreferences preferences;
 	private SharedPreferences.Editor editor;
 	private JSONArray jsonArray;
@@ -124,7 +129,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private Place placeExtra;
 	private ArrayList<Place> mapOverlayPlaces = new ArrayList<Place>();
 	private ArrayList<Place> placesExtra = new ArrayList<Place>();
-
+	
+	private NfcManager nfcManager;
+    private NfcAdapter nfcAdapter;
+    private PendingIntent pendingIntent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -132,6 +140,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         setContentView(R.layout.activity_mapview);
         
         context = this;
+                
+//        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+//        nfcAdapter.disableForegroundDispatch(this);
+        
+//        pendingIntent = PendingIntent.getActivity( this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        
         userId = getUserId();
         userName = getUserName();
         preferences = getApplicationContext().getSharedPreferences("STATE", MODE_PRIVATE);
@@ -150,7 +164,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.getOverlays().add(mapOverlay);
         
         if(getIntent().hasExtra("NFC")){
-        	nfc = true;
+        	nfc = getIntent().getBooleanExtra("NFC", true);
+        	if(getIntent().hasExtra("ROUTE_NFC")){
+        		routeNfc = getIntent().getBooleanExtra("ROUTE_NFC", true);
+        	}
+        	
+        	if(getIntent().hasExtra("UPDATE_NFC")){
+        		updateNfc = getIntent().getBooleanExtra("UPDATE_NFC", true);
+        	}
         }
         
         try {
@@ -272,32 +293,26 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	@Override
 	public void run(){
 	}
-	
-	
+		
 	@Override
 	protected void onDestroy(){
 		mapView.setBuiltInZoomControls(false);
-		mapView.setClickable(false);
-		
+		mapView.setClickable(false);		
 		super.onDestroy();
 	}
-	
-	
+		
 	@Override
 	protected void onPause(){
 		mapView.setBuiltInZoomControls(false);
-		mapView.setClickable(false);
-		
+		mapView.setClickable(false);		
 		super.onPause();
 	}
-		
-	
+			
 	@Override
 	public void onBackPressed(){
 		navIntent = new Intent(context, DashBoardController.class);
 		startActivity(navIntent);
 	}
-	
 	
 	public void getEnvironments(){
 		nodeIconE = getResources().getDrawable(R.drawable.marker_node_blue);
@@ -316,8 +331,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			environmentsExtra.add(environments.get(i));
 		}		
 	}
-	
-	
+		
 	public void getRoute(GeoPoint positionA, GeoPoint positionB){
 		ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
         waypoints.add(positionA);
@@ -373,13 +387,26 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         return true;
     }
 	
-   
 	@Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){	        	        	
 	        case R.id.action_update:
-	        	//////////////////// chamar NFC, verificar se está roteando
-	        	/// atualizar rota
+	        	navIntent = new Intent(context, NFCReaderController.class);
+	        	
+			try {
+				json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+				if(json.has("ROUTE")){
+					navIntent.putExtra("ROUTE_NFC", true);
+				}else {
+					navIntent.putExtra("UPDATE_NFC", true);
+				}
+				
+				
+			} catch (JSONException e) {				
+				e.printStackTrace();
+			}
+	        	
+	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_route:	        	
 	        	startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
@@ -414,24 +441,26 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        case R.id.action_info_environment:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
 	        	
-	        	if(!(environmentExtra == null)){
-		        	navIntent.putExtra("ENVIRONMENT", true);
-	        		navIntent.putExtra("ENVIRONMENT_NAME", environmentExtra.getEnvtName());
-		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentExtra.getEnvtInfo());
-		        	navIntent.putExtra("ENVIROMENT_ID", environmentExtra.getEnvtId());
-	        	}else {
+	        	if(environmentsExtra.size() > 0){
 	        		for(int i = 0; i < environmentsExtra.size(); i++){
 	        			if(environmentsExtra.get(i).getEnvtName().equals(currentMarker)){
 	        				navIntent.putExtra("ENVIRONMENT", true);
 	    	        		navIntent.putExtra("ENVIRONMENT_NAME", environmentsExtra.get(i).getEnvtName());
 	    		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentsExtra.get(i).getEnvtInfo());
-	    		        	navIntent.putExtra("ENVIROMENT_ID", environmentsExtra.get(i).getEnvtId());
+	    		        	navIntent.putExtra("ENVIRONMENT_ID", environmentsExtra.get(i).getEnvtId());
 	        			}
 	        		}
+	        	}else {
+	        		navIntent.putExtra("ENVIRONMENT", true);
+	        		navIntent.putExtra("ENVIRONMENT_NAME", environmentExtra.getEnvtName());
+		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentExtra.getEnvtInfo());
+		        	navIntent.putExtra("ENVIROMENT_ID", environmentExtra.getEnvtId());
 	        	}
-	        		        		        	
-	        	startProgressDialog(getString(R.string.progresst_info_environment), getString(R.string.progressm_info_environment));
-	        	new GetEnvironmentInfoFeedTask().execute(currentMarker);
+	        	
+	        	startActivity(navIntent);
+	        	
+	        	//startProgressDialog(getString(R.string.progresst_info_environment), getString(R.string.progressm_info_environment));
+	        	//new GetEnvironmentInfoFeedTask().execute(currentMarker);
 	        	return true;
 	        case R.id.action_info_place:	        	
 	        	navIntent = new Intent(context, ShowInfoController.class);
@@ -530,6 +559,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			    		    
 			    editor.putString("MAP_OVERLAY", json.toString());
 			    editor.commit();	
+			    
+			    route = true;
 			    placesExtra.add(places.get(position));
 				
 				alertDialog.dismiss();
@@ -583,6 +614,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    editor.putString("MAP_OVERLAY", json.toString());
     		    editor.commit();	
             	
+    		    route = false;
+    		    
             	setTo(latitude, longitude);
             	mapView.invalidate(); 
 				break;
@@ -632,6 +665,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    		    
     		    editor.putString("MAP_OVERLAY", json.toString());
     		    editor.commit();
+    		    
+    		    route = false;
                 
                 setTo(latitude, longitude);
                 mapView.invalidate();
@@ -683,6 +718,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			    editor.putString("MAP_OVERLAY", json.toString());
 			    editor.commit();
 				
+			    route = false;
+			    
 				setTo(latitude, longitude);
                 mapView.invalidate();
 				break;
@@ -733,6 +770,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    editor.putString("MAP_OVERLAY", json.toString());
     		    editor.commit();	
     			
+    		    route = false;
                 
                 setTo(latitude, longitude);
                 mapView.invalidate();
@@ -950,6 +988,25 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		environmentWSI = new EnvironmentWSI();
 	        		environment = environmentWSI.getEnvironmentByNfc(idNfc);
 	        		
+	        		editor = preferences.edit();
+	    		    jsonArray = new JSONArray();
+	    		    json = new JSONObject();
+	    		    try {
+	    				json.put("SHOWMAP", true);
+	    				json.put("ACTION", "ENVIRONMENT");
+	    				json.put("ENVIRONMENT_ID", place.getPlaceId());
+	    			    json.put("ENVIRONMENT_NAME", place.getPlaceName());
+	    			    json.put("ENVIRONMENT_INFO", place.getPlaceInfo());
+	    			    json.put("ENVIRONMENT_LATITUDE", place.getPlaceLatitude());
+	    			    json.put("ENVIRONMENT_LONGITUDE", place.getPlaceLongitude());
+	    			    jsonArray.put(json);
+	    			} catch (JSONException e) {				
+	    				e.printStackTrace();
+	    			}
+	    		    		    
+	    		    editor.putString("MAP_OVERLAY", json.toString());
+	    		    editor.commit();
+	        		
 	        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
 	            	currentEnvironment = environment.getEnvtName();
 	            	latitude = Double.parseDouble(environment.getEnvtLatitude());
@@ -964,6 +1021,28 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	if(nfcPlace){
 	        		placeWSI = new PlaceWSI();
 	        		place = placeWSI.getPlaceByNfc(idNfc);	        		
+	        		
+	        		placeExtra = place;
+	        		
+	        		editor = preferences.edit();
+	    		    jsonArray = new JSONArray();
+	    		    json = new JSONObject();
+	    		    try {
+	    				json.put("SHOWMAP", true);
+	    				json.put("ACTION", "PLACE");
+	    				json.put("PLACE_ID", place.getPlaceId());
+	    			    json.put("PLACE_NAME", place.getPlaceName());
+	    			    json.put("PLACE_INFO", place.getPlaceInfo());
+	    			    json.put("PLACE_LATITUDE", place.getPlaceLatitude());
+	    			    json.put("PLACE_LONGITUDE", place.getPlaceLongitude());
+	    			    jsonArray.put(json);
+	    			} catch (JSONException e) {				
+	    				e.printStackTrace();
+	    			}
+	    		    		    
+	    		    editor.putString("MAP_OVERLAY", json.toString());
+	    		    editor.commit();
+	        		
 	        		
 		        	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
 	            	currentPlace = place.getPlaceName();
@@ -1087,15 +1166,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 nodeMarkerRouteA.setTitle(routeA.get(0).toString());
                 addListenerOnMarkerPlace(nodeMarkerRouteA);
                 
-                currentActions.clear();
-            	currentActions.add("ROUTE");
-            	currentActions.add("PLACE_A");
-            	currentActions.add(routeA.get(0));
-            	currentActions.add("LATITUDE_A");
-            	currentActions.add(routeA.get(1));
-            	currentActions.add("LONGITUDE_A");
-            	currentActions.add(routeA.get(2));
-                
                 Drawable nodeIconB = getResources().getDrawable(R.drawable.marker_node_b);
                 node = road.mNodes.get(1);
 	            nodeMarkerRouteB = new Marker(mapView);
@@ -1106,13 +1176,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                 
                 mapView.getOverlays().add(nodeMarkerRouteA);
                 mapView.getOverlays().add(nodeMarkerRouteB);
-                
-                currentActions.add("PLACE_B");
-                currentActions.add(routeB.get(0));
-            	currentActions.add("LATITUDE_B");
-            	currentActions.add(routeB.get(1));
-            	currentActions.add("LONGITUDE_B");
-            	currentActions.add(routeB.get(2));
                 
                 for (int i = 0; i < environments.size(); i++) {
 					nodeMarkerEnvironments.add(new Marker(mapView));
@@ -1263,22 +1326,22 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 
     	@Override
     	protected Void doInBackground(String... placeName) {
-			try{
-				placeWSI = new PlaceWSI();
-				place = placeWSI.getPlace(encodeUrl(placeName[0]));	
+//			try{
+				//placeWSI = new PlaceWSI();
+				//place = placeWSI.getPlace(encodeUrl(placeName[0]));	
 				//navIntent.putExtra("INFO", place.getPlaceInfo());	
 				//navIntent.putExtra("PLACE_ID", place.getPlaceId());
 				
 				favoritePlaceWSI = new FavoritePlaceWSI();
-				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, place.getPlaceId());
+				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, navIntent.getIntExtra("PLACE_ID", 0));
 				if(favoritePlace.getFpId() != 0){
 					navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}finally {
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}finally {
 				
-			}
+//			}
 			return null;
 		}
 		
