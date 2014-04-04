@@ -3,6 +3,7 @@ package com.hereiam.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -166,16 +167,45 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         
         if(getIntent().hasExtra("NFC")){
         	nfc = getIntent().getBooleanExtra("NFC", true);
-        	if(getIntent().hasExtra("ROUTE_NFC")){
-        		routeNfc = getIntent().getBooleanExtra("ROUTE_NFC", true);
+        	if(getIntent().hasExtra("UPDATE_ROUTE_NFC")){
+        		routeNfc = getIntent().getBooleanExtra("UPDATE_ROUTE_NFC", true);
         	}
         	
-        	if(getIntent().hasExtra("UPDATE_NFC")){
-        		updateNfc = getIntent().getBooleanExtra("UPDATE_NFC", true);
+        	if(getIntent().hasExtra("UPDATE_POSITION_NFC")){
+        		updateNfc = getIntent().getBooleanExtra("UPDATE_POSITION_NFC", true);
         	}
-        }
-        
+        	
+        	       		
+    		idNfc = getIntent().getStringExtra("NFC_ID");
+    		if(idNfc.split("-").length == 3){        		
+        		nfcEnvironment = true;
+        		nfcPlace = false;
+        	}
+        	
+        	if(idNfc.split("-").length == 4){        		
+        		nfcEnvironment = false;
+        		nfcPlace = true;
+        	}
+    	}else {
+    		nfc = false;
+    	}
+                
         try {
+        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+        	
+        	if(nfc){
+        		if(nfcEnvironment){
+        			if(routeNfc){
+//        				alerta rota entre ambiente e local não é suportado
+        				nfc = false;
+        				nfcEnvironment = false;
+        				nfcPlace = false;
+        				updateNfc = false;
+        				idNfc = "";
+        			}
+        		}
+        	}
+        	
         	if(!nfc){
 	        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
 	
@@ -262,23 +292,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		mapOverlayPlaces.add(getJsonB);
 	        		
 	        		setTo(Double.parseDouble(getJsonA.getPlaceLatitude()), 
-	        				Double.parseDouble(getJsonA.getPlaceLongitude()));
-	        		
+	        				Double.parseDouble(getJsonA.getPlaceLongitude()));	        		
 	        	}else{
 	        		route = false;
 	        	}	        
-        	}else {        		
-        		idNfc = getIntent().getStringExtra("NFC_ID");
-        		if(idNfc.split("-").length == 3){        		
-	        		nfcEnvironment = true;
-	        		nfcPlace = false;
-	        	}
-	        	
-	        	if(idNfc.split("-").length == 4){        		
-	        		nfcEnvironment = false;
-	        		nfcPlace = true;
-	        	}
-        	}      
+        	}   
 		
 			mapView.invalidate();           
 	        startProgressDialog(getString(R.string.progresst_loading_map), getString(R.string.progressm_loading_map));
@@ -287,7 +305,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			e.printStackTrace();
 		}		        
     }	
-
 	
 	@Override
 	public void run(){
@@ -408,21 +425,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){	        	        	
 	        case R.id.action_update:
-	        	navIntent = new Intent(context, NFCReaderController.class);
-	        	
-			try {
-				json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
-				if(json.has("ROUTE")){
-					navIntent.putExtra("ROUTE_NFC", true);
-				}else {
-					navIntent.putExtra("UPDATE_NFC", true);
-				}
-				
-				
-			} catch (JSONException e) {				
-				e.printStackTrace();
-			}
-	        	
+	        	navIntent = new Intent(context, NFCReaderController.class);	        				
+	        	navIntent.putExtra("UPDATE_POSITION_NFC", true);
 	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_route:	        	
@@ -502,37 +506,41 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	new GetPlaceInfoFeedTask().execute(currentMarker);
 	        	return true;
 	        case R.id.action_route_stop:
-	        	route = false;
-	        	
+	        	route = false;	        	
 	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
 	        		if(mapView.getOverlays().get(i).getClass().equals(Polyline.class)){
 	        			mapView.getOverlays().remove(i);
 	        		}
 	        	}
-	        	
-	        	
-//	        	AQUI
-	        	
-	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
-	        		if(mapView.getOverlays().get(i).getClass().equals(Marker.class)){
-	        			Marker removeMarker = (Marker) mapView.getOverlays().get(i);
-	        			if(removeMarker.getTitle().equals(placesExtra.get(0).getPlaceName())){
-	        				mapView.getOverlays().remove(i);
-	        			}	        		
-	        		}
-	        	}
-	        	
-	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
-	        		if(mapView.getOverlays().get(i).getClass().equals(Marker.class)){
-	        			Marker removeMarker = (Marker) mapView.getOverlays().get(i);
-	        			if(removeMarker.getTitle().equals(placesExtra.get(1).getPlaceName())){
-	        				mapView.getOverlays().remove(i);
-	        			}
-	        			
-	        		}
-	        	}
-	        		
+	        		        	
+	        	int i = 0;
+	        	boolean removed = false;	        		        	
+	        	while (i < mapView.getOverlays().size()) {
+					removed = false;
+					
+					if(mapView.getOverlays().get(i).getClass().equals(Marker.class)){
+						Marker removeMarker = (Marker) mapView.getOverlays().get(i);
+						for(int x = 0; x < placesExtra.size(); x++){							
+							if(removeMarker.getTitle().equals(placesExtra.get(x).getPlaceName())){
+								mapView.getOverlays().remove(i);
+								removed = true;
+							}
+							if(removed){
+								x = placesExtra.size();
+							}
+						}						
+					}
+					if(!removed){
+						i++;
+					}					
+				}
+	        		        		
 	        	mapView.invalidate();
+	        	return true;
+	        case R.id.action_route_update:
+	        	navIntent = new Intent(context, NFCReaderController.class);	        				
+	        	navIntent.putExtra("UPDATE_ROUTE_NFC", true);
+	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_logout:
         		clearPreferences();
@@ -1035,76 +1043,136 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        }
 	        
 	        if(nfc){
-	        	getEnvironments();
-	        	if(nfcEnvironment){
-	        		environmentWSI = new EnvironmentWSI();
-	        		environment = environmentWSI.getEnvironmentByNfc(idNfc);
-	        		
-	        		editor = preferences.edit();
-	    		    jsonArray = new JSONArray();
-	    		    json = new JSONObject();
-	    		    try {
-	    				json.put("SHOWMAP", true);
-	    				json.put("ACTION", "ENVIRONMENT");
-	    				json.put("ENVIRONMENT_ID", environment.getEnvtId());
-	    			    json.put("ENVIRONMENT_NAME", environment.getEnvtName());
-	    			    json.put("ENVIRONMENT_INFO", environment.getEnvtInfo());
-	    			    json.put("ENVIRONMENT_LATITUDE", environment.getEnvtLatitude());
-	    			    json.put("ENVIRONMENT_LONGITUDE", environment.getEnvtLongitude());
-	    			    jsonArray.put(json);
-	    			} catch (JSONException e) {				
-	    				e.printStackTrace();
-	    			}
-	    		    		    
-	    		    editor.putString("MAP_OVERLAY", json.toString());
-	    		    editor.commit();
-	        		
-	        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
-	            	currentEnvironment = environment.getEnvtName();
-	            	latitude = Double.parseDouble(environment.getEnvtLatitude());
-	            	longitude = Double.parseDouble(environment.getEnvtLongitude());
-	                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
-	                nodeMarker.setIcon(nodeIconP);
-	                nodeMarker.setTitle(currentEnvironment); 
-	                addListenerOnMarkerPlace(nodeMarker);
-	                mapView.getOverlays().add(nodeMarker);	                
-	        	}
+	        	if(!routeNfc){
 	        	
-	        	if(nfcPlace){
+		        	getEnvironments();
+		        	if(nfcEnvironment){
+		        		environmentWSI = new EnvironmentWSI();
+		        		environment = environmentWSI.getEnvironmentByNfc(idNfc);
+		        		
+		        		editor = preferences.edit();
+		    		    jsonArray = new JSONArray();
+		    		    json = new JSONObject();
+		    		    try {
+		    				json.put("SHOWMAP", true);
+		    				json.put("ACTION", "ENVIRONMENT");
+		    				json.put("ENVIRONMENT_ID", environment.getEnvtId());
+		    			    json.put("ENVIRONMENT_NAME", environment.getEnvtName());
+		    			    json.put("ENVIRONMENT_INFO", environment.getEnvtInfo());
+		    			    json.put("ENVIRONMENT_LATITUDE", environment.getEnvtLatitude());
+		    			    json.put("ENVIRONMENT_LONGITUDE", environment.getEnvtLongitude());
+		    			    jsonArray.put(json);
+		    			} catch (JSONException e) {				
+		    				e.printStackTrace();
+		    			}
+		    		    		    
+		    		    editor.putString("MAP_OVERLAY", json.toString());
+		    		    editor.commit();
+		        		
+		        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
+		            	currentEnvironment = environment.getEnvtName();
+		            	latitude = Double.parseDouble(environment.getEnvtLatitude());
+		            	longitude = Double.parseDouble(environment.getEnvtLongitude());
+		                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+		                nodeMarker.setIcon(nodeIconP);
+		                nodeMarker.setTitle(currentEnvironment); 
+		                addListenerOnMarkerPlace(nodeMarker);
+		                mapView.getOverlays().add(nodeMarker);	                
+		        	}
+	        	
+		        	if(nfcPlace){
+		        		placeWSI = new PlaceWSI();
+		        		place = placeWSI.getPlaceByNfc(idNfc);	        		
+		        		
+		        		placeExtra = place;
+		        		
+		        		editor = preferences.edit();
+		    		    jsonArray = new JSONArray();
+		    		    json = new JSONObject();
+		    		    try {
+		    				json.put("SHOWMAP", true);
+		    				json.put("ACTION", "PLACE");
+		    				json.put("PLACE_ID", place.getPlaceId());
+		    			    json.put("PLACE_NAME", place.getPlaceName());
+		    			    json.put("PLACE_INFO", place.getPlaceInfo());
+		    			    json.put("PLACE_LATITUDE", place.getPlaceLatitude());
+		    			    json.put("PLACE_LONGITUDE", place.getPlaceLongitude());
+		    			    jsonArray.put(json);
+		    			} catch (JSONException e) {				
+		    				e.printStackTrace();
+		    			}
+		    		    		    
+		    		    editor.putString("MAP_OVERLAY", json.toString());
+		    		    editor.commit();
+		        		
+		        		
+			        	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
+		            	currentPlace = place.getPlaceName();
+		            	latitude = Double.parseDouble(place.getPlaceLatitude());
+		            	longitude = Double.parseDouble(place.getPlaceLongitude());
+		                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
+		                nodeMarker.setIcon(nodeIconP);
+		                nodeMarker.setTitle(currentPlace);  
+		                addListenerOnMarkerPlace(nodeMarker);
+		                mapView.getOverlays().add(nodeMarker);		                
+		        	}
+	        	}else{
 	        		placeWSI = new PlaceWSI();
-	        		place = placeWSI.getPlaceByNfc(idNfc);	        		
+	        		Place placeA = placeWSI.getPlaceByNfc(idNfc);	        		
+	        			        			        			        			        		        
+	        		try {
+	        			mapOverlayPlaces.clear();
+	        			mapOverlayPlaces.add(placeA);
+		        		
+		        		Place getJsonB = new Place();
+		        		getJsonB.setPlaceId(json.getInt("PLACE_B_ID"));
+		        		getJsonB.setPlaceName(json.getString("PLACE_B_NAME"));
+		        		getJsonB.setPlaceInfo(json.getString("PLACE_B_INFO"));
+		        		getJsonB.setPlaceLatitude(json.getString("PLACE_B_LATITUDE"));
+		        		getJsonB.setPlaceLongitude(json.getString("PLACE_B_LONGITUDE"));
+		        		
+		        		mapOverlayPlaces.add(getJsonB);
+		        		
+		        		editor = preferences.edit();
+					    
+					    JSONObject jsonRouteNfc = new JSONObject();
+					    try {
+					    	jsonRouteNfc.put("ROUTE", true);
+					    	jsonRouteNfc.put("ACTION", "ROUTE");
+					    	jsonRouteNfc.put("PLACE_A_ID", mapOverlayPlaces.get(0).getPlaceId());
+					    	jsonRouteNfc.put("PLACE_A_NAME", mapOverlayPlaces.get(0).getPlaceName());
+					    	jsonRouteNfc.put("PLACE_A_INFO", mapOverlayPlaces.get(0).getPlaceInfo());			    
+					    	jsonRouteNfc.put("PLACE_A_LATITUDE", mapOverlayPlaces.get(0).getPlaceLatitude());
+					    	jsonRouteNfc.put("PLACE_A_LONGITUDE", mapOverlayPlaces.get(0).getPlaceLongitude());
+						    
+					    	jsonRouteNfc.put("PLACE_B_ID", mapOverlayPlaces.get(1).getPlaceId());
+					    	jsonRouteNfc.put("PLACE_B_NAME", mapOverlayPlaces.get(1).getPlaceName());
+					    	jsonRouteNfc.put("PLACE_B_INFO", mapOverlayPlaces.get(1).getPlaceInfo());			    
+					    	jsonRouteNfc.put("PLACE_B_LATITUDE", mapOverlayPlaces.get(1).getPlaceLatitude());
+					    	jsonRouteNfc.put("PLACE_B_LONGITUDE", mapOverlayPlaces.get(1).getPlaceLongitude());
+						    
+						} catch (JSONException e) {				
+							e.printStackTrace();
+						}
+					    		    
+					    editor.putString("MAP_OVERLAY", jsonRouteNfc.toString());
+					    editor.commit();	
+		        		
+	        		} catch (JSONException e) {
+						
+						e.printStackTrace();
+					}
+	        		setTo(Double.parseDouble(placeA.getPlaceLatitude()), 
+	        				Double.parseDouble(placeA.getPlaceLongitude()));
+	        			        		
+	        		getEnvironments();
 	        		
-	        		placeExtra = place;
-	        		
-	        		editor = preferences.edit();
-	    		    jsonArray = new JSONArray();
-	    		    json = new JSONObject();
-	    		    try {
-	    				json.put("SHOWMAP", true);
-	    				json.put("ACTION", "PLACE");
-	    				json.put("PLACE_ID", place.getPlaceId());
-	    			    json.put("PLACE_NAME", place.getPlaceName());
-	    			    json.put("PLACE_INFO", place.getPlaceInfo());
-	    			    json.put("PLACE_LATITUDE", place.getPlaceLatitude());
-	    			    json.put("PLACE_LONGITUDE", place.getPlaceLongitude());
-	    			    jsonArray.put(json);
-	    			} catch (JSONException e) {				
-	    				e.printStackTrace();
-	    			}
-	    		    		    
-	    		    editor.putString("MAP_OVERLAY", json.toString());
-	    		    editor.commit();
-	        		
-	        		
-		        	nodeIconP = getResources().getDrawable(R.drawable.marker_node);
-	            	currentPlace = place.getPlaceName();
-	            	latitude = Double.parseDouble(place.getPlaceLatitude());
-	            	longitude = Double.parseDouble(place.getPlaceLongitude());
-	                nodeMarker.setPosition(new GeoPoint(latitude, longitude));
-	                nodeMarker.setIcon(nodeIconP);
-	                nodeMarker.setTitle(currentPlace);  
-	                addListenerOnMarkerPlace(nodeMarker);
-	                mapView.getOverlays().add(nodeMarker);		                
+	        		GeoPoint positionA = new GeoPoint(Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLatitude()), 
+	        				Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLongitude()));
+	        		GeoPoint positionB = new GeoPoint(Double.parseDouble(mapOverlayPlaces.get(1).getPlaceLatitude()), 
+	        				Double.parseDouble(mapOverlayPlaces.get(1).getPlaceLongitude()));
+	            	
+	            	getRoute(positionA, positionB);	  
 	        	}
 	        }
 	        
