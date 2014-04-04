@@ -127,6 +127,9 @@
 	<string name="alertt_delete_favorites_error">Erro ao deletar Local Favorito</string>
 	<string name="alertm_delete_favorites_error">Houve um erro ao deletar o local aos favoritos, por favor tente mais tarde.</string>
 	
+	<string name="alertt_nfc_environment_place_error">Erro ao atualizar rota</string>
+	<string name="alertm_nfc_environment_place_error">Houve um erro ao atualizar a rota, por favor realize leituras de etiquetas referente a Locais.</string>
+	
 	<string name="alertt_environment_list">Lista de Ambientes</string>
 	<string name="alertt_place_list">Lista de Locais</string>
 	<string name="alertt_route_A_list">Ponto A</string>

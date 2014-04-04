@@ -108,11 +108,11 @@ public class NFCReaderController extends BaseActivity{
     	navIntent = new Intent(this, MapViewController.class);
         navIntent.putExtra("NFC", true);
         navIntent.putExtra("NFC_ID", nfcId);
-        if(mapIntent.hasExtra("ROUTE_NFC")){
-        	navIntent.putExtra("ROUTE_NFC", mapIntent.getBooleanExtra("ROUTE_NFC", true));
+        if(mapIntent.hasExtra("UPDATE_ROUTE_NFC")){
+        	navIntent.putExtra("UPDATE_ROUTE_NFC", mapIntent.getBooleanExtra("UPDATE_ROUTE_NFC", true));
         }
-        if(mapIntent.hasExtra("UPDATE_NFC")){
-        	navIntent.putExtra("UPDATE_NFC", mapIntent.getBooleanExtra("UPDATE_NFC", true));
+        if(mapIntent.hasExtra("UPDATE_POSITION_NFC")){
+        	navIntent.putExtra("UPDATE_POSITION_NFC", mapIntent.getBooleanExtra("UPDATE_POSITION_NFC", true));
         }
 //        this.finish();
         

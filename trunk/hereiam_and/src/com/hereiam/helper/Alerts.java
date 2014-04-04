@@ -19,6 +19,7 @@ public class Alerts {
 	private final static int WITHOUTFAVORITES = 9;
 	private final static int ADDFAVORITESERROR = 10;
 	private final static int DELETEFAVORITESERROR = 11;
+	private final static int NFCENVIRONMENTPLACEERROR = 12;
 	//private final static int WSTIMEOUT = 4;
 	//private final static int INVALIDEMAIL = 8;
 	// private final static int NEWPASSWORDNOTCONFIRMED = 9;
@@ -73,6 +74,10 @@ public class Alerts {
 		case DELETEFAVORITESERROR:
 			alert.setTitle(R.string.alertt_delete_favorites_error);
 			alert.setMessage(R.string.alertm_delete_favorites_error);
+			break;
+		case NFCENVIRONMENTPLACEERROR:
+			alert.setTitle(R.string.alertt_nfc_environment_place_error);
+			alert.setMessage(R.string.alertm_nfc_environment_place_error);
 			break;
 			//case WSTIMEOUT:
 			//alert.setTitle(R.string.msgTimeOutTitle);
