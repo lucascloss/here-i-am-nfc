@@ -109,7 +109,7 @@ public class ShowInfoController extends BaseActivity{
 		}
 		
 		if(getIntent().hasExtra("PLACE")){
-			if(getIntent().hasExtra("FAVORITE_ID")){
+			if(getIntent().hasExtra("IS_FAVORITE")){
 				MenuItem menuAddFavorite = menu.findItem(R.id.action_add_favorite);
 				menuAddFavorite.setVisible(false);
 				MenuItem menuDeleteFavorite = menu.findItem(R.id.action_delete_favorite);
@@ -123,21 +123,22 @@ public class ShowInfoController extends BaseActivity{
 	public void onBackPressed(){
 		navIntent = new Intent(context, MapViewController.class);							
 		
-		if(getIntent().hasExtra("DELETE")){
+		/*if(getIntent().hasExtra("DELETE")){
 			editor = preferences.edit();
 		    
 		    json = new JSONObject();
 		   
 		    try {
 		    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));	
-
-		    	json.put("SHOWMAP", true);
-				json.put("ACTION", "PLACE");
-				json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
-			    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
-			    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
-			    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
-			    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
+		    	if(oldJson.get("ACTION").equals("PLACE")){
+			    	json.put("SHOWMAP", true);
+					json.put("ACTION", "PLACE");
+					json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
+				    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
+				    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
+				    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
+				    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
+		    	}
 			} catch (JSONException e) {				
 				e.printStackTrace();
 			}
@@ -160,14 +161,14 @@ public class ShowInfoController extends BaseActivity{
 			    json.put("FAVORITE_NAME", oldJson.getString("PLACE_NAME"));
 			    json.put("FAVORITE_INFO", oldJson.getString("PLACE_INFO"));			    
 			    json.put("FAVORITE_LATITUDE", oldJson.getString("PLACE_LATITUDE"));
-			    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));
+			    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));			    
 			} catch (JSONException e) {				
 				e.printStackTrace();
 			}
 		    		    
 		    editor.putString("MAP_OVERLAY", json.toString());
 		    editor.commit();
-		}
+		}*/
 		startActivity(navIntent);		
 		//super.onBackPressed();		
 	}
@@ -197,8 +198,8 @@ public class ShowInfoController extends BaseActivity{
 	    			navIntent.putExtra("PLACE_NAME", placeName);
 	    			navIntent.putExtra("PLACE_ID", placeId);
 	    			navIntent.putExtra("PLACE_INFO", placeInfo);
-	    			if(getIntent().hasExtra("FAVORITE_ID")){
-	    				navIntent.putExtra("FAVORITE_ID", getIntent().getIntExtra("FAVORITE_ID", 0));
+	    			if(getIntent().hasExtra("IS_FAVORITE")){
+	    				navIntent.putExtra("IS_FAVORITE", true);
 	    			}
 	    		}	    		
 	        	
@@ -239,8 +240,29 @@ public class ShowInfoController extends BaseActivity{
 	        		navIntent.putExtra("PLACE_NAME", placeName);
 	        		navIntent.putExtra("PLACE_INFO", placeInfo);	
 					navIntent.putExtra("PLACE_ID", placeId);
-					navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());	
+					navIntent.putExtra("IS_FAVORITE", true);
 					navIntent.putExtra("ADD", true);
+					
+					editor = preferences.edit();
+				    
+				    json = new JSONObject();
+				   
+				    try {
+				    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+				    	
+						json.put("SHOWMAP", true);
+						json.put("ACTION", "FAVORITE");
+						json.put("FAVORITE_ID", oldJson.getInt("PLACE_ID"));
+					    json.put("FAVORITE_NAME", oldJson.getString("PLACE_NAME"));
+					    json.put("FAVORITE_INFO", oldJson.getString("PLACE_INFO"));			    
+					    json.put("FAVORITE_LATITUDE", oldJson.getString("PLACE_LATITUDE"));
+					    json.put("FAVORITE_LONGITUDE", oldJson.getString("PLACE_LONGITUDE"));			    
+					} catch (JSONException e) {				
+						e.printStackTrace();
+					}
+				    		    
+				    editor.putString("MAP_OVERLAY", json.toString());
+				    editor.commit();
         		}
         		
         		startActivity(navIntent);
@@ -280,6 +302,28 @@ public class ShowInfoController extends BaseActivity{
 	        		navIntent.putExtra("PLACE_INFO", placeInfo);	
 					navIntent.putExtra("PLACE_ID", placeId);
 					navIntent.putExtra("DELETE", true);
+					
+					editor = preferences.edit();
+				    
+				    json = new JSONObject();
+				   
+				    try {
+				    	oldJson = new JSONObject(preferences.getString("MAP_OVERLAY", ""));	
+				    	
+				    	json.put("SHOWMAP", true);
+						json.put("ACTION", "PLACE");
+						json.put("PLACE_ID", oldJson.getInt("FAVORITE_ID"));
+					    json.put("PLACE_NAME", oldJson.getString("FAVORITE_NAME"));
+					    json.put("PLACE_INFO", oldJson.getString("FAVORITE_INFO"));			    
+					    json.put("PLACE_LATITUDE", oldJson.getString("FAVORITE_LATITUDE"));
+					    json.put("PLACE_LONGITUDE", oldJson.getString("FAVORITE_LONGITUDE"));
+				    	
+					} catch (JSONException e) {				
+						e.printStackTrace();
+					}
+				    		    
+				    editor.putString("MAP_OVERLAY", json.toString());
+				    editor.commit();
         		}
 					
         		startActivity(navIntent);
