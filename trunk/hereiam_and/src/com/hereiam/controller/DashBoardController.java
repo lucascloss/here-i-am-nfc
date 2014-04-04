@@ -308,7 +308,7 @@ public class DashBoardController extends BaseActivity implements OnItemClickList
 			    json.put("FAVORITE_NAME", places.get(position).getPlaceName());
 			    json.put("FAVORITE_INFO", places.get(position).getPlaceInfo());			    
 			    json.put("FAVORITE_LATITUDE", places.get(position).getPlaceLatitude());
-			    json.put("FAVORITE_LONGITUDE", places.get(position).getPlaceLongitude());
+			    json.put("FAVORITE_LONGITUDE", places.get(position).getPlaceLongitude());			    
 			    jsonArray.put(json);
 			} catch (JSONException e) {				
 				e.printStackTrace();

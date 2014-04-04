@@ -20,6 +20,7 @@ import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
@@ -175,99 +176,99 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
         
         try {
-        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
-
-        	if(json.has("SHOWMAP")){
-        		showMap = json.getBoolean("SHOWMAP");
-        	}else{
-        		showMap = false;
-        	}
-        	       	        		        	       
-	        if(showMap){
-	        	action = json.getString("ACTION");
-	        	if(action.equals("ENVIRONMENT")){
-	        		mapOverlayEnvironment = new Environment();
-	        		mapOverlayEnvironment.setEnvtId(json.getInt("ENVIRONMENT_ID"));
-	        		mapOverlayEnvironment.setEnvtName(json.getString("ENVIRONMENT_NAME"));
-	        		mapOverlayEnvironment.setEnvtInfo(json.getString("ENVIRONMENT_INFO"));
-	        		mapOverlayEnvironment.setEnvtLatitude(json.getString("ENVIRONMENT_LATITUDE"));
-	        		mapOverlayEnvironment.setEnvtLongitude(json.getString("ENVIRONMENT_LONGITUDE"));
-	        		environmentExtra = mapOverlayEnvironment;
-	        		setTo(Double.parseDouble(mapOverlayEnvironment.getEnvtLatitude()), 
-	        				Double.parseDouble(mapOverlayEnvironment.getEnvtLongitude()));
+        	if(!nfc){
+	        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+	
+	        	if(json.has("SHOWMAP")){
+	        		showMap = json.getBoolean("SHOWMAP");
+	        	}else{
+	        		showMap = false;
 	        	}
-	        	
-	        	if(action.equals("PLACE")){
-	        		mapOverlayPlace = new Place();
-	        		mapOverlayPlace.setPlaceId(json.getInt("PLACE_ID"));
-	        		mapOverlayPlace.setPlaceName(json.getString("PLACE_NAME"));
-	        		mapOverlayPlace.setPlaceInfo(json.getString("PLACE_INFO"));
-	        		mapOverlayPlace.setPlaceLatitude(json.getString("PLACE_LATITUDE"));
-	        		mapOverlayPlace.setPlaceLongitude(json.getString("PLACE_LONGITUDE"));
-	        		placeExtra = mapOverlayPlace;
+	        	       	        		        	       
+		        if(showMap){
+		        	action = json.getString("ACTION");
+		        	if(action.equals("ENVIRONMENT")){
+		        		mapOverlayEnvironment = new Environment();
+		        		mapOverlayEnvironment.setEnvtId(json.getInt("ENVIRONMENT_ID"));
+		        		mapOverlayEnvironment.setEnvtName(json.getString("ENVIRONMENT_NAME"));
+		        		mapOverlayEnvironment.setEnvtInfo(json.getString("ENVIRONMENT_INFO"));
+		        		mapOverlayEnvironment.setEnvtLatitude(json.getString("ENVIRONMENT_LATITUDE"));
+		        		mapOverlayEnvironment.setEnvtLongitude(json.getString("ENVIRONMENT_LONGITUDE"));
+		        		environmentExtra = mapOverlayEnvironment;
+		        		setTo(Double.parseDouble(mapOverlayEnvironment.getEnvtLatitude()), 
+		        				Double.parseDouble(mapOverlayEnvironment.getEnvtLongitude()));
+		        	}
+		        	
+		        	if(action.equals("PLACE")){
+		        		mapOverlayPlace = new Place();
+		        		mapOverlayPlace.setPlaceId(json.getInt("PLACE_ID"));
+		        		mapOverlayPlace.setPlaceName(json.getString("PLACE_NAME"));
+		        		mapOverlayPlace.setPlaceInfo(json.getString("PLACE_INFO"));
+		        		mapOverlayPlace.setPlaceLatitude(json.getString("PLACE_LATITUDE"));
+		        		mapOverlayPlace.setPlaceLongitude(json.getString("PLACE_LONGITUDE"));
+		        		placeExtra = mapOverlayPlace;
+		        		
+		        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
+		        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
+		        	}
+		        	
+		        	if(action.equals("IMPORTANT")){
+		        		mapOverlayPlace = new Place();
+		        		mapOverlayPlace.setPlaceId(json.getInt("IMPORTANT_ID"));
+		        		mapOverlayPlace.setPlaceName(json.getString("IMPORTANT_NAME"));
+		        		mapOverlayPlace.setPlaceInfo(json.getString("IMPORTANT_INFO"));
+		        		mapOverlayPlace.setPlaceLatitude(json.getString("IMPORTANT_LATITUDE"));
+		        		mapOverlayPlace.setPlaceLongitude(json.getString("IMPORTANT_LONGITUDE"));
+		        		placeExtra = mapOverlayPlace;
+		        		
+		        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
+		        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
+		        	}
+		        	
+		        	if(action.equals("FAVORITE")){
+		        		mapOverlayPlace = new Place();
+		        		mapOverlayPlace.setPlaceId(json.getInt("FAVORITE_ID"));
+		        		mapOverlayPlace.setPlaceName(json.getString("FAVORITE_NAME"));
+		        		mapOverlayPlace.setPlaceInfo(json.getString("FAVORITE_INFO"));
+		        		mapOverlayPlace.setPlaceLatitude(json.getString("FAVORITE_LATITUDE"));
+		        		mapOverlayPlace.setPlaceLongitude(json.getString("FAVORITE_LONGITUDE"));
+		        		placeExtra = mapOverlayPlace;
+		        		
+		        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
+		        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
+		        	}
+		        }
+		        
+		        if(json.has("ROUTE")){
+	        		route = json.getBoolean("ROUTE");
+	        		action = json.getString("ACTION");
+	        		        		
+	        		Place getJsonA = new Place();
+	        		getJsonA.setPlaceId(json.getInt("PLACE_A_ID"));
+	        		getJsonA.setPlaceName(json.getString("PLACE_A_NAME"));
+	        		getJsonA.setPlaceInfo(json.getString("PLACE_A_INFO"));
+	        		getJsonA.setPlaceLatitude(json.getString("PLACE_A_LATITUDE"));
+	        		getJsonA.setPlaceLongitude(json.getString("PLACE_A_LONGITUDE"));
 	        		
-	        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
-	        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
-	        	}
-	        	
-	        	if(action.equals("IMPORTANT")){
-	        		mapOverlayPlace = new Place();
-	        		mapOverlayPlace.setPlaceId(json.getInt("IMPORTANT_ID"));
-	        		mapOverlayPlace.setPlaceName(json.getString("IMPORTANT_NAME"));
-	        		mapOverlayPlace.setPlaceInfo(json.getString("IMPORTANT_INFO"));
-	        		mapOverlayPlace.setPlaceLatitude(json.getString("IMPORTANT_LATITUDE"));
-	        		mapOverlayPlace.setPlaceLongitude(json.getString("IMPORTANT_LONGITUDE"));
-	        		placeExtra = mapOverlayPlace;
+	        		mapOverlayPlaces.add(getJsonA);
 	        		
-	        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
-	        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
-	        	}
-	        	
-	        	if(action.equals("FAVORITE")){
-	        		mapOverlayPlace = new Place();
-	        		mapOverlayPlace.setPlaceId(json.getInt("FAVORITE_ID"));
-	        		mapOverlayPlace.setPlaceName(json.getString("FAVORITE_NAME"));
-	        		mapOverlayPlace.setPlaceInfo(json.getString("FAVORITE_INFO"));
-	        		mapOverlayPlace.setPlaceLatitude(json.getString("FAVORITE_LATITUDE"));
-	        		mapOverlayPlace.setPlaceLongitude(json.getString("FAVORITE_LONGITUDE"));
-	        		placeExtra = mapOverlayPlace;
+	        		Place getJsonB = new Place();
+	        		getJsonB.setPlaceId(json.getInt("PLACE_B_ID"));
+	        		getJsonB.setPlaceName(json.getString("PLACE_B_NAME"));
+	        		getJsonB.setPlaceInfo(json.getString("PLACE_B_INFO"));
+	        		getJsonB.setPlaceLatitude(json.getString("PLACE_B_LATITUDE"));
+	        		getJsonB.setPlaceLongitude(json.getString("PLACE_B_LONGITUDE"));
 	        		
-	        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
-	        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
-	        	}
-	        }
-	        
-	        if(json.has("ROUTE")){
-        		route = json.getBoolean("ROUTE");
-        		action = json.getString("ACTION");
-        		        		
-        		Place getJsonA = new Place();
-        		getJsonA.setPlaceId(json.getInt("PLACE_A_ID"));
-        		getJsonA.setPlaceName(json.getString("PLACE_A_NAME"));
-        		getJsonA.setPlaceInfo(json.getString("PLACE_A_INFO"));
-        		getJsonA.setPlaceLatitude(json.getString("PLACE_A_LATITUDE"));
-        		getJsonA.setPlaceLongitude(json.getString("PLACE_A_LONGITUDE"));
-        		
-        		mapOverlayPlaces.add(getJsonA);
-        		
-        		Place getJsonB = new Place();
-        		getJsonB.setPlaceId(json.getInt("PLACE_B_ID"));
-        		getJsonB.setPlaceName(json.getString("PLACE_B_NAME"));
-        		getJsonB.setPlaceInfo(json.getString("PLACE_B_INFO"));
-        		getJsonB.setPlaceLatitude(json.getString("PLACE_B_LATITUDE"));
-        		getJsonB.setPlaceLongitude(json.getString("PLACE_B_LONGITUDE"));
-        		
-        		mapOverlayPlaces.add(getJsonB);
-        		
-        		setTo(Double.parseDouble(getJsonA.getPlaceLatitude()), 
-        				Double.parseDouble(getJsonA.getPlaceLongitude()));
-        		
-        	}else{
-        		route = false;
-        	}	        
-	        
-	        if(nfc){        		
-        		idNfc = getIntent().getStringExtra("NFC");
+	        		mapOverlayPlaces.add(getJsonB);
+	        		
+	        		setTo(Double.parseDouble(getJsonA.getPlaceLatitude()), 
+	        				Double.parseDouble(getJsonA.getPlaceLongitude()));
+	        		
+	        	}else{
+	        		route = false;
+	        	}	        
+        	}else {        		
+        		idNfc = getIntent().getStringExtra("NFC_ID");
         		if(idNfc.split("-").length == 3){        		
 	        		nfcEnvironment = true;
 	        		nfcPlace = false;
@@ -277,9 +278,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		nfcEnvironment = false;
 	        		nfcPlace = true;
 	        	}
-        	}else{
-        		nfc = false;
-        	}	        
+        	}      
 		
 			mapView.invalidate();           
 	        startProgressDialog(getString(R.string.progresst_loading_map), getString(R.string.progressm_loading_map));
@@ -388,6 +387,24 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     }
 	
 	@Override
+
+	public boolean onPrepareOptionsMenu(Menu menu) {
+
+		if(route){
+			MenuItem menuStopRoute = menu.findItem(R.id.action_route_stop);
+			menuStopRoute.setVisible(true);
+			MenuItem menuUpdateRoute = menu.findItem(R.id.action_route_update);
+			menuUpdateRoute.setVisible(true);
+		} else {
+			MenuItem menuStopRoute = menu.findItem(R.id.action_route_stop);
+			menuStopRoute.setVisible(false);
+			MenuItem menuUpdateRoute = menu.findItem(R.id.action_route_update);
+			menuUpdateRoute.setVisible(false);
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){	        	        	
 	        case R.id.action_update:
@@ -483,6 +500,39 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		        	
 	        	startProgressDialog(getString(R.string.progresst_info_place), getString(R.string.progressm_info_place));
 	        	new GetPlaceInfoFeedTask().execute(currentMarker);
+	        	return true;
+	        case R.id.action_route_stop:
+	        	route = false;
+	        	
+	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
+	        		if(mapView.getOverlays().get(i).getClass().equals(Polyline.class)){
+	        			mapView.getOverlays().remove(i);
+	        		}
+	        	}
+	        	
+	        	
+//	        	AQUI
+	        	
+	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
+	        		if(mapView.getOverlays().get(i).getClass().equals(Marker.class)){
+	        			Marker removeMarker = (Marker) mapView.getOverlays().get(i);
+	        			if(removeMarker.getTitle().equals(placesExtra.get(0).getPlaceName())){
+	        				mapView.getOverlays().remove(i);
+	        			}	        		
+	        		}
+	        	}
+	        	
+	        	for(int i = 0; i < mapView.getOverlays().size(); i++){
+	        		if(mapView.getOverlays().get(i).getClass().equals(Marker.class)){
+	        			Marker removeMarker = (Marker) mapView.getOverlays().get(i);
+	        			if(removeMarker.getTitle().equals(placesExtra.get(1).getPlaceName())){
+	        				mapView.getOverlays().remove(i);
+	        			}
+	        			
+	        		}
+	        	}
+	        		
+	        	mapView.invalidate();
 	        	return true;
 	        case R.id.action_logout:
         		clearPreferences();
@@ -921,10 +971,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		}
         	}
         	        	
-        	if(mapView.getZoomLevel() > 18){            	
+        	if(mapView.getZoomLevel() > 18){   
+        		BoundingBoxE6 boundingBox = new BoundingBoxE6(0, 0, 0, 0);
+        		mapView.setScrollableAreaLimit(boundingBox);
         	}
         return false;
-        }        
+        }           
     }
     
     private class InitialFeedTask extends AsyncTask<Void, Void, Void>{
@@ -994,11 +1046,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	    		    try {
 	    				json.put("SHOWMAP", true);
 	    				json.put("ACTION", "ENVIRONMENT");
-	    				json.put("ENVIRONMENT_ID", place.getPlaceId());
-	    			    json.put("ENVIRONMENT_NAME", place.getPlaceName());
-	    			    json.put("ENVIRONMENT_INFO", place.getPlaceInfo());
-	    			    json.put("ENVIRONMENT_LATITUDE", place.getPlaceLatitude());
-	    			    json.put("ENVIRONMENT_LONGITUDE", place.getPlaceLongitude());
+	    				json.put("ENVIRONMENT_ID", environment.getEnvtId());
+	    			    json.put("ENVIRONMENT_NAME", environment.getEnvtName());
+	    			    json.put("ENVIRONMENT_INFO", environment.getEnvtInfo());
+	    			    json.put("ENVIRONMENT_LATITUDE", environment.getEnvtLatitude());
+	    			    json.put("ENVIRONMENT_LONGITUDE", environment.getEnvtLongitude());
 	    			    jsonArray.put(json);
 	    			} catch (JSONException e) {				
 	    				e.printStackTrace();
@@ -1335,7 +1387,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				favoritePlaceWSI = new FavoritePlaceWSI();
 				favoritePlace = favoritePlaceWSI.findFavoritePlace(userId, navIntent.getIntExtra("PLACE_ID", 0));
 				if(favoritePlace.getFpId() != 0){
-					navIntent.putExtra("FAVORITE_ID", favoritePlace.getFpId());
+					navIntent.putExtra("IS_FAVORITE", true);
 				}
 //			} catch (UnsupportedEncodingException e) {
 //				e.printStackTrace();

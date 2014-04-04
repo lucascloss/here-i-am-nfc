@@ -179,8 +179,8 @@ public class CalendarController extends BaseActivity implements OnClickListener,
     		navIntent.putExtra("PLACE_NAME", placeName);
         	navIntent.putExtra("PLACE_INFO", placeInfo);
         	navIntent.putExtra("PLACE_ID", placeId);
-        	if(getIntent().hasExtra("FAVORITE_ID")){
-        		navIntent.putExtra("FAVORITE_ID", getIntent().getIntExtra("FAVORITE_ID", 0));
+        	if(getIntent().hasExtra("IS_FAVORITE")){
+        		navIntent.putExtra("IS_FAVORITE", true);
         	}
 		}		
 		startActivity(navIntent);

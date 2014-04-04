@@ -35,8 +35,10 @@
     
     <string name="map_info_environment">info do ambiente</string>
     <string name="map_info_place">info do local</string>
-    <string name="map_update">atualizar posição</string>
+    <string name="map_update">atualizar posição</string>    
     <string name="map_route">montar rota</string>
+    <string name="map_route_update">atualizar rota</string>
+    <string name="map_route_stop">parar rota</string>
     <string name="map_list_environments">listar ambientes</string>    
     <string name="map_list_places">listar locais</string>
     <string name="map_list_favorites">listar favoritos</string>
