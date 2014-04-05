@@ -130,6 +130,9 @@
 	<string name="alertt_nfc_environment_place_error">Erro ao atualizar rota</string>
 	<string name="alertm_nfc_environment_place_error">Houve um erro ao atualizar a rota, por favor realize leituras de etiquetas referente a Locais.</string>
 	
+	<string name="alertt_nfc_duplicate_place_error">Erro ao atualizar rota</string>
+	<string name="alertm_nfc_duplicate_place_error">Os pontos A e B são iguais, por favor selecione locais distintos.</string>
+	
 	<string name="alertt_environment_list">Lista de Ambientes</string>
 	<string name="alertt_place_list">Lista de Locais</string>
 	<string name="alertt_route_A_list">Ponto A</string>

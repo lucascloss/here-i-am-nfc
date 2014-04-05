@@ -57,6 +57,7 @@ import android.widget.ListView;
 import com.hereiam.R;
 import com.hereiam.controller.activity.BaseActivity;
 import com.hereiam.controller.adapter.AlertDialogAdapter;
+import com.hereiam.helper.Alerts;
 import com.hereiam.model.Environment;
 import com.hereiam.model.FavoritePlace;
 import com.hereiam.model.Place;
@@ -112,13 +113,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private ArrayList<String> routeB = new ArrayList<String>();
 	private FavoritePlaceWSI favoritePlaceWSI;
 	private FavoritePlace favoritePlace;
-	private ArrayList<String> currentActions = new ArrayList<String>();
+//	private ArrayList<String> currentActions = new ArrayList<String>();
 	private String idNfc;
-	private boolean nfc;
-	private boolean nfcEnvironment;
-	private boolean nfcPlace;
-	private boolean updateNfc;
-	private boolean routeNfc;
+	private boolean nfc = false;
+	private boolean nfcEnvironment = false;
+	private boolean nfcPlace = false;
+	private boolean updateNfc = false;
+	private boolean routeNfc = false;
 	private SharedPreferences preferences;
 	private SharedPreferences.Editor editor;
 	private JSONArray jsonArray;
@@ -131,10 +132,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private Place placeExtra;
 	private ArrayList<Place> mapOverlayPlaces = new ArrayList<Place>();
 	private ArrayList<Place> placesExtra = new ArrayList<Place>();
+	private boolean selectedPlace = false;
 	
-	private NfcManager nfcManager;
-    private NfcAdapter nfcAdapter;
-    private PendingIntent pendingIntent;
+//	private NfcManager nfcManager;
+//  private NfcAdapter nfcAdapter;
+//  private PendingIntent pendingIntent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -190,23 +192,23 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		nfc = false;
     	}
                 
-        try {
-        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+        try {        	
         	
         	if(nfc){
         		if(nfcEnvironment){
-        			if(routeNfc){
-//        				alerta rota entre ambiente e local não é suportado
+        			if(routeNfc){        				
         				nfc = false;
         				nfcEnvironment = false;
         				nfcPlace = false;
         				updateNfc = false;
         				idNfc = "";
+        				Alerts.createErrorAlert(12, context);
         			}
         		}
         	}
         	
         	if(!nfc){
+        		
 	        	json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
 	
 	        	if(json.has("SHOWMAP")){
@@ -429,9 +431,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	navIntent.putExtra("UPDATE_POSITION_NFC", true);
 	        	startActivity(navIntent);
 	        	return true;
-	        case R.id.action_route:	        	
-	        	startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
-	        	createAlertDialog(ALERT_ROUTE_A);
+	        case R.id.action_route:	        		        	
+	        	if(!selectedPlace){
+	        		startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
+	        		createAlertDialog(ALERT_ROUTE_A);
+	        	}
 	        	selectedMenu = ALERT_ROUTE_A;
 	            new SelectPlaceRouteAAlertDialogFeedTask().execute();
 	        	return true;
@@ -583,11 +587,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				}
 			    		    
 			    editor.putString("MAP_OVERLAY", json.toString());
-			    //editor.commit();	
 				placesExtra.add(places.get(position));
 				listItens.remove(position);
 				places.remove(position);			
-				alertDialog.dismiss();				
+				alertDialog.dismiss();
+				
 				
 				selectedMenu = ALERT_ROUTE_B;
 				createAlertDialog(ALERT_ROUTE_B);	
@@ -855,7 +859,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
        
     public void addListenerOnMarkerPlace(Marker marker){
     	marker.setOnMarkerClickListener(new OnMarkerClickListener() {
-            
+
 			@Override
 			public boolean onMarkerClick(final Marker arg0, final MapView arg1) {								
 				//arg0.showInfoWindow();
@@ -863,6 +867,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 				menuPlace.setTitle("INFO - " + arg0.getTitle());
 				currentMarker = arg0.getTitle();
 				menuPlace.setVisible(true);
+				selectedPlace = true;
 				return false;
 			}
         });
@@ -926,6 +931,42 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         });
     }
     
+    public void getRouteByMarkerAndAlert(){ 
+	    if(routeA.size() > 1) {
+			routeA.clear();
+		}
+	
+		routeA.add(place.getPlaceName());
+		routeA.add(place.getPlaceLatitude());
+		routeA.add(place.getPlaceLongitude());
+		
+		editor = preferences.edit();
+	    
+	    json = new JSONObject();
+	    try {
+			json.put("ROUTE", true);
+			json.put("ACTION", "ROUTE");
+			json.put("PLACE_A_ID", place.getPlaceId());
+		    json.put("PLACE_A_NAME", place.getPlaceName());
+		    json.put("PLACE_A_INFO", place.getPlaceInfo());			    
+		    json.put("PLACE_A_LATITUDE", place.getPlaceLatitude());
+		    json.put("PLACE_A_LONGITUDE", place.getPlaceLongitude());
+		
+		} catch (JSONException e) {				
+			e.printStackTrace();
+		}
+	    		    
+	    editor.putString("MAP_OVERLAY", json.toString());
+		placesExtra.add(place);
+		listItens.remove(place.getPlaceId() - 1);
+		places.remove(place.getPlaceId() - 1);								
+	
+		
+		selectedMenu = ALERT_ROUTE_B;
+		createAlertDialog(ALERT_ROUTE_B);	
+		
+    }
+    
     public class MapOverlay extends org.osmdroid.views.overlay.Overlay {
 
         public MapOverlay(Context ctx) {
@@ -972,6 +1013,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		
         		if(menuPlace.isVisible()){
         			menuPlace.setVisible(false);
+        			selectedPlace = false;
         		}
         		
         		if(menuEnvironment.isVisible()){
@@ -1120,10 +1162,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		placeWSI = new PlaceWSI();
 	        		Place placeA = placeWSI.getPlaceByNfc(idNfc);	        		
 	        			        			        			        			        		        
-	        		try {
-	        			mapOverlayPlaces.clear();
-	        			mapOverlayPlaces.add(placeA);
-		        		
+	        		try {	        			
+	        			json = new JSONObject(preferences.getString("MAP_OVERLAY", ""));
+	        			
 		        		Place getJsonB = new Place();
 		        		getJsonB.setPlaceId(json.getInt("PLACE_B_ID"));
 		        		getJsonB.setPlaceName(json.getString("PLACE_B_NAME"));
@@ -1131,6 +1172,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        		getJsonB.setPlaceLatitude(json.getString("PLACE_B_LATITUDE"));
 		        		getJsonB.setPlaceLongitude(json.getString("PLACE_B_LONGITUDE"));
 		        		
+		        		if(placeA.getPlaceName().equals(getJsonB.getPlaceName())){
+		        			Alerts.createErrorAlert(13, context);
+		        			navIntent = new Intent(context, MapViewController.class);
+		        			startActivity(navIntent);
+		        		}
+		        		
+		        		mapOverlayPlaces.clear();
+		        		mapOverlayPlaces.add(placeA);
 		        		mapOverlayPlaces.add(getJsonB);
 		        		
 		        		editor = preferences.edit();
@@ -1161,10 +1210,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		} catch (JSONException e) {
 						
 						e.printStackTrace();
-					}
-	        		setTo(Double.parseDouble(placeA.getPlaceLatitude()), 
-	        				Double.parseDouble(placeA.getPlaceLongitude()));
-	        			        		
+					}	        		
 	        		getEnvironments();
 	        		
 	        		GeoPoint positionA = new GeoPoint(Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLatitude()), 
@@ -1190,7 +1236,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			setTo(Double.parseDouble(environment.getEnvtLatitude()), Double.parseDouble(environment.getEnvtLongitude()));
 		}
 		if(nfcPlace){
-			setTo(Double.parseDouble(place.getPlaceLatitude()), Double.parseDouble(place.getPlaceLongitude()));
+			if(!routeNfc){
+				setTo(Double.parseDouble(place.getPlaceLatitude()), Double.parseDouble(place.getPlaceLongitude()));
+			}else {
+				setTo(Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLatitude()), Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLongitude()));
+			}
 		}
 		mapView.postInvalidate();
 		finishProgressDialog();	        
@@ -1322,15 +1372,24 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	@Override
     	protected Void doInBackground(Void... arg0) {
 			try{
+				
 				placeWSI = new PlaceWSI();
 				places = placeWSI.getListPlace();	
+		
 				listItens.clear();				
 				for (int i = 0; i < places.size(); i++) {
 					listItens.add(places.get(i).getPlaceName());
 				}
 				
-				alertDialogAdapter = new AlertDialogAdapter(context, listItens);
-			    listViewResults.setAdapter(alertDialogAdapter);
+				if(!selectedPlace){
+					alertDialogAdapter = new AlertDialogAdapter(context, listItens);
+				    listViewResults.setAdapter(alertDialogAdapter);
+				}else {
+					place = placeWSI.getPlace(encodeUrl(currentMarker));
+				}
+			} catch (UnsupportedEncodingException e) {
+ 
+				e.printStackTrace();
 			}finally {
 				
 			}
@@ -1339,8 +1398,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		
 		@Override
         protected void onPostExecute(Void res){
-			finishProgressDialog();
-	        alertDialog = alertDialogBuilder.show(); 
+			if(!selectedPlace){
+				finishProgressDialog();
+		        alertDialog = alertDialogBuilder.show(); 
+			}else{
+				getRouteByMarkerAndAlert();
+			}
         }
     }
 	
