@@ -26,4 +26,6 @@ $(document).ready(function() {
     $('#btnRemover').click(function() { 
     	$(location).attr('href', 'index.php?controle=manteradministrador&acao=remover');
     });
+    
+    $('#teste').datepicker();
 } );
