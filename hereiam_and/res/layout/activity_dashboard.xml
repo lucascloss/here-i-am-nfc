@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/color_white">
 <TableLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"    
@@ -20,7 +21,7 @@
     		android:textSize="18sp"
     		android:gravity="bottom|center"
     		android:text="@string/dashboard_map"
-    		android:drawableTop="@drawable/maps64"
+    		android:drawableTop="@drawable/map64"
     		android:layout_weight="1"
     		android:clickable="true"
     		android:onClick="showMap"/>
@@ -31,7 +32,7 @@
     		android:textSize="18sp"
     		android:gravity="bottom|center"
     		android:text="@string/dashboard_nfc"
-    		android:drawableTop="@drawable/maps64"
+    		android:drawableTop="@drawable/nfc64"
     		android:layout_weight="1"
     		android:clickable="true"
     		android:onClick="readNFC"/>
@@ -57,7 +58,7 @@
     		android:textSize="18sp"
     		android:gravity="bottom|center"
     		android:text="@string/dashboard_favorites"
-    		android:drawableTop="@drawable/maps64"
+    		android:drawableTop="@drawable/favorite64"
     		android:layout_weight="1"
     		android:clickable="true"
     		android:onClick="listFavorites"/>
@@ -72,7 +73,7 @@
     		android:textSize="18sp"
     		android:gravity="bottom|center"
     		android:text="@string/dashboard_route"
-    		android:drawableTop="@drawable/maps64"
+    		android:drawableTop="@drawable/route64"
     		android:layout_weight="1"
     		android:clickable="true"
     		android:onClick="startRoute"/>
@@ -83,7 +84,7 @@
     		android:textSize="18sp"
     		android:gravity="bottom|center"
     		android:text="@string/dashboard_important"
-    		android:drawableTop="@drawable/maps64"
+    		android:drawableTop="@drawable/important64"
     		android:layout_weight="1"
     		android:clickable="true"
     		android:onClick="listImportants"/>
