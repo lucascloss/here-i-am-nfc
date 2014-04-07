@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.17, created on 2014-04-07 04:16:51
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-07 04:37:35
          compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAdministrador.html" */ ?>
 <?php /*%%SmartyHeaderCode:20552811325341fff55a01b7-69510640%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'a66fe520dfab334307d6dd121a71ac1b9e2a43ab' => 
     array (
       0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAdministrador.html',
-      1 => 1396836891,
+      1 => 1396838222,
       2 => 'file',
     ),
   ),
@@ -44,6 +44,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 				<button id="btnRemover" type="button" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-remove"></span>
 				</button>
+				
+				<input type="text" id="teste" />
 			</div>		
 			<table class="table table-striped table-bordered" id="listaAdministradores">
 				<thead>
