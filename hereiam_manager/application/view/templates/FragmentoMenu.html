@@ -21,8 +21,8 @@
 							<li {if count($parametros) > 0 && $parametros.tipo == 'local'}class="active"{/if}><a href="index.php?controle=manteradministrador&acao=listar&parametros=tipo/local/">Local</a></li>
 						</ul>
 					</li>
-					<li{if $controle == "ManterAmbiente"} class="active"{/if}><a href="index.php?controle=manterambiente">Ambientes</a></li>
-					<li{if $controle == "ManterLocal"} class="active"{/if}><a href="index.php?controle=manterlocal">Locais</a></li>
+					<li{if $controle == "ManterAmbiente"} class="active"{/if}><a href="index.php?controle=manterambiente&acao=listar&parametros=tipo/ambiente/">Ambientes</a></li>
+					<li{if $controle == "ManterLocal"} class="active"{/if}><a href="index.php?controle=manterlocal&acao=listar&parametros=tipo/local/">Locais</a></li>
 					<li{if $controle == "ManterAgendaEventos"} class="active"{/if}><a href="index.php?controle=manteragendaeventos">Agenda de eventos</a></li>
 					<li{if $controle == "ManterUsuario"} class="active"{/if}><a href="index.php?controle=manterusuario">Usu&aacute;rios</a></li>
 				</ul>
