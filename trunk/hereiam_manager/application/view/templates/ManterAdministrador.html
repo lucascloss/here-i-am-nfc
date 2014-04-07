@@ -2,43 +2,46 @@
 {include file="FragmentoConteudoCabecalho.html"}
 {include file="FragmentoMenu.html"}
 
+{if $acao = "listar"}
 	<div class="panel panel-default">
-		<div class="panel-heading">Gerenciar administradores
-		<!-- <div class="pull-right"> -->
-						<ul class="pagination pagination-sm pull-right">
-							<li class="disabled"><a href="#">&laquo;</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">&raquo;</a></li>
-						</ul><!-- </div> --></div>
+		<div class="panel-heading"><h3>Gerenciar administradores do {if isset($parametros) && $parametros.tipo == "sistema"}sistema{elseif isset($parametros) && $parametros.tipo == "ambiente"}ambiente{else}local{/if}</h3></div>
 		<div class="panel-body">
-			<p>...</p>
-		</div>
-	
-		<!-- Table -->
-		<table class="table">
-			<thead>
-				<tr>
-					<td>Coluna 1</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td></td>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-		<div class="panel-footer">
+ 			<div class="form-group">
+				<button id="btnAdicionar" type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-plus"></span>
+				</button>
+				<button id="btnEditar" type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-edit"></span>
+				</button>
+				<button id="btnRemover" type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-remove"></span>
+				</button>
+			</div>		
+			<table class="table table-striped table-bordered" id="listaAdministradores">
+				<thead>
+					<tr>
+						<td><strong>Nome</strong></td>
+						<td width="20%"><strong>Usu&aacute;rio</strong></td>
+						<td width="30%"><strong>Email</strong></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Guilherme Wunsch</td>
+						<td>guiwunsch</td>
+						<td>email@guiwunsch.com</td>
+					</tr>
+					<tr>
+						<td>Lucas Closs</td>
+						<td>lcloss</td>
+						<td>lucas.closs@gmail.com</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
+{elseif $acao = "adicionar"}
+{/if}
+
 {include file="FragmentoConteudoRodape.html"} 
 {include file="FragmentoRodape.html"}
