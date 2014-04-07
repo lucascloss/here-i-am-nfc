@@ -61,7 +61,6 @@ public class LoginAuthController extends BaseActivity implements OnClickListener
 		loginSend.setOnClickListener(this);
 		
 		loginNew = (TextView) findViewById(R.id.loginNew);
-		loginNew.setPaintFlags(loginNew.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 		loginNew.setOnClickListener(this);
 	}
 

@@ -1,10 +1,7 @@
 package com.hereiam.controller;
 
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,20 +13,13 @@ import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.bonuspack.routing.RoadNode;
-import org.osmdroid.events.DelayedMapListener;
-import org.osmdroid.events.MapListener;
-import org.osmdroid.events.ScrollEvent;
-import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Overlay;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,12 +27,8 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.nfc.NfcAdapter;
-import android.nfc.NfcManager;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -50,7 +36,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -134,6 +119,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private ArrayList<Place> placesExtra = new ArrayList<Place>();
 	private boolean selectedPlace = false;
 	
+	private int scrollX;
+	private int scrollY;
+	
 //	private NfcManager nfcManager;
 //  private NfcAdapter nfcAdapter;
 //  private PendingIntent pendingIntent;
@@ -158,14 +146,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setBuiltInZoomControls(true);
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
-        mapView.setMaxZoomLevel(19);
+        mapView.setMaxZoomLevel(18);
         //mapView.setMultiTouchControls(true);    
         mapController = (MapController) mapView.getController();
         
         nodeMarker = new Marker(mapView);
        
         mapOverlay = new MapOverlay(context);        
-        mapView.getOverlays().add(mapOverlay);
+        mapView.getOverlays().add(mapOverlay);        
         
         if(getIntent().hasExtra("NFC")){
         	nfc = getIntent().getBooleanExtra("NFC", true);
@@ -229,6 +217,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        		environmentExtra = mapOverlayEnvironment;
 		        		setTo(Double.parseDouble(mapOverlayEnvironment.getEnvtLatitude()), 
 		        				Double.parseDouble(mapOverlayEnvironment.getEnvtLongitude()));
+		        		mapView.getScrollX();
 		        	}
 		        	
 		        	if(action.equals("PLACE")){
@@ -854,7 +843,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	GeoPoint position = new GeoPoint(latitude, longitude);
     	mapController = (MapController) mapView.getController();
         mapController.setZoom(15);
-        mapController.setCenter(position);  
+        mapController.setCenter(position);
+        scrollX = mapView.getScrollX();
+        scrollY = mapView.getScrollY();
     }
        
     public void addListenerOnMarkerPlace(Marker marker){
@@ -1021,9 +1012,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		}
         	}
         	        	
-        	if(mapView.getZoomLevel() > 18){   
-        		BoundingBoxE6 boundingBox = new BoundingBoxE6(0, 0, 0, 0);
-        		mapView.setScrollableAreaLimit(boundingBox);
+        	if(mapView.getZoomLevel() > 18){             		
+
         	}
         return false;
         }           
@@ -1111,7 +1101,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		    		    editor.putString("MAP_OVERLAY", json.toString());
 		    		    editor.commit();
 		        		
-		        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_b);
+		        		nodeIconP = getResources().getDrawable(R.drawable.marker_node_blue);
 		            	currentEnvironment = environment.getEnvtName();
 		            	latitude = Double.parseDouble(environment.getEnvtLatitude());
 		            	longitude = Double.parseDouble(environment.getEnvtLongitude());

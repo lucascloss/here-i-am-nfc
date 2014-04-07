@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="activity_create">Criar novo usuário</string>
     <string name="activity_dashboard">Menu Principal</string>
     <string name="activity_map">Mapa</string>
     <string name="activity_info">Informações</string>
     <string name="activity_nfc">Leitura Etiqueta NFC</string>
     
-    <string name="app_name">HereIAm</string>
+    <string name="app_name">Here I Am</string>
     <string name="action_settings">configurações</string>
     <string name="ok">ok</string>
     <string name="logout">logout</string>
