@@ -97,8 +97,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private ArrayList<String> routeA = new ArrayList<String>();
 	private ArrayList<String> routeB = new ArrayList<String>();
 	private FavoritePlaceWSI favoritePlaceWSI;
-	private FavoritePlace favoritePlace;
-//	private ArrayList<String> currentActions = new ArrayList<String>();
+	private FavoritePlace favoritePlace;	
 	private String idNfc;
 	private boolean nfc = false;
 	private boolean nfcEnvironment = false;
@@ -216,8 +215,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        		mapOverlayEnvironment.setEnvtLongitude(json.getString("ENVIRONMENT_LONGITUDE"));
 		        		environmentExtra = mapOverlayEnvironment;
 		        		setTo(Double.parseDouble(mapOverlayEnvironment.getEnvtLatitude()), 
-		        				Double.parseDouble(mapOverlayEnvironment.getEnvtLongitude()));
-		        		mapView.getScrollX();
+		        				Double.parseDouble(mapOverlayEnvironment.getEnvtLongitude()));		        	
 		        	}
 		        	
 		        	if(action.equals("PLACE")){
@@ -414,10 +412,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){	        	        	
+        				
+		switch (item.getItemId()){	        	        	
 	        case R.id.action_update:
 	        	navIntent = new Intent(context, NFCReaderController.class);	        				
-	        	navIntent.putExtra("UPDATE_POSITION_NFC", true);
+	        	navIntent.putExtra("UPDATE_POSITION_NFC", true);	        		        	        	
 	        	startActivity(navIntent);
 	        	return true;
 	        case R.id.action_route:	        		        	
@@ -426,30 +425,95 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        		createAlertDialog(ALERT_ROUTE_A);
 	        	}
 	        	selectedMenu = ALERT_ROUTE_A;
+	        	
+	        	if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	        	
 	            new SelectPlaceRouteAAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_list_environments:	        	
 	            startProgressDialog(getString(R.string.progresst_environment_list), getString(R.string.progressm_environment_list));
 	            createAlertDialog(ALERT_ENVIRONMENT);
 	            selectedMenu = ALERT_ENVIRONMENT;
+	            
+	            if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	            
 	            new SelectEnvironemntAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_list_places:	        	
 	            startProgressDialog(getString(R.string.progresst_places_list), getString(R.string.progressm_places_list));
 	            createAlertDialog(ALERT_PLACE);
 	            selectedMenu = ALERT_PLACE;
+	            
+	            if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	            
 	            new SelectPlaceAlertDialogFeedTask().execute();	            																		          	           
 	        	return true;
 	        case R.id.action_list_favorites:	        	
 	        	startProgressDialog(getString(R.string.progresst_favorites_list), getString(R.string.progressm_favorites_list));
 	        	createAlertDialog(ALERT_FAVORITE);
 	        	selectedMenu = ALERT_FAVORITE;
+	        	
+	        	if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	        	
 	        	new SelectFavoritePlaceAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_list_importants:	        	
 	        	startProgressDialog(getString(R.string.progresst_importants_list), getString(R.string.progressm_importants_list));
 	        	createAlertDialog(ALERT_IMPORTANT);
 	        	selectedMenu = ALERT_IMPORTANT;
+	        	
+	        	if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	        	
 	            new SelectPlaceByImportanceAlertDialogFeedTask().execute();
 	        	return true;
 	        case R.id.action_info_environment:	        	
@@ -470,6 +534,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        	navIntent.putExtra("ENVIRONMENT_INFO", environmentExtra.getEnvtInfo());
 		        	navIntent.putExtra("ENVIROMENT_ID", environmentExtra.getEnvtId());
 	        	}
+	        	
+	        	
 	        	
 	        	startActivity(navIntent);
 	        	
@@ -494,7 +560,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        	navIntent.putExtra("PLACE_INFO", placeExtra.getPlaceInfo());
 		        	navIntent.putExtra("PLACE_ID", placeExtra.getPlaceId());
 	        	}
-	        		        	
+	        	
+	        	
+	        	
 	        	startProgressDialog(getString(R.string.progresst_info_place), getString(R.string.progressm_info_place));
 	        	new GetPlaceInfoFeedTask().execute(currentMarker);
 	        	return true;
@@ -527,7 +595,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 						i++;
 					}					
 				}
-	        		        		
+	        		
+	        	if(!currentMarker.equals(null)){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}
+	        	
 	        	mapView.invalidate();
 	        	return true;
 	        case R.id.action_route_update:
@@ -844,8 +924,6 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     	mapController = (MapController) mapView.getController();
         mapController.setZoom(15);
         mapController.setCenter(position);
-        scrollX = mapView.getScrollX();
-        scrollY = mapView.getScrollY();
     }
        
     public void addListenerOnMarkerPlace(Marker marker){
