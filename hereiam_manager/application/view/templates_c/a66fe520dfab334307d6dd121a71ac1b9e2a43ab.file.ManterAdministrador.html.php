@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.17, created on 2014-04-07 04:37:35
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-08 05:10:15
          compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAdministrador.html" */ ?>
 <?php /*%%SmartyHeaderCode:20552811325341fff55a01b7-69510640%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'a66fe520dfab334307d6dd121a71ac1b9e2a43ab' => 
     array (
       0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAdministrador.html',
-      1 => 1396838222,
+      1 => 1396926364,
       2 => 'file',
     ),
   ),
@@ -71,6 +71,14 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 		</div>
 	</div>
 <?php  } else { if (!isset($_smarty_tpl->tpl_vars['acao'])) $_smarty_tpl->tpl_vars['acao'] = new Smarty_Variable(null);if ($_smarty_tpl->tpl_vars['acao']->value = "adicionar") {?>
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+
 <?php }}?>
 
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
