@@ -1,10 +1,105 @@
+{if $acao == "adicionar"}
+	<!-- Modal Adicionar Ambiente -->
+	<div class="modal fade" id="modalAddAmbiente" tabindex="-1" role="dialog" aria-labelledby="modalAmbienteLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="modalAmbienteLabel">Adicionar Ambiente</h4>
+				</div>
+				<div class="modal-body">
+	
+					<form class="form-horizontal" role="form" method="" action="">
+						<div class="form-group">		
+							<label for="nome" class="col-sm-5 control-label">Nome</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="nome" placeholder="Nome">
+	  				 			</div>	
+	 						</div>			
+						<div class="form-group">		
+							<label for="tipo" class="col-sm-5 control-label">Tipo</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="tipo" placeholder="Tipo">
+	  				 			</div>	
+						</div>
+						<div class="form-group">		
+							<label for="info" class="col-sm-5 control-label">Info</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="info" placeholder="Info">
+	  				 			</div>	
+	 						</div>								
+						<div class="form-group">		
+							<label for="latitude" class="col-sm-5 control-label">Latitude</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="latitude" placeholder="Latitude">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="longitude" class="col-sm-5 control-label">Longitude</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="longitude" placeholder="Longitude">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="endereco" class="col-sm-5 control-label">Endereï¿½o</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="endereco" placeholder="Endereï¿½o">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="bairro" class="col-sm-5 control-label">Bairro</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="bairro" placeholder="Bairro">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="numero" class="col-sm-5 control-label">Nï¿½mero</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="numero" placeholder="Nï¿½mero">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="cidade" class="col-sm-5 control-label">Cidade</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="cidade" placeholder="Cidade">
+	  				 			</div>	
+	 						</div>
+	 						<div class="form-group">		
+							<label for="estado" class="col-sm-5 control-label">Estado</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="estado" placeholder="Estado">
+	  				 			</div>	
+	 						</div>
+	 						<div class="form-group">		
+							<label for="pais" class="col-sm-5 control-label">Paï¿½s</label>
+	  							<div class="col-xs-5">
+	    			 				<input type="text" class="form-control" id="pais" placeholder="Paï¿½s">
+	  				 			</div>	
+	 						</div>
+						<div class="form-group">		
+							<label for="listaAdmAmbiente" class="col-sm-5 control-label">Administrador do Ambiente</label>
+	  							<div class="col-xs-5">
+	    			 				<select class="form-control" id="listaAdmAmbiente">...</select>
+	  				 			</div>	
+	 						</div>
+					</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-success">Adicionar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!---------------------------- // ---------------------------->	
+{elseif $acao == "editar"}
+
+{else}
 {include file="FragmentoCabecalho.html"}
 {include file="FragmentoConteudoCabecalho.html"}
 {include file="FragmentoMenu.html"}
-{if $acao = "listar"}
-<div class="panel panel-default">
-<!-- 		<div class="panel-heading"><h3>Gerenciar administradores do {if isset($parametros) && $parametros.tipo == "sistema"}sistema{elseif isset($parametros) && $parametros.tipo == "ambiente"}ambiente{else}local{/if}</h3></div> -->
-	<div class="panel-heading"><h3>Gerenciar Ambientes</h3></div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading"><h3>Gerenciar Ambientes</h3></div>
 		<div class="panel-body">
  			<div class="form-group">
 				<button id="btnAdicionar" type="button" class="btn btn-default btn-lg" 
@@ -42,99 +137,6 @@
 		</div>
 	</div>
 
-<!-- Modal Adicionar Ambiente -->
-	<div class="modal fade" id="modalAddAmbiente" tabindex="-1" role="dialog" aria-labelledby="modalAmbienteLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="modalAmbienteLabel">Adicionar Ambiente</h4>
-				</div>
-				<div class="modal-body">
-
-					<form class="form-horizontal" role="form" method="" action="">
-						<div class="form-group">		
-							<label for="nome" class="col-sm-5 control-label">Nome</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="nome" placeholder="Nome">
-   				 			</div>	
-  						</div>			
-						<div class="form-group">		
-							<label for="tipo" class="col-sm-5 control-label">Tipo</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="tipo" placeholder="Tipo">
-   				 			</div>	
-						</div>
-						<div class="form-group">		
-							<label for="info" class="col-sm-5 control-label">Info</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="info" placeholder="Info">
-   				 			</div>	
-  						</div>								
-						<div class="form-group">		
-							<label for="latitude" class="col-sm-5 control-label">Latitude</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="latitude" placeholder="Latitude">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="longitude" class="col-sm-5 control-label">Longitude</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="longitude" placeholder="Longitude">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="endereco" class="col-sm-5 control-label">Endereço</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="endereco" placeholder="Endereço">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="bairro" class="col-sm-5 control-label">Bairro</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="bairro" placeholder="Bairro">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="numero" class="col-sm-5 control-label">Número</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="numero" placeholder="Número">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="cidade" class="col-sm-5 control-label">Cidade</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="cidade" placeholder="Cidade">
-   				 			</div>	
-  						</div>
-  						<div class="form-group">		
-							<label for="estado" class="col-sm-5 control-label">Estado</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="estado" placeholder="Estado">
-   				 			</div>	
-  						</div>
-  						<div class="form-group">		
-							<label for="pais" class="col-sm-5 control-label">País</label>
-   							<div class="col-xs-5">
-     			 				<input type="text" class="form-control" id="pais" placeholder="País">
-   				 			</div>	
-  						</div>
-						<div class="form-group">		
-							<label for="listaAdmAmbiente" class="col-sm-5 control-label">Administrador do Ambiente</label>
-   							<div class="col-xs-5">
-     			 				<select class="form-control" id="listaAdmAmbiente">...</select>
-   				 			</div>	
-  						</div>
-					</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">Adicionar</button>
-				</div>
-			</div>
-		</div>
-	</div>
-<!---------------------------- // ---------------------------->	
-	
-{/if}
 {include file="FragmentoConteudoRodape.html"} 
 {include file="FragmentoRodape.html"}
+{/if}
