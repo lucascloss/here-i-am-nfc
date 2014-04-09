@@ -1,39 +1,34 @@
-<?php /* Smarty version Smarty-3.1.17, created on 2014-04-09 01:40:39
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-09 05:22:05
          compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAmbiente.html" */ ?>
-<?php /*%%SmartyHeaderCode:5785306353420b426370e2-33241999%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:14992470525344b6ab28bb67-54291970%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '64fb133c9192c0409d851cb8631d85271735ddc7' => 
     array (
       0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAmbiente.html',
-      1 => 1397000421,
+      1 => 1397013723,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '5785306353420b426370e2-33241999',
+  'nocache_hash' => '14992470525344b6ab28bb67-54291970',
   'function' => 
   array (
   ),
   'version' => 'Smarty-3.1.17',
-  'unifunc' => 'content_53420b426e5bc3_65673484',
+  'unifunc' => 'content_5344b6ab30a933_79837041',
   'variables' => 
   array (
     'acao' => 0,
   ),
   'has_nocache_code' => false,
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_53420b426e5bc3_65673484')) {function content_53420b426e5bc3_65673484($_smarty_tpl) {?><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>
-<!-- Modal Adicionar Ambiente -->
-<div class="modal fade" id="modalAddAmbiente" tabindex="-1" role="dialog" aria-labelledby="modalAmbienteLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
+<?php if ($_valid && !is_callable('content_5344b6ab30a933_79837041')) {function content_5344b6ab30a933_79837041($_smarty_tpl) {?><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="modalAmbienteLabel">Adicionar Ambiente</h4>
+				<h4 class="modal-title" id="modalAdicionarTitulo">Adicionar Ambiente</h4>
 			</div>
 			<div class="modal-body">
-
 				<form class="form-horizontal" role="form" method="" action="">
 					<div class="form-group">		
 						<label for="nome" class="col-sm-5 control-label">Nome</label>
@@ -108,14 +103,11 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   				 			</div>	
  						</div>
 				</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-				<button type="button" class="btn btn-success">Adicionar</button>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-success">Adicionar</button>
+				</div>
 			</div>
-		</div>
-	</div>
-</div>
-<!---------------------------- // ---------------------------->	
 <?php } elseif ($_smarty_tpl->tpl_vars['acao']->value=="editar") {?>
 
 <?php } else { ?>
@@ -126,10 +118,13 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoMenu.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
 
-<div class="panel panel-default">
-	<div class="panel-heading"><h3>Gerenciar Ambientes</h3></div>
+	<div class="panel panel-default">
+		<div class="panel-heading"><h3>Gerenciar Ambientes</h3></div>
 		<div class="panel-body">
  			<div class="form-group">
+ 			<!--  aqui -->
+ 			<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manterambiente&acao=adicionar" class="btn btn-primary">Teste</a><br />
+ 			<!--  aqui  -->
 				<button id="btnAdicionar" type="button" class="btn btn-default btn-lg" 
 						data-toggle="modal" data-target="#modalAddAmbiente">
 					<span class="glyphicon glyphicon-plus"></span>
@@ -165,6 +160,13 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 		</div>
 	</div>
 	
+	<!-- Modal -->
+	<div class="modal fade" id="modalAdicionar" tabindex="-1" role="dialog" aria-labelledby="modalAdicionarTitulo" aria-hidden="true">
+		<div class="modal-dialog">
+	    	<div class="modal-content">
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
  
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
