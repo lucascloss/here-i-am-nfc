@@ -1,6 +1,6 @@
-<?php /* Smarty version Smarty-3.1.17, created on 2014-04-07 04:18:42
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-09 04:55:35
          compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/Inicial.html" */ ?>
-<?php /*%%SmartyHeaderCode:116402375053420b02051184-44032102%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:14807032335344b6a743d795-91294125%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
@@ -11,15 +11,15 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '116402375053420b02051184-44032102',
+  'nocache_hash' => '14807032335344b6a743d795-91294125',
   'function' => 
   array (
   ),
   'has_nocache_code' => false,
   'version' => 'Smarty-3.1.17',
-  'unifunc' => 'content_53420b020b3d58_19268463',
+  'unifunc' => 'content_5344b6a74fb810_14433031',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_53420b020b3d58_19268463')) {function content_53420b020b3d58_19268463($_smarty_tpl) {?><?php echo $_smarty_tpl->getSubTemplate ("FragmentoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+<?php if ($_valid && !is_callable('content_5344b6a74fb810_14433031')) {function content_5344b6a74fb810_14433031($_smarty_tpl) {?><?php echo $_smarty_tpl->getSubTemplate ("FragmentoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
