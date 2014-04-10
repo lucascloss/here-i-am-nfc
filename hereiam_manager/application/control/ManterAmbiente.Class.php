@@ -38,7 +38,10 @@ class ManterAmbiente extends BaseCRUD
 	
 	public function salvar() { }
 	
-	public function remover($parametros) { }
+	public function remover($parametros)
+	{
+		$this->getForm()->mostrar();
+	}
 	
 }
 
