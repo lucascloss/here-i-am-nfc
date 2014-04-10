@@ -1,14 +1,25 @@
 {include file="FragmentoCabecalho.html"}
 {include file="FragmentoConteudoCabecalho.html"}
-		{include file="FragmentoMensagem.html"}
+{include file="FragmentoMensagem.html"}
+
 		<form class="form-signin" role="form" method="post" action="index.php?controle=login&acao=entrar">
 			<h2 class="form-signin-heading">Por favor, entrar</h2>
-			<input type="email" name="email" class="form-control" placeholder="Email"{if isset($valores)} value="{$valores.email}"{/if} required autofocus>
+			<input type="text" name="usuario" class="form-control" placeholder="Usu&aacute;rio"{if isset($valores)} value="{$valores.email}"{/if} required autofocus>
 			<input type="password" name="senha" class="form-control" placeholder="Senha" required>
+			
+			<label for="listaLogin" class="col-sm-12 control-label">Acessar como:</label>
+			
+			<select class="form-control" id="listaLogins">
+				<option value="admSolucao">Administrador da Solução</option>
+				<option value="admAmbiente">Administrador do Ambiente</option>
+				<option value="admLocal">Administrador do Local</option>
+			</select>
+						
 			<label class="checkbox">
 				<input type="checkbox" name="lembrar" value="lembrar"{if isset($valores)} value="{if isset($valores.lembrar)}true{else}false{/if}"{/if}> Lembrar
 			</label>
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+			<button id="btnEntrar" class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
 		</form>
+		
 {include file="FragmentoConteudoRodape.html"} 
 {include file="FragmentoRodape.html"}
