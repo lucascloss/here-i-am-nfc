@@ -28,7 +28,7 @@ class Login extends Base
 	public function entrar()
 	{
 		try {
-			$email = !empty($_POST['email']) ? $_POST['email'] : "";
+			$email = !empty($_POST['usuario']) ? $_POST['usuario'] : "";
 			$senha = !empty($_POST['senha']) ? $_POST['senha'] : "";
 			
 			if (($email == "admin@admin") && ($senha == "admin")) {

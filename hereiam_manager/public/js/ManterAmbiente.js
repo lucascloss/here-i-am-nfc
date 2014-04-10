@@ -2,7 +2,7 @@ $(document).ready(function() {
 	
     $('#listaAmbientes').dataTable();
     
-    $('#btnAdicionar').click(function() { 
+    /*$('#btnAdicionar').click(function() { 
     	$(location).attr('href', 'index.php?controle=manterambiente&acao=adicionar');
     });
     
@@ -12,6 +12,6 @@ $(document).ready(function() {
     
     $('#btnRemover').click(function() { 
     	$(location).attr('href', 'index.php?controle=manterambiente&acao=remover');
-    });
+    });*/
 
 } );
