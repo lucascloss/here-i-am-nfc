@@ -2,7 +2,7 @@ $(document).ready(function() {
     $('#listaLocais').dataTable();
     
     $('#btnAdicionar').click(function() { 
-//    	$(location).attr('href', 'index.php?controle=manterlocal&acao=adicionar');
+    	$(location).attr('href', 'index.php?controle=manterlocal&acao=adicionar');
     });
     
     $('#btnEditar').click(function() { 
