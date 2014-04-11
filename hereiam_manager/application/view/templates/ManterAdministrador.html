@@ -1,22 +1,54 @@
 {if $acao == "adicionar" || $acao == "editar"}
-		<!-- Modal Adicionar Administrador -->
+		<!-- Modal Adicionar-Editar Administrador -->
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="modalAdministrador">Adicionar Local</h4>
+					<h4 class="modal-title" id="modalAdm">{if $acao == "adicionar"}Adicionar{else}Editar{/if} Administrador 
+					do {if isset($parametros) && $parametros.tipo == "sistema"}sistema{elseif isset($parametros) && $parametros.tipo == "ambiente"}ambiente{else}local{/if}</h4>
 				</div>
 				<div class="modal-body">
-
-											
+				<form class="form-horizontal" role="form" method="" action="">
+					<div class="form-group">		
+						<label for="nome" class="col-sm-5 control-label">Nome</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="nome" placeholder="Nome" />
+  				 			</div>	
+ 					</div> 					
+ 					<div class="form-group">		
+						<label for="usuario" class="col-sm-5 control-label">Usu&aacute;rio</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="usuario" placeholder="Usu&aacute;rio" {if $acao == "editar"} disabled="disabled"{/if}/>
+  				 			</div>	
+ 					</div>			 					
+ 					<div class="form-group">		
+						<label for="email" class="col-sm-5 control-label">Email</label>
+  							<div class="col-xs-5">
+    			 				<input type="email" class="form-control" id="email" placeholder="Email" />
+  				 			</div>	
+ 					</div>			 					
+ 					<div class="form-group">		
+						<label for="senha" class="col-sm-5 control-label">Senha</label>
+  							<div class="col-xs-5">
+    			 				<input type="password" class="form-control" id="senha" placeholder="Senha" />
+  				 			</div>	
+ 					</div> 					
+ 					<div class="form-group">		
+						<label for="confsenha" class="col-sm-5 control-label">Confirma&ccedil;&atilde;o Senha</label>
+  							<div class="col-xs-5">
+    			 				<input type="password" class="form-control" id="confsenha" placeholder="Confirma&ccedil;&atilde;o Senha" />
+  				 			</div>	
+ 					</div>														
+				</form>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">Adicionar</button>
+					<button type="button" class="btn btn-success">{if $acao == "adicionar"}Adicionar{else}Editar{/if}</button>
 				</div>
 			</div>
 {elseif $acao == "remover"}
 		<!-- Modal Remover Administrador -->
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="modalRemoverAdm">Remover Local</h4>
+				<h4 class="modal-title" id="modalRemoverAdm">Remover Administrador 
+					do {if isset($parametros) && $parametros.tipo == "sistema"}sistema{elseif isset($parametros) && $parametros.tipo == "ambiente"}ambiente{else}local{/if}</h4>
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" role="form" method="" action="">
@@ -37,17 +69,61 @@
 		<div class="panel-body">
  			<div class="form-group">
 	{if $tipoUsuario == 1}
-				<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manteradministrador&acao=adicionar" class="btn btn-default btn-lg">
-					<span class="glyphicon glyphicon-plus"></span>
-				</a>		
+		{if isset($parametros) && $parametros.tipo == "sistema"}
+			<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manteradministrador&acao=adicionar&parametros=tipo/sistema/" class="btn btn-default btn-lg">
+				<span class="glyphicon glyphicon-plus"></span>
+			</a>
+		{/if}		
+		
+		{if isset($parametros) && $parametros.tipo == "ambiente"}
+			<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manteradministrador&acao=adicionar&parametros=tipo/ambiente/" class="btn btn-default btn-lg">
+				<span class="glyphicon glyphicon-plus"></span>
+			</a>
+		{/if}
+		
+		{if isset($parametros) && $parametros.tipo == "local"}
+			<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manteradministrador&acao=adicionar&parametros=tipo/local/" class="btn btn-default btn-lg">
+				<span class="glyphicon glyphicon-plus"></span>
+			</a>
+		{/if}
 	{/if}		
-				<a data-toggle="modal" data-target="#modalEditar" href="index.php?controle=manteradministrador&acao=editar" class="btn btn-default btn-lg">
-					<span class="glyphicon glyphicon-edit"></span>
-				</a>	
-	{if $tipoUsuario == 1}		
-				<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manteradministrador&acao=remover" class="btn btn-default btn-lg">
-					<span class="glyphicon glyphicon-remove"></span>
-				</a>
+	
+	{if isset($parametros) && $parametros.tipo == "sistema"}
+		<a data-toggle="modal" data-target="#modalEditar" href="index.php?controle=manteradministrador&acao=editar&parametros=tipo/sistema/" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-edit"></span>
+		</a>
+	{/if}		
+	
+	{if isset($parametros) && $parametros.tipo == "ambiente"}
+		<a data-toggle="modal" data-target="#modalEditar" href="index.php?controle=manteradministrador&acao=editar&parametros=tipo/ambiente/" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-edit"></span>
+		</a>
+	{/if}
+	
+	{if isset($parametros) && $parametros.tipo == "local"}
+		<a data-toggle="modal" data-target="#modalEditar" href="index.php?controle=manteradministrador&acao=editar&parametros=tipo/local/" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-edit"></span>
+		</a>
+	{/if}
+		
+	{if $tipoUsuario == 1}	
+		{if isset($parametros) && $parametros.tipo == "sistema"}
+		<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manteradministrador&acao=remover&parametros=tipo/sistema/" class="btn btn-default btn-lg">
+			<span class="glyphicon glyphicon-remove"></span>
+		</a>
+		{/if}		
+		
+		{if isset($parametros) && $parametros.tipo == "ambiente"}
+			<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manteradministrador&acao=remover&parametros=tipo/ambiente/" class="btn btn-default btn-lg">
+				<span class="glyphicon glyphicon-remove"></span>
+			</a>
+		{/if}
+		
+		{if isset($parametros) && $parametros.tipo == "local"}
+			<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manteradministrador&acao=remover&parametros=tipo/local/" class="btn btn-default btn-lg">
+				<span class="glyphicon glyphicon-remove"></span>
+			</a>
+		{/if}
 	{/if}
 				<!--  <input type="text" id="teste" />-->
 			</div>		
@@ -84,7 +160,7 @@
 	</div><!-- /.modal -->
 	
 	<!-- Modal Editar -->
-	<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalAdministrador" aria-hidden="true">
+	<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalAdm" aria-hidden="true">
 		<div class="modal-dialog">
 	    	<div class="modal-content">
 			</div><!-- /.modal-content -->
