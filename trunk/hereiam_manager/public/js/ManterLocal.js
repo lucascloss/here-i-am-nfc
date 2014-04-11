@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('#listaLocais').dataTable();
    
-    $('[data-toggle="modal"]').click(function(e) { 
+    /*$('[data-toggle="modal"]').click(function(e) { 
     	$.ajax({
     	    type:"GET", 
     	    url: "http://hereiam.zapto.org/hereiamwse/user/find?username=lcloss", 
@@ -16,7 +16,7 @@ $(document).ready(function() {
     	});
     });
     
-    /*$('#btnAdicionar').click(function() { 
+    $('#btnAdicionar').click(function() { 
     	$(location).attr('href', 'index.php?controle=manterlocal&acao=adicionar');
     });
     
