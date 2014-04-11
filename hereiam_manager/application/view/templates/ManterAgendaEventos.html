@@ -28,7 +28,7 @@
   				 			</div>	
 					</div>
 					<div class="form-group">		
-						<label for="horaInicio" class="col-sm-5 control-label">Hor&aacute;rio de Inicio</label>
+						<label for="horaInicio" class="col-sm-5 control-label">Hor&aacute;rio de In&iacute;cio</label>
   							<div class="col-xs-5">
     			 				<input type="text" class="form-control" id="horaInicioIn" placeholder="">
     			 				<script type="text/javascript">
@@ -67,7 +67,73 @@
 				</div>
 			</div>
 {elseif $acao == "editar"}
-
+<!-- Modal Editar Evento -->
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="modalAdicionarEvento">Editar Evento</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" role="form" method="" action="">
+					<div class="form-group">		
+						<label for="evento" class="col-sm-5 control-label">Nome do Evento</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="evento" placeholder="Nome do Evento">
+  				 			</div>	
+					</div>
+					<div class="form-group">		
+						<label for="info" class="col-sm-5 control-label">Informa&ccedil;&otilde;es</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="info" placeholder="Informa&ccedil;&otilde;es">
+  				 			</div>	
+					</div>
+					<div class="form-group">		
+						<label for="dataInicio" class="col-sm-5 control-label">Data de In&iacute;cio</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="dataInicioIn" placeholder="">    			 				
+								<script type=”text/javascript”>								
+									$('#dataInicioIn').datepicker();											
+								</script>
+  				 			</div>	
+					</div>
+					<div class="form-group">		
+						<label for="horaInicio" class="col-sm-5 control-label">Hor&aacute;rio de In&iacute;cio</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="horaInicioIn" placeholder="">
+    			 				<script type="text/javascript">
+	    			 				$('#horaInicioIn').datetimepicker({
+	    			 					datepicker:false,
+	    			 					format:'H:i'
+	    			 				});
+						        </script>
+  				 			</div>	
+					</div>
+					<div class="form-group">		
+						<label for="dataFim" class="col-sm-5 control-label">Data do Encerramento</label>
+  							<div class="col-xs-5">
+    			 				<input type="text" class="form-control" id="dataFimIn" placeholder="">
+    			 				<script type=”text/javascript”>								
+									$('#dataFimIn').datepicker();											
+								</script>
+  				 			</div>	
+					</div>
+					<div class="form-group">		
+						<label for="horaFim" class="col-sm-5 control-label">Hor&aacute;rio do Encerramento</label>
+  							<div class="col-xs-5">  							
+    			 				<input type="text" class="form-control" id="horafimIn" placeholder="">
+    			 				<script type="text/javascript">
+	    			 				$('#horafimIn').datetimepicker({
+	    			 					datepicker:false,
+	    			 					format:'H:i'
+	    			 				});
+						        </script>
+					        </div>	
+					</div>				
+				</form>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-success">Editar</button>
+				</div>
+			</div>
 {elseif $acao == "remover"}
 		<!-- Modal Remover Evento -->
 			<div class="modal-header">
