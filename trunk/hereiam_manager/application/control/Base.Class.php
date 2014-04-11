@@ -35,6 +35,8 @@ abstract class Base
 		$this->getForm()->atribuirValor('controle', Roteador::getInstancia()->getControle());
 		$this->getForm()->atribuirValor('acao', Roteador::getInstancia()->getAcao());
 		$this->getForm()->atribuirValor('parametros', Roteador::getInstancia()->getParametros());
+		$this->getForm()->atribuirValor('usuario', Autenticacao::getUsuario());
+		$this->getForm()->atribuirValor('tipoUsuario', Autenticacao::getTipoUsuario());
 	}
 	
 	public function setForm($form)

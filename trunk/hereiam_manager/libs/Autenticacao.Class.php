@@ -7,6 +7,7 @@ use Libs\Singleton;
 class Autenticacao extends Singleton
 {
 	private static $usuario;
+	private static $tipoUsuario;
 	
 	public function __construct() { }
 	
@@ -14,20 +15,31 @@ class Autenticacao extends Singleton
     {
         return self::$usuario;
     }
-	
-	static private function setUsuario($obj)
+    
+    static public function getTipoUsuario()
     {
-        self::$usuario = $obj;
+    	return self::$tipoUsuario;	
     }
-	
+    
 	static public function autenticado() {
 		try {
-	        if(isset($_SESSION['autenticado']) && $_SESSION['autenticado'] == true) {
+	        if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] == true) {
 	        	
-	        	//$usuario = $_SESSION['usuario'];
-	        	//$usuario = $em->find('Modelo\Usuario', $usuario);
-
-	        	//self::setUsuario($usuario);
+	        	self::$usuario = $_SESSION['usuario'];
+	        	
+	        	// Teste temporário //
+	        	switch (self::$usuario) {
+	        		case "admin@solucao":
+	        			self::$tipoUsuario = 1;
+	        			break;
+	        		case "admin@ambiente":
+	        			self::$tipoUsuario = 2;
+	        			break;
+	        		case "admin@local":
+	        			self::$tipoUsuario = 3;
+	        			break;
+	        	}
+	        	
 				return true;
 	        }
 			else {

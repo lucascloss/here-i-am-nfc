@@ -31,7 +31,8 @@ class Login extends Base
 			$email = !empty($_POST['usuario']) ? $_POST['usuario'] : "";
 			$senha = !empty($_POST['senha']) ? $_POST['senha'] : "";
 			
-			if (($email == "admin@admin") && ($senha == "admin")) {
+			if ((($email == "admin@solucao") || ($email == "admin@ambiente") || ($email == "admin@local")) && 
+				($senha == "admin")) {
 				// Define os valores para o usuário global
 				$_SESSION['usuario'] = $email;
 				$_SESSION['autenticado'] = true;
