@@ -1,8 +1,34 @@
-{if $acao == "adicionar" || $acao == "editar"}
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-12 01:51:49
+         compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAgendaEventos.html" */ ?>
+<?php /*%%SmartyHeaderCode:124884996853475c71ca24e7-01397419%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    'cf7cc945989913659deb4c8754e569f615c120c8' => 
+    array (
+      0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAgendaEventos.html',
+      1 => 1397260257,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '124884996853475c71ca24e7-01397419',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.17',
+  'unifunc' => 'content_53475c71d3dd86_05076440',
+  'variables' => 
+  array (
+    'acao' => 0,
+    'tipoUsuario' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_53475c71d3dd86_05076440')) {function content_53475c71d3dd86_05076440($_smarty_tpl) {?><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar"||$_smarty_tpl->tpl_vars['acao']->value=="editar") {?>
 			<!-- Modal Evento -->
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="modalEvento">{if $acao == "adicionar"}Adicionar{else}Editar{/if} Evento</h4>
+				<h4 class="modal-title" id="modalEvento"><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>Adicionar<?php } else { ?>Editar<?php }?> Evento</h4>
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" role="form" method="" action="">
@@ -63,22 +89,22 @@
 					<div class="form-group">	 
 			   			 <label for="listaAmbientes" class="col-sm-5 control-label">Nome do Ambiente</label>
 			   			 <div class="col-xs-5">
-			     		 	<select class="form-control" id="listaAmbientes"{if $tipoUsuario != 1} disabled="disabled"{/if}>...</select>
+			     		 	<select class="form-control" id="listaAmbientes"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value!=1) {?> disabled="disabled"<?php }?>>...</select>
 			   			 </div>   				    				 
 					</div>
 					<div class="form-group">	 
 			   			 <label for="listaAmbientes" class="col-sm-5 control-label">Nome do Local</label>
 			   			 <div class="col-xs-5">
-			     		 	<select class="form-control" id="listaLocais"{if $tipoUsuario == 3} disabled="disabled"{/if}>...</select>
+			     		 	<select class="form-control" id="listaLocais"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value==3) {?> disabled="disabled"<?php }?>>...</select>
 			   			 </div>   				    				 
 					</div>								
 				</form>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">{if $acao == "adicionar"}Adicionar{else}Editar{/if}</button>
+					<button type="button" class="btn btn-success"><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>Adicionar<?php } else { ?>Editar<?php }?></button>
 				</div>
 			</div>
-{elseif $acao == "remover"}
+<?php } elseif ($_smarty_tpl->tpl_vars['acao']->value=="remover") {?>
 		<!-- Modal Remover Evento -->
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -93,10 +119,13 @@
 					<button type="button" class="btn btn-danger">Remover</button>
 				</div>
 			</div>
-{else}
-{include file="FragmentoCabecalho.html"}
-{include file="FragmentoConteudoCabecalho.html"}
-{include file="FragmentoMenu.html"}
+<?php } else { ?>
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoMenu.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
 
 	<div class="panel panel-default">
 		<div class="panel-heading"><h3>Gerenciar Eventos</h3></div>
@@ -165,6 +194,9 @@
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-{include file="FragmentoConteudoRodape.html"} 
-{include file="FragmentoRodape.html"}
-{/if}
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+ 
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php }?>
+<?php }} ?>

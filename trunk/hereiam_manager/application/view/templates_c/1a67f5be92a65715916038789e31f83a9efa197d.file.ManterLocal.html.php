@@ -1,8 +1,34 @@
-{if $acao == "adicionar" || $acao == "editar"}
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-12 01:29:40
+         compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterLocal.html" */ ?>
+<?php /*%%SmartyHeaderCode:1612445595534764d52c18f3-53098038%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    '1a67f5be92a65715916038789e31f83a9efa197d' => 
+    array (
+      0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterLocal.html',
+      1 => 1397258978,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '1612445595534764d52c18f3-53098038',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.17',
+  'unifunc' => 'content_534764d533c8b6_57973637',
+  'variables' => 
+  array (
+    'acao' => 0,
+    'tipoUsuario' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_534764d533c8b6_57973637')) {function content_534764d533c8b6_57973637($_smarty_tpl) {?><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar"||$_smarty_tpl->tpl_vars['acao']->value=="editar") {?>
 			<!-- Modal Local -->
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title" id="modalLocal">{if $acao == "adicionar"}Adicionar{else}Editar{/if} Local</h4>
+					<h4 class="modal-title" id="modalLocal"><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>Adicionar<?php } else { ?>Editar<?php }?> Local</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form" method="" action="">
@@ -15,7 +41,7 @@
    						<div class="form-group">	 
 		   					<label for="tipo" class="col-sm-4 control-label">Tipo</label>
 		   					<div class="col-xs-5">
-		     			 		<input type="text" class="form-control" id="tipo" placeholder="Tipo"{if $tipoUsuario == 3} disabled="disabled"{/if} />
+		     			 		<input type="text" class="form-control" id="tipo" placeholder="Tipo"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value==3) {?> disabled="disabled"<?php }?> />
 		   				 	</div>
 		   				</div>	 
 			  			<div class="form-group">
@@ -27,32 +53,32 @@
 			   			<div class="form-group">	 
 			   				 <label for="latitude" class="col-sm-4 control-label">Latitude</label>
 			   				 <div class="col-xs-5">
-			     			 	<input type="text" class="form-control" id="latitude" placeholder="Latitude"{if $tipoUsuario != 1} disabled="disabled"{/if} />
+			     			 	<input type="text" class="form-control" id="latitude" placeholder="Latitude"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value!=1) {?> disabled="disabled"<?php }?> />
 			   				 </div>   				    				 
 						</div>						
 						<div class="form-group">	 
 			   				 <label for="longitude" class="col-sm-4 control-label">Longitude</label>
 			   				 <div class="col-xs-5">
-			     			 	<input type="text" class="form-control" id="longitude" placeholder="Longitude"{if $tipoUsuario != 1} disabled="disabled"{/if} />
+			     			 	<input type="text" class="form-control" id="longitude" placeholder="Longitude"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value!=1) {?> disabled="disabled"<?php }?> />
 			   				 </div>   				    				 
 						</div>					
 						<div class="form-group">	 
 			   				 <label for="listaAmbientes" class="col-sm-4 control-label">Nome do Ambiente</label>
 			   				 <div class="col-xs-5">
-			     			 	<select class="form-control" id="listaAmbientes"{if $tipoUsuario != 1} disabled="disabled"{/if}>...</select>
+			     			 	<select class="form-control" id="listaAmbientes"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value!=1) {?> disabled="disabled"<?php }?>>...</select>
 			   				 </div>   				    				 
 						</div>						
 						<div class="form-group">	 
 			   				 <label for="listaAdmLocal" class="col-sm-4 control-label">Administrador do Local</label>
 			   				 <div class="col-xs-5">
-								<select class="form-control" id="listaAdmLocal"{if $tipoUsuario == 3} disabled="disabled"{/if}>...</select>			     			 	
+								<select class="form-control" id="listaAdmLocal"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value==3) {?> disabled="disabled"<?php }?>>...</select>			     			 	
 			   				 </div>   				    				 
 						</div>
 						<div class="form-group">
 							<div class="col-sm-offset-4 col-sm-8">
 								<div class="checkbox">
 					    			<label >
-					      				<input type="checkbox"{if $tipoUsuario != 1} disabled="disabled"{/if}>&Eacute; importante?
+					      				<input type="checkbox"<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value!=1) {?> disabled="disabled"<?php }?>>&Eacute; importante?
 					    			</label>
 					  			</div>
 							</div>
@@ -60,10 +86,10 @@
 					</form>								
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">{if $acao == "adicionar"}Adicionar{else}Editar{/if}</button>
+					<button type="button" class="btn btn-success"><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>Adicionar<?php } else { ?>Editar<?php }?></button>
 				</div>
 			</div>
-{elseif $acao == "remover"}
+<?php } elseif ($_smarty_tpl->tpl_vars['acao']->value=="remover") {?>
 			<!-- Modal Remover Local -->
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -79,28 +105,31 @@
 				</div>
 			</div>
 
-{else}
-{include file="FragmentoCabecalho.html"}
-{include file="FragmentoConteudoCabecalho.html"}
-{include file="FragmentoMenu.html"}
+<?php } else { ?>
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoMenu.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
 
 <div class="panel panel-default">
 	<div class="panel-heading"><h3>Gerenciar Locais</h3></div>
 		<div class="panel-body">
  			<div class="form-group">	
-	{if $tipoUsuario == 1}			
+	<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value==1) {?>			
 				<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manterlocal&acao=adicionar" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-plus"></span>
 				</a>
-	{/if}			
+	<?php }?>			
 				<a data-toggle="modal" data-target="#modalEditar" href="index.php?controle=manterlocal&acao=editar" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-edit"></span>
 				</a>
-	{if $tipoUsuario == 1}					
+	<?php if ($_smarty_tpl->tpl_vars['tipoUsuario']->value==1) {?>					
 				<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manterlocal&acao=remover" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-remove"></span>
 				</a>	
-	{/if}													
+	<?php }?>													
 			</div>		
 			<table class="table table-striped table-bordered" id="listaLocais">
 				<thead>
@@ -326,6 +355,8 @@
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-{include file="FragmentoConteudoRodape.html"} 
-{include file="FragmentoRodape.html"}
-{/if}
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+ 
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php }?><?php }} ?>
