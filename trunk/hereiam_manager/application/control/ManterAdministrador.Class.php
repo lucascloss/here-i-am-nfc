@@ -26,13 +26,22 @@ class ManterAdministrador extends BaseCRUD
 		$this->getForm()->mostrar();
 	}
 	
-	public function adicionar() { }
+	public function adicionar() 
+	{
+		$this->getForm()->mostrar();
+	}
 	
-	public function editar($parametros) { }
+	public function editar($parametros)
+	{
+		$this->getForm()->mostrar();
+	}
 	
 	public function salvar() { }
 	
-	public function remover($parametros) { }
+	public function remover($parametros) 
+	{
+		$this->getForm()->mostrar();
+	}
 	
 }
 
