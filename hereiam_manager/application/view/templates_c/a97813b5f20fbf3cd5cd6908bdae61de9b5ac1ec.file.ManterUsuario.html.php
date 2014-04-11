@@ -1,4 +1,29 @@
-{if $acao == "remover"}
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-12 01:43:08
+         compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterUsuario.html" */ ?>
+<?php /*%%SmartyHeaderCode:1999576354534768d9521c60-00374438%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+$_valid = $_smarty_tpl->decodeProperties(array (
+  'file_dependency' => 
+  array (
+    'a97813b5f20fbf3cd5cd6908bdae61de9b5ac1ec' => 
+    array (
+      0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterUsuario.html',
+      1 => 1397259535,
+      2 => 'file',
+    ),
+  ),
+  'nocache_hash' => '1999576354534768d9521c60-00374438',
+  'function' => 
+  array (
+  ),
+  'version' => 'Smarty-3.1.17',
+  'unifunc' => 'content_534768d957c6c8_15125101',
+  'variables' => 
+  array (
+    'acao' => 0,
+  ),
+  'has_nocache_code' => false,
+),false); /*/%%SmartyHeaderCode%%*/?>
+<?php if ($_valid && !is_callable('content_534768d957c6c8_15125101')) {function content_534768d957c6c8_15125101($_smarty_tpl) {?><?php if ($_smarty_tpl->tpl_vars['acao']->value=="remover") {?>
 		<!-- Modal Remover Usu�rio-->
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -13,10 +38,13 @@
 					<button type="button" class="btn btn-danger">Remover</button>
 				</div>
 			</div>
-{else}
-{include file="FragmentoCabecalho.html"}
-{include file="FragmentoConteudoCabecalho.html"}
-{include file="FragmentoMenu.html"}
+<?php } else { ?>
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoCabecalho.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoMenu.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
 
 <div class="panel panel-default">
 	<div class="panel-heading"><h3>Gerenciar Usu&aacute;rios</h3></div>
@@ -67,6 +95,8 @@
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->		
-{include file="FragmentoConteudoRodape.html"} 
-{include file="FragmentoRodape.html"}
-{/if}
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+ 
+<?php echo $_smarty_tpl->getSubTemplate ("FragmentoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+<?php }?><?php }} ?>

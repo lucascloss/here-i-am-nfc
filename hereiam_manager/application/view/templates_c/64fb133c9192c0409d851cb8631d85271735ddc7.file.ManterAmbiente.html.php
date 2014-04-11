@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.17, created on 2014-04-11 05:55:13
+<?php /* Smarty version Smarty-3.1.17, created on 2014-04-12 01:43:36
          compiled from "/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAmbiente.html" */ ?>
 <?php /*%%SmartyHeaderCode:14992470525344b6ab28bb67-54291970%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '64fb133c9192c0409d851cb8631d85271735ddc7' => 
     array (
       0 => '/Users/guiwunsch/Projetos/HereIAm/application/view/templates/ManterAmbiente.html',
-      1 => 1397188505,
+      1 => 1397258991,
       2 => 'file',
     ),
   ),
@@ -37,7 +37,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   							<div class="col-xs-5">
     			 				<input type="text" class="form-control" id="nome" placeholder="Nome" />
   				 			</div>	
- 						</div>			
+ 					</div>			
 					<div class="form-group">		
 						<label for="tipo" class="col-sm-5 control-label">Tipo</label>
   							<div class="col-xs-5">
@@ -107,7 +107,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 				</form>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">Adicionar</button>
+					<button type="button" class="btn btn-success"><?php if ($_smarty_tpl->tpl_vars['acao']->value=="adicionar") {?>Adicionar<?php } else { ?>Editar<?php }?></button>
 				</div>
 			</div>
 <?php } elseif ($_smarty_tpl->tpl_vars['acao']->value=="remover") {?>
@@ -155,20 +155,25 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 				<thead>
 					<tr>
 						<td><strong>Nome</strong></td>
-						<td width="20%"><strong>Usu&aacute;rio</strong></td>
-						<td width="30%"><strong>Email</strong></td>
+						<td width="20%"><strong>Tipo</strong></td>
+						<td width="30%"><strong>Administrador</strong></td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td>Guilherme Wunsch</td>
+						<td>Feevale</td>
+						<td>Universidades</td>
 						<td>guiwunsch</td>
-						<td>email@guiwunsch.com</td>
 					</tr>
 					<tr>
-						<td>Lucas Closs</td>
+						<td>Pinacoteca de Montenegro</td>
+						<td>Museus</td>
 						<td>lcloss</td>
-						<td>lucas.closs@gmail.com</td>
+					</tr>
+					<tr>
+						<td>Unisinos</td>
+						<td>Universidades</td>
+						<td>guiwunsch</td>
 					</tr>
 				</tbody>
 			</table>
@@ -198,6 +203,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
+	
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoConteudoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
  
 <?php echo $_smarty_tpl->getSubTemplate ("FragmentoRodape.html", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
