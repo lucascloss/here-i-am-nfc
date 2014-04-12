@@ -149,6 +149,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         //mapView.setMultiTouchControls(true);    
         mapController = (MapController) mapView.getController();
         
+        currentMarker = null;
+        
         nodeMarker = new Marker(mapView);
        
         mapOverlay = new MapOverlay(context);        
@@ -426,7 +428,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	}
 	        	selectedMenu = ALERT_ROUTE_A;
 	        	
-	        	if(!currentMarker.equals(null)){
+	        	if(!currentMarker.equals("null")){
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
