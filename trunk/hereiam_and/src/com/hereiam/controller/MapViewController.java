@@ -146,7 +146,7 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         mapView.setClickable(true);
         mapView.setMinZoomLevel(16);
         mapView.setMaxZoomLevel(18);
-        //mapView.setMultiTouchControls(true);    
+        mapView.setMultiTouchControls(true);    
         mapController = (MapController) mapView.getController();
         
         currentMarker = null;
@@ -403,11 +403,48 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			menuStopRoute.setVisible(true);
 			MenuItem menuUpdateRoute = menu.findItem(R.id.action_route_update);
 			menuUpdateRoute.setVisible(true);
+			
+			MenuItem menuUpdate = menu.findItem(R.id.action_update);
+			menuUpdate.setVisible(false);
+			
+			MenuItem menuRoute = menu.findItem(R.id.action_route);
+			menuRoute.setVisible(false);
+			
+			MenuItem menuListEnvironments = menu.findItem(R.id.action_list_environments);
+			menuListEnvironments.setVisible(false);
+			
+			MenuItem menuListPlaces = menu.findItem(R.id.action_list_places);
+			menuListPlaces.setVisible(false);
+			
+			MenuItem menuListFavorites = menu.findItem(R.id.action_list_favorites);
+			menuListFavorites.setVisible(false);
+			
+			MenuItem menuListImportants = menu.findItem(R.id.action_list_importants);
+			menuListImportants.setVisible(false);
+			
 		} else {
 			MenuItem menuStopRoute = menu.findItem(R.id.action_route_stop);
 			menuStopRoute.setVisible(false);
 			MenuItem menuUpdateRoute = menu.findItem(R.id.action_route_update);
 			menuUpdateRoute.setVisible(false);
+			
+			MenuItem menuUpdate = menu.findItem(R.id.action_update);
+			menuUpdate.setVisible(true);
+			
+			MenuItem menuRoute = menu.findItem(R.id.action_route);
+			menuRoute.setVisible(true);
+			
+			MenuItem menuListEnvironments = menu.findItem(R.id.action_list_environments);
+			menuListEnvironments.setVisible(true);
+			
+			MenuItem menuListPlaces = menu.findItem(R.id.action_list_places);
+			menuListPlaces.setVisible(true);
+			
+			MenuItem menuListFavorites = menu.findItem(R.id.action_list_favorites);
+			menuListFavorites.setVisible(true);
+			
+			MenuItem menuListImportants = menu.findItem(R.id.action_list_importants);
+			menuListImportants.setVisible(true);
 		}
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -428,7 +465,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	}
 	        	selectedMenu = ALERT_ROUTE_A;
 	        	
-	        	if(!currentMarker.equals("null")){
+//	        	if(!currentMarker.equals("null")){
+	        	if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -447,7 +495,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	            createAlertDialog(ALERT_ENVIRONMENT);
 	            selectedMenu = ALERT_ENVIRONMENT;
 	            
-	            if(!currentMarker.equals(null)){
+//	            if(!currentMarker.equals("null")){
+	            if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	            }else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -466,7 +525,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	            createAlertDialog(ALERT_PLACE);
 	            selectedMenu = ALERT_PLACE;
 	            
-	            if(!currentMarker.equals(null)){
+//	            if(!currentMarker.equals("null")){
+	            if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	            }else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -485,7 +555,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	createAlertDialog(ALERT_FAVORITE);
 	        	selectedMenu = ALERT_FAVORITE;
 	        	
-	        	if(!currentMarker.equals(null)){
+//	        	if(!currentMarker.equals("null")){
+	        	if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -504,7 +585,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	createAlertDialog(ALERT_IMPORTANT);
 	        	selectedMenu = ALERT_IMPORTANT;
 	        	
-	        	if(!currentMarker.equals(null)){
+//	        	if(!currentMarker.equals("null")){
+	        	if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -598,7 +690,18 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 					}					
 				}
 	        		
-	        	if(!currentMarker.equals(null)){
+//	        	if(!currentMarker.equals(null)){
+	        	if(currentMarker == null){
+	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+	    			if(menuEnvironment.isVisible()){
+	    				menuEnvironment.setVisible(false);
+	    			}
+	    			
+	    			MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+	    			if(menuPlace.isVisible()){
+	    				menuPlace.setVisible(false);
+	    			}
+	        	}else {
 	        		MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
 	    			if(menuEnvironment.isVisible()){
 	    				menuEnvironment.setVisible(false);
@@ -609,6 +712,9 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	    				menuPlace.setVisible(false);
 	    			}
 	        	}
+	        	
+	        	currentMarker = null;
+	        	selectedPlace = false;
 	        	
 	        	mapView.invalidate();
 	        	return true;
