@@ -25,6 +25,7 @@
     <string name="login_send">acessar</string>
     <string name="login_new">criar nova conta</string>
     
+    <string name="dashboard_info">ver informações</string>
     <string name="dashboard_map">visualizar mapa</string>
     <string name="dashboard_nfc">leitura etiqueta NFC</string>
     <string name="dashboard_places">listar locais</string>
@@ -34,7 +35,7 @@
     
     <string name="map_info_environment">info do ambiente</string>
     <string name="map_info_place">info do local</string>
-    <string name="map_update">atualizar posição</string>    
+    <string name="map_update">atualizar posição por NFC</string>    
     <string name="map_route">montar rota</string>
     <string name="map_route_update">atualizar rota</string>
     <string name="map_route_stop">parar rota</string>

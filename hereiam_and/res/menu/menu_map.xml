@@ -3,15 +3,15 @@
     <item
         android:id="@+id/action_info_environment"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"        
-        android:title="@string/map_info_environment"
+        android:showAsAction="always"        
+        android:icon="@drawable/info64"
         android:visible="false"/>
     
     <item
         android:id="@+id/action_info_place"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"        
-        android:title="@string/map_info_place"
+        android:showAsAction="always"        
+        android:icon="@drawable/info64"
         android:visible="false"/>        
     
     <item

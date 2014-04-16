@@ -118,24 +118,12 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	private ArrayList<Place> placesExtra = new ArrayList<Place>();
 	private boolean selectedPlace = false;
 	
-	private int scrollX;
-	private int scrollY;
-	
-//	private NfcManager nfcManager;
-//  private NfcAdapter nfcAdapter;
-//  private PendingIntent pendingIntent;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapview);
         
         context = this;
-                
-//        this.nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-//        nfcAdapter.disableForegroundDispatch(this);
-        
-//        pendingIntent = PendingIntent.getActivity( this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         
         userId = getUserId();
         userName = getUserName();
@@ -257,6 +245,15 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        		
 		        		setTo(Double.parseDouble(mapOverlayPlace.getPlaceLatitude()), 
 		        				Double.parseDouble(mapOverlayPlace.getPlaceLongitude()));
+		        	}
+		        	
+		        	if(action.equals("ENVIRONMENT")){
+		        		currentMarker = mapOverlayEnvironment.getEnvtName();
+		        		setTitle(currentMarker);		        		
+		        	}else {
+		        		currentMarker = mapOverlayPlace.getPlaceName();
+		        		setTitle(currentMarker);
+		        		selectedPlace = true;
 		        	}
 		        }
 		        
@@ -386,16 +383,27 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         }
 	}
 	
-	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu){
         this.menu = menu;
 		getMenuInflater().inflate(R.menu.menu_map, menu);
+		
+		if(action != null && !action.equals("ROUTE")){				
+			if(action.equals("ENVIRONMENT")){
+				MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+				menuEnvironment.setTitle(getString(R.string.dashboard_info));
+				menuEnvironment.setVisible(true);
+			}else {
+	    		MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+				menuPlace.setTitle(getString(R.string.dashboard_info));
+				menuPlace.setVisible(true);
+			}
+		}
+		
         return true;
     }
 	
 	@Override
-
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
 		if(route){
@@ -422,7 +430,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			MenuItem menuListImportants = menu.findItem(R.id.action_list_importants);
 			menuListImportants.setVisible(false);
 			
-		} else {
+		} else {	
+			
 			MenuItem menuStopRoute = menu.findItem(R.id.action_route_stop);
 			menuStopRoute.setVisible(false);
 			MenuItem menuUpdateRoute = menu.findItem(R.id.action_route_update);
@@ -716,6 +725,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	        	currentMarker = null;
 	        	selectedPlace = false;
 	        	
+	        	setTitle(getString(R.string.activity_map));
+	        	
 	        	mapView.invalidate();
 	        	return true;
 	        case R.id.action_route_update:
@@ -736,6 +747,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     @Override
 	public void onItemClick(AdapterView av, View v, int position, long id){		 
 		
+    	MenuItem menuPlace;
+    	
 		alertDialog.dismiss();
 		switch(getSelectedMenu()){
 			case ALERT_ROUTE_A:
@@ -856,6 +869,14 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    route = false;
     		    
             	setTo(latitude, longitude);
+            	
+            	setTitle(environments.get(position).getEnvtName());
+            	MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+    			menuEnvironment.setTitle(getString(R.string.dashboard_info));
+    			menuEnvironment.setVisible(true);
+            	
+    			currentMarker = currentEnvironment;
+    			
             	mapView.invalidate(); 
 				break;
 			case ALERT_PLACE:
@@ -908,6 +929,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    route = false;
                 
                 setTo(latitude, longitude);
+                
+                setTitle(placeExtra.getPlaceName());
+            	menuPlace = menu.findItem(R.id.action_info_place);
+    			menuPlace.setTitle(getString(R.string.dashboard_info));
+    			menuPlace.setVisible(true);
+                
+    			currentMarker = currentPlace;
+    			
+    			selectedPlace = true;
+    			
                 mapView.invalidate();
 				break;
 			case ALERT_FAVORITE:
@@ -960,6 +991,16 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			    route = false;
 			    
 				setTo(latitude, longitude);
+				
+				setTitle(placeExtra.getPlaceName());
+            	menuPlace = menu.findItem(R.id.action_info_place);
+    			menuPlace.setTitle(getString(R.string.dashboard_info));
+    			menuPlace.setVisible(true);
+				
+    			currentMarker = currentPlace;
+    			
+    			selectedPlace = true;
+    			
                 mapView.invalidate();
 				break;
 			case ALERT_IMPORTANT:
@@ -1012,16 +1053,24 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
     		    route = false;
                 
                 setTo(latitude, longitude);
+                
+                setTitle(placeExtra.getPlaceName());
+                menuPlace = menu.findItem(R.id.action_info_place);
+    			menuPlace.setTitle(getString(R.string.dashboard_info));
+    			menuPlace.setVisible(true);
+                
+    			currentMarker = currentPlace;
+    			
+    			selectedPlace = true;
+    			
                 mapView.invalidate();
 				break;
 		}
 	}
 
-	
     @Override
 	public void onClick(View v) {			
 	}
-	
 	
 	public RoadManager getMapQuestKey(){
 		return new MapQuestRoadManager("Fmjtd%7Cluur2luan5%2Ca2%3Do5-901auz");
@@ -1041,9 +1090,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			public boolean onMarkerClick(final Marker arg0, final MapView arg1) {								
 				//arg0.showInfoWindow();
 				MenuItem menuPlace = menu.findItem(R.id.action_info_place);
-				menuPlace.setTitle("INFO - " + arg0.getTitle());
+				menuPlace.setTitle(getString(R.string.dashboard_info));
 				currentMarker = arg0.getTitle();
 				menuPlace.setVisible(true);
+				setTitle(currentMarker);
 				selectedPlace = true;
 				return false;
 			}
@@ -1057,9 +1107,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 			public boolean onMarkerClick(Marker arg0, MapView arg1) {
 				//arg0.showInfoWindow();
 				MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
-				menuEnvironment.setTitle("INFO - " + arg0.getTitle());
+				menuEnvironment.setTitle(getString(R.string.dashboard_info));
 				currentMarker = arg0.getTitle();
 				menuEnvironment.setVisible(true);
+				setTitle(currentMarker);
 				return false;
 			}
         });
@@ -1191,15 +1242,13 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
         		if(menuPlace.isVisible()){
         			menuPlace.setVisible(false);
         			selectedPlace = false;
+        			setTitle(getString(R.string.activity_map));
         		}
         		
         		if(menuEnvironment.isVisible()){
         			menuEnvironment.setVisible(false);
+        			setTitle(getString(R.string.activity_map));
         		}
-        	}
-        	        	
-        	if(mapView.getZoomLevel() > 18){             		
-
         	}
         return false;
         }           
@@ -1222,6 +1271,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     nodeMarker.setTitle(currentPlace);  
                     addListenerOnMarkerPlace(nodeMarker);
                     mapView.getOverlays().add(nodeMarker);
+                    
+                    currentMarker = currentPlace;
                 }
 	                
                 if(action.equals("IMPORTANT")){
@@ -1234,6 +1285,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     nodeMarker.setTitle(currentPlace);    
                     addListenerOnMarkerPlace(nodeMarker);
                     mapView.getOverlays().add(nodeMarker);
+                    
+                    currentMarker = currentPlace;
                 }	
 	                
                 if(action.equals("FAVORITE")){
@@ -1245,6 +1298,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
                     nodeMarker.setTitle(currentPlace);    
                     addListenerOnMarkerPlace(nodeMarker);
                     mapView.getOverlays().add(nodeMarker);
+                    
+                    currentMarker = currentPlace;
                 }
     	        finishProgressDialog();
 	        }
@@ -1267,6 +1322,8 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		        	if(nfcEnvironment){
 		        		environmentWSI = new EnvironmentWSI();
 		        		environment = environmentWSI.getEnvironmentByNfc(idNfc);
+		        		
+		        		environmentExtra = environment;
 		        		
 		        		editor = preferences.edit();
 		    		    jsonArray = new JSONArray();
@@ -1295,7 +1352,10 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		                nodeMarker.setIcon(nodeIconP);
 		                nodeMarker.setTitle(currentEnvironment); 
 		                addListenerOnMarkerPlace(nodeMarker);
-		                mapView.getOverlays().add(nodeMarker);	                
+		                mapView.getOverlays().add(nodeMarker);	   
+		                
+		                currentMarker = currentEnvironment;
+		                
 		        	}
 	        	
 		        	if(nfcPlace){
@@ -1332,7 +1392,11 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 		                nodeMarker.setIcon(nodeIconP);
 		                nodeMarker.setTitle(currentPlace);  
 		                addListenerOnMarkerPlace(nodeMarker);
-		                mapView.getOverlays().add(nodeMarker);		                
+		                mapView.getOverlays().add(nodeMarker);	
+		                
+		                currentMarker = currentPlace;
+		                
+		                selectedPlace = true;
 		        	}
 	        	}else{
 	        		placeWSI = new PlaceWSI();
@@ -1409,11 +1473,19 @@ public class MapViewController extends BaseActivity implements Runnable, OnClick
 	protected void onPostExecute(Void res){
 		
 		if(nfcEnvironment){
+			setTitle(environment.getEnvtName());
 			setTo(Double.parseDouble(environment.getEnvtLatitude()), Double.parseDouble(environment.getEnvtLongitude()));
+			MenuItem menuEnvironment = menu.findItem(R.id.action_info_environment);
+			menuEnvironment.setTitle(getString(R.string.dashboard_info));
+			menuEnvironment.setVisible(true);
 		}
 		if(nfcPlace){
 			if(!routeNfc){
+				setTitle(place.getPlaceName());
 				setTo(Double.parseDouble(place.getPlaceLatitude()), Double.parseDouble(place.getPlaceLongitude()));
+				MenuItem menuPlace = menu.findItem(R.id.action_info_place);
+				menuPlace.setTitle(getString(R.string.dashboard_info));
+				menuPlace.setVisible(true);
 			}else {
 				setTo(Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLatitude()), Double.parseDouble(mapOverlayPlaces.get(0).getPlaceLongitude()));
 			}
