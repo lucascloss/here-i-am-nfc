@@ -6,10 +6,10 @@ use Libs\Carregador,
 define('DIRETORIO_BASE', __DIR__ . '/..');
 define('URL_BASE', '/HereIAm');
 
-require_once DIRETORIO_BASE . '/libs/Singleton.Class.php';
-require_once DIRETORIO_BASE . '/libs/Carregador.Class.php';	
-require_once DIRETORIO_BASE . '/libs/Roteador.Class.php';
-require_once DIRETORIO_BASE . '/libs/smarty/smarty-3.1.17/Smarty.class.php';
+require_once DIRETORIO_BASE . '/Libs/Singleton.Class.php';
+require_once DIRETORIO_BASE . '/Libs/Carregador.Class.php';	
+require_once DIRETORIO_BASE . '/Libs/Roteador.Class.php';
+require_once DIRETORIO_BASE . '/Libs/smarty/smarty-3.1.17/Smarty.class.php';
 
 $carregador = Carregador::getInstancia();
 
