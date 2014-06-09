@@ -1,6 +1,17 @@
 $(document).ready(function() {
-    $('#listaLocais').dataTable();
-   
+	
+    $('#listaLocais').dataTable( {
+        "ajax": URL_BASE + "/places",
+        "ajaxDataProp": "",
+        "columns": [
+            //{ "data": "id" },
+            { "data": "name" },
+            { "data": "environmentId" },
+            { "data": "type" },
+            { "data": "placeAdmId" }     
+        ]
+    } );
+    
     /*$('[data-toggle="modal"]').click(function(e) { 
     	$.ajax({
     	    type:"GET", 

@@ -1,3 +1,5 @@
+URL_BASE = "http://54.186.1.128:3000/api";
+
 $.extend( true, $.fn.dataTable.defaults, {
 	"sDom":
 		"<'row'<'col-xs-6'l><'col-xs-6'f>r>"+
