@@ -9,10 +9,10 @@ abstract class Base extends \Smarty
     { 
 		parent::__construct();
 
-		$this->template_dir = DIRETORIO_BASE . '/application/view/templates';
-		$this->compile_dir = DIRETORIO_BASE . '/application/view/templates_c';
-		$this->config_dir = DIRETORIO_BASE . '/application/view/config';
-		$this->cache_dir = DIRETORIO_BASE . '/application/view/cache';
+		$this->template_dir = DIRETORIO_BASE . '/application/View/templates';
+		$this->compile_dir = DIRETORIO_BASE . '/application/View/templates_c';
+		$this->config_dir = DIRETORIO_BASE . '/application/View/config';
+		$this->cache_dir = DIRETORIO_BASE . '/application/View/cache';
 	
         $this->caching = false;
     }
