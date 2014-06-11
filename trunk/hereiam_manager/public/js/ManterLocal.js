@@ -27,9 +27,34 @@ $(document).ready(function() {
     $('#modalAdicionar').on('loaded.bs.modal', function (e) {
     	$(this).find("form").submit($.adicionarLocal);
     });
-    
-    //botão editar
-    
+        
+    $('#modalAdicionar').on('show.bs.modal', function (e) {
+ 		
+ 		$.ajax({
+         	type: "GET",
+         	url: URL_BASE + "/environments",        	
+         	success: function(data) {
+         		$('#environmentId option').remove();
+         		for (var i = 0; i < data.length; i++) {         			
+         			$('#environmentId').append($("<option></option>").text(data[i].name));
+         		}
+             } , 
+     	dataType: "json"
+        });
+
+ 	    $.ajax({
+         	type: "GET",
+         	url: URL_BASE + "/placeAdms",        	
+         	success: function(data) {
+         		$('#placeAdmId option').remove();         		
+         		for (var i = 0; i < data.length; i++) {         			
+         			$('#placeAdmId').append($("<option></option>").text(data[i].name));
+         		}        	           		        	
+             } , 
+     	dataType: "json"
+        });         		         		
+    });
+      
     $('#modalEditar').on('loaded.bs.modal', function (e) {    	    	    	    
 	    $(this).find("form").submit($.editarLocal);	   	   
     });
