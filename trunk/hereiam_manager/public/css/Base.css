@@ -7,3 +7,10 @@
 .selected td {
 	background-color: #428bca !important;
 }
+
+.progressBar {
+	text-align: right;
+	display: none;
+	float: right;
+	clear: both;
+}
