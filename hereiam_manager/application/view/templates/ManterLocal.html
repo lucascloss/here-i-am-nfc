@@ -4,8 +4,11 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="modalLocal">{if $acao == "adicionar"}Adicionar{else}Editar{/if} Local</h4>
 			</div>
-			<form id="adicionarLocal" class="form-horizontal" role="form" method="post" action="">
+			<form id="{if $acao == "adicionar"}adicionar{else}editar{/if}Local" class="form-horizontal" role="form" method="post" action="">
 				<div class="modal-body">
+					<div class="progressBar">
+						<img src="images/spin.gif" width="32" height="32" />
+					</div>	
 					<div class="form-group">		
 						<label for="nome" class="col-sm-4 control-label">Nome</label>
   							<div class="col-xs-5">
@@ -58,11 +61,11 @@
 						<div class="col-sm-offset-4 col-sm-8">
 							<div class="checkbox">
 				    			<label >
-				      				<input type="checkbox" name="important"{if $tipoUsuario != 1} disabled="disabled"{/if}>&Eacute; importante?
+				      				<input type="checkbox" id="important" name="important"{if $tipoUsuario != 1} disabled="disabled"{/if}>&Eacute; importante?
 				    			</label>
 				  			</div>
 						</div>
-					</div>	
+					</div>
 				</div>						  				
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -113,9 +116,9 @@
 					<tr>
 						<td><strong>ID</strong></td>
 						<td><strong>Nome</strong></td>
-						<td width="25%"><strong>Ambiente</strong></td>
+						<td width="25%"><strong>ID do Ambiente</strong></td>
 						<td width="15%"><strong>Tipo</strong></td>
-						<td width="20%"><strong>Administrador</strong></td>
+						<td width="20%"><strong>ID do Administrador</strong></td>
 					</tr>
 				</thead>
 			</table>
