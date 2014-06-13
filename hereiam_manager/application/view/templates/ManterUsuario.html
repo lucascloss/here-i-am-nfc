@@ -4,15 +4,15 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="modalRemoverUsuario">Remover Usu&aacute;rio</h4>
 			</div>
-			<div class="modal-body">
-				<form class="form-horizontal" role="form" method="" action="">
-					
-				</form>				
+			<form class="form-horizontal" role="form" method="" action="">
+				<div class="modal-body">
+					<p>Você deseja realmente remover os locais selecionados?</p>
+				</div>										
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-danger">Remover</button>
+					<button type="submit" class="btn btn-danger">Remover</button>
 				</div>
-			</div>
+			</form>
 {else}
 {include file="FragmentoCabecalho.html"}
 {include file="FragmentoConteudoCabecalho.html"}
@@ -22,13 +22,14 @@
 	<div class="panel-heading"><h3>Gerenciar Usu&aacute;rios</h3></div>
 		<div class="panel-body">
  			<div class="form-group">										
-			<a data-toggle="modal" data-target="#modalRemover" href="index.php?controle=manterusuario&acao=remover" class="btn btn-default btn-lg">
+			<a data-toggle="modal" id="btnRemoverUsuario" data-target="#modalRemover" href="index.php?controle=manterusuario&acao=remover" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-remove"></span>
 			</a>																													
 			</div>		
 			<table class="table table-striped table-bordered" id="listaUsuarios">
 				<thead>
 					<tr>
+						<td><strong>ID</strong></td>
 						<td><strong>Nome</strong></td>
 						<td width="20%"><strong>Usu&aacute;rio</strong></td>
 						<td width="30%"><strong>Email</strong></td>
