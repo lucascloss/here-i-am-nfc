@@ -12,16 +12,17 @@ $(document).ready(function() {
             { "data": "ends" }  
         ]
     } );
+        
+    $init = function() {
+    	$("#btnEditarAgenda").prop( "disabled", true );
+        $("#btnRemoverAgenda").prop( "disabled", true );
+    };
+    $init();
     
-    /*$('#btnAdicionar').click(function() { 
-    	$(location).attr('href', 'index.php?controle=manteragendaeventos&acao=adicionar');
-    });
+    $.reload = function() {
+        $.init();
+        
+        $("#listaAgendas").dataTable()._fnAjaxUpdate();
+    };
     
-    $('#btnEditar').click(function() { 
-    	$(location).attr('href', 'index.php?controle=manteragendaeventos&acao=editar');
-    });
-    
-    $('#btnRemover').click(function() { 
-    	$(location).attr('href', 'index.php?controle=manteragendaeventos&acao=remover');
-    });*/   
-} );
+});

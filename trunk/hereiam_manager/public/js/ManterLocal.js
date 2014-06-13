@@ -17,8 +17,8 @@ $(document).ready(function() {
         $(this).toggleClass('selected');
         
         var selected = $("#listaLocais").DataTable().rows('.selected').data();
-        $("#btnEditarLocal").prop( "disabled", (selected.length != 1) );
-        $("#btnRemoverLocal").prop( "disabled", (selected.length == 0) );
+        $("#btnEditarLocal").attr( "disabled", (selected.length != 1) );
+        $("#btnRemoverLocal").attr( "disabled", (selected.length == 0) );
     } );
     
     $('#modalAdicionar').on('loaded.bs.modal', function (e) {
@@ -58,8 +58,11 @@ $(document).ready(function() {
     $('#modalEditar').on('loaded.bs.modal', function (e) {    	    	    	    
 	    $(this).find("form").submit($.editarLocal);
 	    
-	    $('#editarLocal #environmentId').prop( 'disabled', true );
-	    $('#editarLocal #placeAdmId').prop( 'disabled', true );
+	    $('#editarLocal #latitude').attr( 'disabled', true );
+	    $('#editarLocal #longitude').attr( 'disabled', true );
+	    $('#editarLocal #idNfc').attr( 'disabled', true );
+	    $('#editarLocal #environmentId').attr( 'disabled', true );
+	    $('#editarLocal #placeAdmId').attr( 'disabled', true );
     });
     
     $('#modalEditar').on('show.bs.modal', function (e) {
@@ -103,9 +106,9 @@ $(document).ready(function() {
         		}
         		
         		if(data.important == true){
-        			$('#editarLocal #important').prop('checked', true);
+        			$('#editarLocal #important').attr('checked', true);
         		} else {
-        			$('#editarLocal #important').prop('checked', false);
+        			$('#editarLocal #important').attr('checked', false);
         		}
         		
         		$('.progressBar').hide();
@@ -172,6 +175,7 @@ $(document).ready(function() {
 	        		$('.progressBar').hide();
 	        		$("#modalEditar").modal("hide");
 	        		$.reload();
+	        		$.init();
 	            }, 
 	        	dataType: "json"
 	        });
@@ -193,6 +197,7 @@ $(document).ready(function() {
 		        		$('.progressBar').hide();
 		        		$("#modalRemover").modal("hide");
 		        		$.reload();
+		        		$.init();
 		            }, 
 		        	dataType: "json"
 		        });
@@ -203,13 +208,13 @@ $(document).ready(function() {
     };
     
     $init = function() {
-    	$("#btnEditarLocal").prop( "disabled", true );
-        $("#btnRemoverLocal").prop( "disabled", true );
+    	$("#btnEditarLocal").attr( "disabled", true );
+        $("#btnRemoverLocal").attr( "disabled", true );
     };
     $init();
     
     $.reload = function() {
-        $.init();
+//        $.init();
         
         $("#listaLocais").dataTable()._fnAjaxUpdate();
     };
