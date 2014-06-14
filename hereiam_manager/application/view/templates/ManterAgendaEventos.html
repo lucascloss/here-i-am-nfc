@@ -21,43 +21,25 @@
 					<div class="form-group">		
 						<label for="dataInicio" class="col-sm-5 control-label">Data de In&iacute;cio</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="dateBegin" placeholder="">    			 				
-								<script type=�text/javascript�>								
-									$('#dataInicioIn').datepicker();											
-								</script>
+    			 				<input type="text" class="form-control" id="dateBegin" placeholder="">    			 												
   				 			</div>	
 					</div>
 					<div class="form-group">		
 						<label for="horaInicio" class="col-sm-5 control-label">Hor&aacute;rio de In&iacute;cio</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="timeBegin" placeholder="">
-    			 				<script type="text/javascript">
-	    			 				$('#horaInicioIn').datetimepicker({
-	    			 					datepicker:false,
-	    			 					format:'H:i'
-	    			 				});
-						        </script>
+    			 				<input type="text" class="form-control" id="timeBegin" placeholder="">    			 				
   				 			</div>	
 					</div>
 					<div class="form-group">		
 						<label for="dataFim" class="col-sm-5 control-label">Data do Encerramento</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="dateEnd" placeholder="">
-    			 				<script type="text/javascript">								
-									$('#dataFimIn').datepicker();											
-								</script>
+    			 				<input type="text" class="form-control" id="dateEnd" placeholder="">    			 				
   				 			</div>	
 					</div>
 					<div class="form-group">		
 						<label for="horaFim" class="col-sm-5 control-label">Hor&aacute;rio do Encerramento</label>
   							<div class="col-xs-5">  							
-    			 				<input type="text" class="form-control" id="timeEnd" placeholder="">
-    			 				<script type="text/javascript">
-	    			 				$('#horafimIn').datetimepicker({
-	    			 					datepicker:false,
-	    			 					format:'H:i'
-	    			 				});
-						        </script>
+    			 				<input type="text" class="form-control" id="timeEnd" placeholder="">    			 				
 					        </div>	
 					</div>	
 					<div class="form-group">	 
@@ -84,15 +66,16 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="modalRemoverEvento">Remover Evento</h4>
 			</div>
-			<div class="modal-body">
-				<form class="form-horizontal" role="form" method="" action="">
+			<form class="form-horizontal" role="form" method="" action="">
+				<div class="modal-body">
 					<p>Você deseja realmente remover os eventos selecionados?</p>
-				</form>				
+				</div>				
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 					<button type="submit" class="btn btn-danger">Remover</button>
 				</div>
-			</div>
+			</form>
+			
 {else}
 {include file="FragmentoCabecalho.html"}
 {include file="FragmentoConteudoCabecalho.html"}

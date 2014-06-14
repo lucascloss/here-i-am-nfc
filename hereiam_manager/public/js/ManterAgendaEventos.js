@@ -15,7 +15,7 @@ $(document).ready(function() {
         ]
     } );
      
-    $('.progressBar').hide();
+    $('.progressBar').hide();        
     
     $('#listaEventos tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('selected');
@@ -27,11 +27,22 @@ $(document).ready(function() {
     
     $('#modalAdicionar').on('loaded.bs.modal', function (e) {
     	$(this).find("form").submit($.adicionarEvento);
+    	
+    	$('#dateBegin').datepicker();
+        $('#timeBegin').datetimepicker({
+    			datepicker:false,
+    			format:'H:i'
+    	});
+        $('#dateEnd').datepicker();
+        $('#timeEnd').datetimepicker({
+    			datepicker:false,
+    			format:'H:i'
+    	});
     });
         
     $('#modalAdicionar').on('show.bs.modal', function (e) {
     	$('.progressBar').show();
- 		
+    	
     	$.ajax({
          	type: "GET",
          	url: URL_BASE + "/environments",        	
@@ -58,7 +69,18 @@ $(document).ready(function() {
     });
     
     $('#modalEditar').on('loaded.bs.modal', function (e) {    	    	    	    
-	    $(this).find("form").submit($.editarEvento);	    	    
+	    $(this).find("form").submit($.editarEvento);
+	    
+	    $('#dateBegin').datepicker();
+        $('#timeBegin').datetimepicker({
+    			datepicker:false,
+    			format:'H:i'
+    	});
+        $('#dateEnd').datepicker();
+        $('#timeEnd').datetimepicker({
+    			datepicker:false,
+    			format:'H:i'
+    	});
     });
     
     $('#modalEditar').on('show.bs.modal', function (e) {
@@ -87,7 +109,7 @@ $(document).ready(function() {
                  	type: "GET",
                  	url: URL_BASE + "/environments",        	
                  	success: function(data1) {         		        		
-                 		$('#adicionarEvento #environments option').remove();
+                 		$('#editarEvento #environments option').remove();
                  		for (var i = 0; i < data1.length; i++) {         			
                  			$('#editarEvento #environments').append($("<option></option>").text(data1[i].name).val(data1[i].id));
                  		}
@@ -150,12 +172,12 @@ $(document).ready(function() {
     	
     	if (selected.length == 1) {    		    	
 	    	var obj = new Object();
-	    	obj.event = $("#adicionarEvento #event").val();    	    	
-	    	obj.info = $("#adicionarEvento #info").val();
-	    	obj.begin = $("#adicionarEvento #dateBegin").val() + "#" + $("#adicionarEvento #timeBegin").val();
-	    	obj.ends = $("#adicionarEvento #dateEnd").val() + "#" + $("#adicionarEvento #timeEnd").val();
-	    	obj.environmentId = $("#adicionarEvento #environments").val();
-	    	obj.placeId = $("#adicionarEvento #places").val();
+	    	obj.event = $("#editarEvento #event").val();    	    	
+	    	obj.info = $("#editarEvento #info").val();
+	    	obj.begin = $("#editarEvento #dateBegin").val() + "#" + $("#editarEvento #timeBegin").val();
+	    	obj.ends = $("#editarEvento #dateEnd").val() + "#" + $("#editarEvento #timeEnd").val();
+	    	obj.environmentId = $("#editarEvento #environments").val();
+	    	obj.placeId = $("#editarEvento #places").val();
         	    	   	
     	   	$.ajax({
 	        	type: "PUT",
