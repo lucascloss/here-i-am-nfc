@@ -46,7 +46,8 @@ $(document).ready(function() {
       
     $('#modalEditar').on('loaded.bs.modal', function (e) {    	    	    	    
 	    $(this).find("form").submit($.editarAmbiente);
-	    	    
+	    
+	    $('#editarAmbiente #idNfc').attr( 'disabled', true );
 	    $('#editarAmbiente #latitude').attr( 'disabled', true );
 	    $('#editarAmbiente #longitude').attr( 'disabled', true );
 	    $('#editarAmbiente #address').attr( 'disabled', true );
@@ -108,7 +109,7 @@ $(document).ready(function() {
     	obj.name = $("#adicionarAmbiente #name").val();    	
     	obj.type = $("#adicionarAmbiente #type").val();
     	obj.info = $("#adicionarAmbiente #info").val();
-//    	obj.idNfc = $("#adicionarAmbiente #idNfc").val();
+    	obj.idNfc = $("#adicionarAmbiente #idNfc").val();
     	obj.latitude = $("#adicionarAmbiente #latitude").val();
     	obj.longitude = $("#adicionarAmbiente #longitude").val();
     	obj.address = $('#adicionarAmbiente #address').val();

@@ -4,12 +4,12 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="modalEvento">{if $acao == "adicionar"}Adicionar{else}Editar{/if} Evento</h4>
 			</div>
-			<div class="modal-body">
-				<form class="form-horizontal" role="form" method="" action="">
+			<form id="{if $acao == "adicionar"}adicionar{else}editar{/if}Evento" class="form-horizontal" role="form" method="" action="">
+				<div class="modal-body">				
 					<div class="form-group">		
 						<label for="evento" class="col-sm-5 control-label">Nome do Evento</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="evento" placeholder="Nome do Evento">
+    			 				<input type="text" class="form-control" id="event" placeholder="Nome do Evento">
   				 			</div>	
 					</div>
 					<div class="form-group">		
@@ -21,7 +21,7 @@
 					<div class="form-group">		
 						<label for="dataInicio" class="col-sm-5 control-label">Data de In&iacute;cio</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="dataInicioIn" placeholder="">    			 				
+    			 				<input type="text" class="form-control" id="dateBegin" placeholder="">    			 				
 								<script type=�text/javascript�>								
 									$('#dataInicioIn').datepicker();											
 								</script>
@@ -30,7 +30,7 @@
 					<div class="form-group">		
 						<label for="horaInicio" class="col-sm-5 control-label">Hor&aacute;rio de In&iacute;cio</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="horaInicioIn" placeholder="">
+    			 				<input type="text" class="form-control" id="timeBegin" placeholder="">
     			 				<script type="text/javascript">
 	    			 				$('#horaInicioIn').datetimepicker({
 	    			 					datepicker:false,
@@ -42,7 +42,7 @@
 					<div class="form-group">		
 						<label for="dataFim" class="col-sm-5 control-label">Data do Encerramento</label>
   							<div class="col-xs-5">
-    			 				<input type="text" class="form-control" id="dataFimIn" placeholder="">
+    			 				<input type="text" class="form-control" id="dateEnd" placeholder="">
     			 				<script type="text/javascript">								
 									$('#dataFimIn').datepicker();											
 								</script>
@@ -51,7 +51,7 @@
 					<div class="form-group">		
 						<label for="horaFim" class="col-sm-5 control-label">Hor&aacute;rio do Encerramento</label>
   							<div class="col-xs-5">  							
-    			 				<input type="text" class="form-control" id="horafimIn" placeholder="">
+    			 				<input type="text" class="form-control" id="timeEnd" placeholder="">
     			 				<script type="text/javascript">
 	    			 				$('#horafimIn').datetimepicker({
 	    			 					datepicker:false,
@@ -63,21 +63,21 @@
 					<div class="form-group">	 
 			   			 <label for="listaAmbientes" class="col-sm-5 control-label">Nome do Ambiente</label>
 			   			 <div class="col-xs-5">
-			     		 	<select class="form-control" id="listaAmbientes"{if $tipoUsuario != 1} disabled="disabled"{/if}>...</select>
+			     		 	<select class="form-control" id="environments"{if $tipoUsuario != 1} disabled="disabled"{/if}>...</select>
 			   			 </div>   				    				 
 					</div>
 					<div class="form-group">	 
-			   			 <label for="listaAmbientes" class="col-sm-5 control-label">Nome do Local</label>
+			   			 <label for="listaLocais" class="col-sm-5 control-label">Nome do Local</label>
 			   			 <div class="col-xs-5">
-			     		 	<select class="form-control" id="listaLocais"{if $tipoUsuario == 3} disabled="disabled"{/if}>...</select>
+			     		 	<select class="form-control" id="places"{if $tipoUsuario == 3} disabled="disabled"{/if}>...</select>
 			   			 </div>   				    				 
-					</div>								
-				</form>
+					</div>
+				</div>												
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-success">{if $acao == "adicionar"}Adicionar{else}Editar{/if}</button>
-				</div>
-			</div>
+					<button type="submit" class="btn btn-success">{if $acao == "adicionar"}Adicionar{else}Editar{/if}</button>
+				</div>			
+			</form>
 {elseif $acao == "remover"}
 		<!-- Modal Remover Evento -->
 			<div class="modal-header">
@@ -86,11 +86,11 @@
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" role="form" method="" action="">
-					
+					<p>Você deseja realmente remover os eventos selecionados?</p>
 				</form>				
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-danger">Remover</button>
+					<button type="submit" class="btn btn-danger">Remover</button>
 				</div>
 			</div>
 {else}
@@ -105,16 +105,17 @@
  				<a data-toggle="modal" data-target="#modalAdicionar" href="index.php?controle=manteragendaeventos&acao=adicionar" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-plus"></span>
 				</a>				
-				<a data-toggle="modal" id="btnEditarAgenda" data-target="#modalEditar" href="index.php?controle=manteragendaeventos&acao=editar" class="btn btn-default btn-lg">
+				<a data-toggle="modal" id="btnEditarEvento" data-target="#modalEditar" href="index.php?controle=manteragendaeventos&acao=editar" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-edit"></span>
 				</a>				
-				<a data-toggle="modal" id="btnRemoverAgenda" data-target="#modalRemover" href="index.php?controle=manteragendaeventos&acao=remover" class="btn btn-default btn-lg">
+				<a data-toggle="modal" id="btnRemoverEvento" data-target="#modalRemover" href="index.php?controle=manteragendaeventos&acao=remover" class="btn btn-default btn-lg">
 					<span class="glyphicon glyphicon-remove"></span>
 				</a>								
 			</div>		
 			<table class="table table-striped table-bordered" id="listaEventos">
 				<thead>
 					<tr>
+						<td><strong>ID</strong></td>
 						<td><strong>Nome</strong></td>
 						<td width="20%"><strong>Ambiente</strong></td>
 						<td width="20%"><strong>Local</strong></td>
