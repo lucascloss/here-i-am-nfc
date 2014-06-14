@@ -128,7 +128,7 @@ $(document).ready(function() {
         		$('.progressBar').hide();
         		
         		$("#modalAdicionar").modal("hide");
-        		$("#listaAmbientes").dataTable()._fnAjaxUpdate();
+        		$.reload();
             }
         });    	    	  	
         
@@ -165,7 +165,6 @@ $(document).ready(function() {
 	        		$('.progressBar').hide();	        		
 	        		$("#modalEditar").modal("hide");       		
 	        		$.reload();
-	        		$.init();
 	            }, 	            
 	        	dataType: "json"
 	        });
@@ -187,7 +186,6 @@ $(document).ready(function() {
 		        		$('.progressBar').hide();
 		        		$("#modalRemover").modal("hide");
 		        		$.reload();
-		        		$.init();
 		            }, 
 		        	dataType: "json"
 		        });
@@ -204,7 +202,7 @@ $(document).ready(function() {
     $init();
     
     $.reload = function() {
-//        $.init();
+    	$init();
         $("#listaAmbientes").dataTable()._fnAjaxUpdate();
     };
     

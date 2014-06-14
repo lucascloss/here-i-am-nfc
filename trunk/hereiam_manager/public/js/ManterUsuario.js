@@ -37,7 +37,6 @@ $(document).ready(function() {
 			        		$('.progressBar').hide();
 			        		$("#modalRemover").modal("hide");
 			        		$.reload();
-			        		$.init();
 			            }, 
 			        	dataType: "json"
 			        });
@@ -53,7 +52,7 @@ $(document).ready(function() {
 	    $init();
 	    
 	    $.reload = function() {
-//	        $.init();
+	        $init();
 	        $("#listaUsuarios").dataTable()._fnAjaxUpdate();
 	    };
 } );
