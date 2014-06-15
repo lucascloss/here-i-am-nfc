@@ -12,6 +12,14 @@ $(document).ready(function() {
             { "data": "placeId" },
             { "data": "begin" },
             { "data": "ends" }  
+        ], 
+        "columnDefs": [
+            { "targets": [ 2 ],
+              "visible": false,
+              "searchable": false },
+            { "targets": [ 3 ],
+              "visible": false,
+              "searchable": false },
         ]
     } );
      

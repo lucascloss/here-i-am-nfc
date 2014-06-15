@@ -10,6 +10,11 @@ $(document).ready(function() {
             { "data": "name" },
             { "data": "type" },
             { "data": "environmentAdmId" }     
+        ], 
+        "columnDefs": [
+            { "targets": [ 3 ],
+              "visible": false,
+              "searchable": false },            
         ]
     });
     

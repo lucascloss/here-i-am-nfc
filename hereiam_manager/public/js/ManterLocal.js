@@ -10,7 +10,15 @@ $(document).ready(function() {
             { "data": "environmentId" },
             { "data": "type" },
             { "data": "placeAdmId" }     
-        ]        
+        ], 
+        "columnDefs": [
+            { "targets": [ 2 ],
+              "visible": false,
+              "searchable": false },
+            { "targets": [ 4 ],
+              "visible": false,
+              "searchable": false },
+        ]
     } );
     
     $('#listaLocais tbody').on( 'click', 'tr', function () {
