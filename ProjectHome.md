@@ -1,0 +1,1 @@
+A tool to apply in indoor environments, helping people to locate
